@@ -11,5 +11,8 @@ listpcm:
 countcards:
 	gcc -o bin/countcards countcards.c $(LIBS)
 
+playback:
+	gcc -o bin/playback playback.c $(LIBS)
+
 clear:
 	- rm bin/*
