@@ -6,6 +6,8 @@ all: bin/countcards bin/countwave bin/listpcm bin/playback bin/iirfilter
 
 clear:
 	- rm bin/*
+	- rm classes/*.o
+	- rm *.o
 
 bin/countwave: alsa/countwave.c
 	gcc -o bin/countwave alsa/countwave.c $(LIBS)
@@ -19,5 +21,8 @@ bin/countcards: alsa/countcards.c
 bin/playback: alsa/playback.c
 	gcc -o bin/playback alsa/playback.c $(LIBS)
 
-bin/iirfilter:
-	gcc -o bin/iirfilter iirfilter.c $(LIBS)
+bin/iirfilter: iirfilter.cpp classes/Matrix.o
+	g++ -o bin/iirfilter iirfilter.cpp $(LIBS)
+
+%o: %cpp
+	g++ -c $(FLAGS) -o $@ $<
