@@ -78,12 +78,7 @@ int main() {
   /* We want to loop for 5 seconds */
   snd_pcm_hw_params_get_period_time(params,
                                     &val, &dir);
-  /* 5 seconds in microseconds divided by
-   * period time */
-  loops = 5000000 / val;
-
-  while (loops > 0) {
-    loops--;
+  while (1) {
     rc = read(0, buffer, size);
     if (rc == 0) {
       fprintf(stderr, "end of file on input\n");
