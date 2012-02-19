@@ -1,6 +1,6 @@
 LIBS = -lasound
 
-all: countcards countwave listpcm
+all: countcards countwave listpcm playback
 
 countwave:
 	gcc -o bin/countwave countwave.c $(LIBS)
