@@ -14,6 +14,8 @@ class Matrix {
 
 	public:
 		Matrix(int rows, int cols);
+
+		bool set(int row, int col, float value);
 		int* getSize();
 		int getRows();
 		int getCols();

@@ -14,6 +14,10 @@ Matrix::Matrix(int rows, int cols) {
 	return;
 }
 
+bool Matrix::set(int row, int col, float value) {
+	matrix[row][col] = value;
+	return true;
+}
 
 int Matrix::getRows() {
 	return this->rows;
