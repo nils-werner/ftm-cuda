@@ -24,5 +24,5 @@ bin/playback: alsa/playback.c
 bin/iirfilter: iirfilter.cpp classes/Matrix.o
 	g++ -o bin/iirfilter iirfilter.cpp $(LIBS)
 
-%o: %cpp
+%o: %cpp %h
 	g++ -c $(FLAGS) -o $@ $<
