@@ -7,17 +7,17 @@ all: bin/countcards bin/countwave bin/listpcm bin/playback bin/iirfilter
 clear:
 	- rm bin/*
 
-bin/countwave:
-	gcc -o bin/countwave countwave.c $(LIBS)
+bin/countwave: alsa/countwave.c
+	gcc -o bin/countwave alsa/countwave.c $(LIBS)
 
-bin/listpcm:
-	gcc -o bin/listpcm listpcm.c $(LIBS)
+bin/listpcm: alsa/listpcm.c
+	gcc -o bin/listpcm alsa/listpcm.c $(LIBS)
 
-bin/countcards:
-	gcc -o bin/countcards countcards.c $(LIBS)
+bin/countcards: alsa/countcards.c
+	gcc -o bin/countcards alsa/countcards.c $(LIBS)
 
-bin/playback:
-	gcc -o bin/playback playback.c $(LIBS)
+bin/playback: alsa/playback.c
+	gcc -o bin/playback alsa/playback.c $(LIBS)
 
 bin/iirfilter:
 	gcc -o bin/iirfilter iirfilter.c $(LIBS)
