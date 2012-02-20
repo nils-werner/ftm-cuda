@@ -21,7 +21,7 @@ bin/countcards: alsa/countcards.c
 bin/playback: alsa/playback.c
 	gcc -o bin/playback alsa/playback.c $(LIBS)
 
-bin/iirfilter: iirfilter.cpp classes/Matrix.o
+bin/iirfilter: iirfilter.cpp classes/Filter.o classes/Matrix.o
 	g++ -o bin/iirfilter iirfilter.cpp $(LIBS)
 
 %o: %cpp %h
