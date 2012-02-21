@@ -3,7 +3,14 @@
 
 using namespace std;
 
+Filter::Filter() {
+	cout << "ehhh";
+	Filter((float) 0.65);
+}
+
 Filter::Filter(float length = 0.65) {
+	int i;
+
 	// Saiten-Koeffizienten
 	this->l = length;
 	this->Ts = 60.97;
@@ -27,12 +34,17 @@ Filter::Filter(float length = 0.65) {
 	this->blocksize = 100;
 
 	// Ausgangssignal
-	// y = zeros(1,samples);
+	y = (float*) malloc(sizeof(float));
 
 
 	this->createMatrices();
-		
-	std::cout << "Hello World!";
+
+	for(i = 0; i < samples; i++) {
+		y[i] = MC.multiply(Mstate).get(0,0);
+		Mstate = MA.multiply(Mstate);
+	}
+
+	std::cout << y;
 }
 
 void Filter::createMatrices() {
@@ -60,16 +72,16 @@ void Filter::createMatrices() {
 		c1 = -2 * exp(sigma * this->l / this->T) * cos(omega * this->l / this->T);
 		c0 = exp( 2 * sigma * this->l / T);
 
-		MC.set(0, i  , 0);
-		MC.set(0, i+1, a);
+		this->MC.set(0, i  , 0);
+		this->MC.set(0, i+1, a);
 
-		MA.set(i  , i  , 0);
-		MA.set(i  , i+1, -c0);
-		MA.set(i+1, i  , 1);
-		MA.set(i+1, i+1, -c1);
+		this->MA.set(i  , i  , 0);
+		this->MA.set(i  , i+1, -c0);
+		this->MA.set(i+1, i  , 1);
+		this->MA.set(i+1, i+1, -c1);
 
-		Mstate.set(i  , 0, 1);
-		Mstate.set(i+1, 0, 0);
+		this->Mstate.set(i  , 0, 1);
+		this->Mstate.set(i+1, 0, 0);
 
 	}
 }

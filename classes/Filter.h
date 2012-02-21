@@ -24,9 +24,11 @@ class Filter {
 		// Blockverarbeitungs-Länge
 		int blocksize;
 
+		// Matrizen
 		Matrix MC, MA, Mstate;
 
-
+		// Ausgangssignal
+		float* y;
 
 	public:
 		Filter(float lenght);

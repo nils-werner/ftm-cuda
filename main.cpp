@@ -8,8 +8,8 @@ using namespace std;
 int main ()
 {
 	Buffer buffer(10);
-	Filter filter();
+	Filter filter(0.65);
 
-	cout << "Hello World!";
+
 	return 0;
 }
