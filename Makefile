@@ -3,7 +3,7 @@
 LIBS = -lasound
 OBJS = classes/Filter.o classes/Matrix.o classes/Buffer.o
 
-all: bin/countcards bin/countwave bin/listpcm bin/playback bin/iirfilter
+all: bin/countcards bin/countwave bin/listpcm bin/playback bin/iirfilter bin/matrixtest
 
 clear:
 	- rm bin/*
@@ -24,6 +24,9 @@ bin/playback: alsa/playback.c
 
 bin/iirfilter: main.cpp $(OBJS)
 	g++ -o bin/iirfilter main.cpp $(LIBS)
+
+bin/matrixtest: matrixtest.cpp $(OBJS)
+	g++ -o bin/matrixtest matrixtest.cpp $(LIBS)
 
 %.o: %.cpp %.h
 	g++ -c $(FLAGS) -o $@ $<
