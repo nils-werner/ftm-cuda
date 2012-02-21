@@ -3,6 +3,8 @@
 Matrix::Matrix() {
 	this->rows = 0;
 	this->cols = 0;
+
+	this->matrix = (float**) malloc(sizeof(float*));
 }
 
 Matrix::Matrix(int rows, int cols) {

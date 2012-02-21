@@ -3,11 +3,6 @@
 
 using namespace std;
 
-Filter::Filter() {
-	cout << "ehhh";
-	Filter((float) 0.65);
-}
-
 Filter::Filter(float length = 0.65) {
 	int i;
 
