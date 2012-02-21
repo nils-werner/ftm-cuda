@@ -40,9 +40,9 @@ void Filter::createMatrices() {
 	double gamma, sigma, omega;
 	double a, b, c1, c0;
 
-	Matrix C(1, 2 * this->filters);
-	Matrix A(2 * this->filters, 2 * this->filters);
-	Matrix state(2 * this->filters, 1);
+	this->MC.resize(1, 2 * this->filters);
+	this->MA.resize(2 * this->filters, 2 * this->filters);
+	this->Mstate.resize(2 * this->filters, 1);
 
 	for(i = 0; i < this->filters; i++) {
 		gamma = i * ( M_PI / this->l );
@@ -60,16 +60,16 @@ void Filter::createMatrices() {
 		c1 = -2 * exp(sigma * this->l / this->T) * cos(omega * this->l / this->T);
 		c0 = exp( 2 * sigma * this->l / T);
 
-		C.set(0, i  , 0);
-		C.set(0, i+1, a);
+		MC.set(0, i  , 0);
+		MC.set(0, i+1, a);
 
-		A.set(i  , i  , 0);
-		A.set(i  , i+1, -c0);
-		A.set(i+1, i  , 1);
-		A.set(i+1, i+1, -c1);
+		MA.set(i  , i  , 0);
+		MA.set(i  , i+1, -c0);
+		MA.set(i+1, i  , 1);
+		MA.set(i+1, i+1, -c1);
 
-		state.set(i  , 0, 1);
-		state.set(i+1, 0, 0);
+		Mstate.set(i  , 0, 1);
+		Mstate.set(i+1, 0, 0);
 
 	}
 }

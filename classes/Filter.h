@@ -24,6 +24,8 @@ class Filter {
 		// Blockverarbeitungs-Länge
 		int blocksize;
 
+		Matrix MC, MA, Mstate;
+
 
 
 	public:

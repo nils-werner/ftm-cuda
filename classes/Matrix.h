@@ -13,9 +13,11 @@ class Matrix {
 		int rows, cols;
 
 	public:
+		Matrix();
 		Matrix(int rows, int cols);
 		Matrix(const Matrix& m);
 
+		void resize(int rows, int cols);
 		void set(int row, int col, float value);
 		float get(int row, int col);
 		int* getSize();

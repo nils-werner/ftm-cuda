@@ -1,7 +1,27 @@
 #include "Matrix.h"
 
+Matrix::Matrix() {
+	this->rows = 0;
+	this->cols = 0;
+}
+
 Matrix::Matrix(int rows, int cols) {
+	this->resize(rows, cols);
+}
+
+Matrix::Matrix(const Matrix& m) {
+	this->rows = m.rows;
+	this->cols = m.cols;
+	this->matrix = m.matrix;
+}
+
+void Matrix::resize(int rows, int cols) {
 	int i;
+
+	for(i = 0; i < this->rows; i++) {
+		free(this->matrix[i]);
+	}
+	free(this->matrix);
 
 	this->rows = rows;
 	this->cols = cols;
@@ -12,12 +32,6 @@ Matrix::Matrix(int rows, int cols) {
 	}
 
 	return;
-}
-
-Matrix::Matrix(const Matrix& m) {
-	this->rows = m.rows;
-	this->cols = m.cols;
-	this->matrix = m.matrix;
 }
 
 void Matrix::set(int row, int col, float value) {
