@@ -27,11 +27,19 @@ Filter::Filter(float length = 0.65) {
 
 	// Ausgangssignal
 	// y = zeros(1,samples);
+
+	this->createPoles();
 		
 	std::cout << "Hello World!";
 }
 
 void Filter::createPoles() {
+	int i;
 	vector<float> sigmas(this->filters);
 	vector<float> omegas(this->filters);
+
+	for(i = 0; i < this->filters; i++) {
+		sigmas.push_back(1);
+		omegas.push_back(2);
+	}
 }
