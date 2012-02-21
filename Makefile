@@ -1,6 +1,7 @@
 .PHONY: all clear
 
 LIBS = -lasound
+OBJS = classes/Filter.o classes/Matrix.o classes/Buffer.o
 
 all: bin/countcards bin/countwave bin/listpcm bin/playback bin/iirfilter
 
@@ -21,7 +22,7 @@ bin/countcards: alsa/countcards.c
 bin/playback: alsa/playback.c
 	gcc -o bin/playback alsa/playback.c $(LIBS)
 
-bin/iirfilter: main.cpp classes/Filter.o classes/Matrix.o
+bin/iirfilter: main.cpp $(OBJS)
 	g++ -o bin/iirfilter main.cpp $(LIBS)
 
 %.o: %.cpp %.h
