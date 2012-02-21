@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 
 class Filter {
 
@@ -25,6 +26,9 @@ class Filter {
 
 	public:
 		Filter(float lenght);
+	
+	private:
+		void createPoles();
 
 };
 

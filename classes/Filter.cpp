@@ -1,5 +1,7 @@
 #include "Filter.h"
 
+using namespace std;
+
 Filter::Filter(float length = 0.65) {
 	// Saiten-Koeffizienten
 	this->l = length;
@@ -27,4 +29,9 @@ Filter::Filter(float length = 0.65) {
 	// y = zeros(1,samples);
 		
 	std::cout << "Hello World!";
+}
+
+void Filter::createPoles() {
+	vector<float> sigmas(this->filters);
+	vector<float> omegas(this->filters);
 }
