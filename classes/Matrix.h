@@ -14,8 +14,10 @@ class Matrix {
 
 	public:
 		Matrix(int rows, int cols);
+		Matrix(const Matrix& m);
 
-		bool set(int row, int col, float value);
+		void set(int row, int col, float value);
+		float get(int row, int col);
 		int* getSize();
 		int getRows();
 		int getCols();

@@ -6,17 +6,26 @@ Matrix::Matrix(int rows, int cols) {
 	this->rows = rows;
 	this->cols = cols;
 
-	matrix = (float**) malloc(rows * sizeof(float*));
+	this->matrix = (float**) malloc(rows * sizeof(float*));
 	for (i = 0; i < rows; i++){
-		matrix[i] = (float*) malloc(cols * sizeof(float));
+		this->matrix[i] = (float*) malloc(cols * sizeof(float));
 	}
 
 	return;
 }
 
-bool Matrix::set(int row, int col, float value) {
-	matrix[row][col] = value;
-	return true;
+Matrix::Matrix(const Matrix& m) {
+	this->rows = m.rows;
+	this->cols = m.cols;
+	this->matrix = m.matrix;
+}
+
+void Matrix::set(int row, int col, float value) {
+	this->matrix[row][col] = value;
+}
+
+float Matrix::get(int row, int col) {
+	return matrix[row][col];
 }
 
 int Matrix::getRows() {
@@ -34,9 +43,29 @@ int* Matrix::getSize() {
 
 
 
-Matrix Matrix::multiply(Matrix otherMatrix) {
-	return *this;
+Matrix Matrix::multiply(Matrix m) {
+	int i, j, k;
+	float sum = 0;
+	Matrix result(this->getRows(), m.getCols());
+
+	for(i = 0; i < result.getRows(); i++) {
+		for(j = 0; j < result.getCols(); j++) {
+			for(k = 0; k < this->getCols(); k++) {
+				sum = sum + this->get(i,k) * m.get(k,j);
+			}
+			result.set(i,j, sum);
+			sum = 0;
+		}
+	}
 }
 
 Matrix Matrix::pow(int power) {
+	int i;
+	Matrix result(*this);
+
+	for(i = 1; i < power; i++) {
+		result = this->multiply(result);
+	}
+
+	return result;
 }
