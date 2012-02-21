@@ -2,26 +2,26 @@
 
 Filter::Filter() {
 	// Saiten-Koeffizienten
-	float l = 0.65;
-	float Ts = 60.97;
-	float rho = 1140;
-	float A = 0.5188e-6;
-	float E = 5.4e9;
-	float I = 0.171e-12;
-	float d1 = 8e-5;
-	float d3 = -1.4e-5;
+	this->l = 0.65;
+	this->Ts = 60.97;
+	this->rho = 1140;
+	this->A = 0.5188e-6;
+	this->E = 5.4e9;
+	this->I = 0.171e-12;
+	this->d1 = 8e-5;
+	this->d3 = -1.4e-5;
 
 	// Abtastpunkt
-	float xa = 0.1;
+	this->xa = 0.1;
 
 	// Abtastrate und Samplelänge
-	int T = 44100;
-	int seconds = 10;
-	int samples = seconds*T;
-	int filters = 30;
+	this->T = 44100;
+	this->seconds = 10;
+	this->samples = seconds*T;
+	this->filters = 30;
 
 	// Blockverarbeitungs-Länge
-	int blocksize = 100;
+	this->blocksize = 100;
 
 	// Ausgangssignal
 	// y = zeros(1,samples);

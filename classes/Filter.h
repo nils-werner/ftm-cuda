@@ -9,6 +9,19 @@
 class Filter {
 
 	private:
+		// Saiten-Koeffizienten
+		float l, Ts, rho, A, E, I, d1, d3;
+
+		// Abtastpunkt
+		float xa;
+
+		// Abtastrate und Samplelänge
+		int T, seconds, samples, filters;
+
+		// Blockverarbeitungs-Länge
+		int blocksize;
+
+
 
 	public:
 		Filter();
