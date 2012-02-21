@@ -24,15 +24,12 @@ class Filter {
 		// Blockverarbeitungs-Länge
 		int blocksize;
 
-		std::vector<float> sigmas, omegas;
-
 
 
 	public:
 		Filter(float lenght);
 	
 	private:
-		void createPoles();
 		void createMatrices();
 
 };

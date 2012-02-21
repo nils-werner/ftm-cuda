@@ -29,17 +29,16 @@ Filter::Filter(float length = 0.65) {
 	// Ausgangssignal
 	// y = zeros(1,samples);
 
-	this->sigmas.resize(this->filters);
-	this->omegas.resize(this->filters);
 
-	this->createPoles();
+	this->createMatrices();
 		
 	std::cout << "Hello World!";
 }
 
-void Filter::createPoles() {
+void Filter::createMatrices() {
 	int i;
 	double gamma, sigma, omega;
+	double a, b, c1, c0;
 
 	for(i = 0; i < this->filters; i++) {
 		gamma = i * ( M_PI / this->l );
@@ -51,20 +50,10 @@ void Filter::createPoles() {
 				+ ( pow(this->d1 / (2 * this->rho * this->A), 2) )
 			);
 		
-		this->sigmas.push_back(sigma);
-		this->omegas.push_back(omega);
-		
+		a = sin(i * M_PI * this->xa / this->l);
+
+		b = this->T * sin(omega * this->l / this->T) / (omega * this->l / this->T);
+		c1 = -2 * exp(sigma * this->l / this->T) * cos(omega * this->l / this->T);
+		c0 = exp( 2 * sigma * this->l / T);
 	}
-}
-
-void Filter::createMatrices() {
-	int i;
-
-	Matrix A(this->filters * 2, this->filters * 2);
-
-	for(i = 0; i < this->filters; i++) {
-	
-	}
-
-	A = A.pow(this->blocksize);
 }
