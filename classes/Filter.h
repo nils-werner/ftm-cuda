@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+#include "Matrix.h"
 
 class Filter {
 
@@ -30,6 +31,7 @@ class Filter {
 	
 	private:
 		void createPoles();
+		void createMatrices();
 
 };
 

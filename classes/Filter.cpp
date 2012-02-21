@@ -54,3 +54,13 @@ void Filter::createPoles() {
 		
 	}
 }
+
+void Filter::createMatrices() {
+	int i;
+
+	Matrix matrix(this->filters * 2, this->filters * 2);
+
+	for(i = 0; i < this->filters; i++) {
+		
+	}
+}
