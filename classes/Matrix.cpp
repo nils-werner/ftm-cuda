@@ -34,6 +34,9 @@ int* Matrix::getSize() {
 
 
 
-Matrix Matrix::Multiply(Matrix otherMatrix) {
+Matrix Matrix::multiply(Matrix otherMatrix) {
 	return *this;
+}
+
+Matrix Matrix::pow(int power) {
 }

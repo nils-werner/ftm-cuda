@@ -20,7 +20,8 @@ class Matrix {
 		int getRows();
 		int getCols();
 
-		Matrix Multiply(Matrix otherMatrix);
+		Matrix multiply(Matrix otherMatrix);
+		Matrix pow(int power);
 
 };
 
