@@ -24,6 +24,8 @@ class Filter {
 		// Blockverarbeitungs-Länge
 		int blocksize;
 
+		std::vector<float> sigmas, omegas;
+
 
 
 	public:

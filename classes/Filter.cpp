@@ -1,4 +1,5 @@
 #include "Filter.h"
+#include <vector>
 
 using namespace std;
 
@@ -28,6 +29,9 @@ Filter::Filter(float length = 0.65) {
 	// Ausgangssignal
 	// y = zeros(1,samples);
 
+	this->sigmas.resize(this->filters);
+	this->omegas.resize(this->filters);
+
 	this->createPoles();
 		
 	std::cout << "Hello World!";
@@ -36,8 +40,6 @@ Filter::Filter(float length = 0.65) {
 void Filter::createPoles() {
 	int i;
 	double gamma, sigma, omega;
-	vector<float> sigmas(this->filters);
-	vector<float> omegas(this->filters);
 
 	for(i = 0; i < this->filters; i++) {
 		gamma = i * ( M_PI / this->l );
@@ -49,8 +51,8 @@ void Filter::createPoles() {
 				+ ( pow(this->d1 / (2 * this->rho * this->A), 2) )
 			);
 		
-		sigmas.push_back(sigma);
-		omegas.push_back(omega);
+		this->sigmas.push_back(sigma);
+		this->omegas.push_back(omega);
 		
 	}
 }
@@ -64,5 +66,5 @@ void Filter::createMatrices() {
 	
 	}
 
-	A.pow(this->blocksize);
+	A = A.pow(this->blocksize);
 }
