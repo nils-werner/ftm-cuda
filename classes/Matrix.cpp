@@ -8,6 +8,7 @@ Matrix::Matrix() {
 }
 
 Matrix::Matrix(int rows, int cols) {
+	Matrix();
 	this->resize(rows, cols);
 }
 
@@ -20,10 +21,12 @@ Matrix::Matrix(const Matrix& m) {
 void Matrix::resize(int rows, int cols) {
 	int i;
 
-	for(i = 0; i < this->rows; i++) {
-		free(this->matrix[i]);
+	if(this->rows > 0 && this->cols > 0) {
+		for(i = 0; i < this->rows; i++) {
+			free(this->matrix[i]);
+		}
+		free(this->matrix);
 	}
-	free(this->matrix);
 
 	this->rows = rows;
 	this->cols = cols;
