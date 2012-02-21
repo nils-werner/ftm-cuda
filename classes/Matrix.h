@@ -27,6 +27,8 @@ class Matrix {
 		Matrix multiply(Matrix otherMatrix);
 		Matrix pow(int power);
 
+		void fill();
+
 };
 
 #endif

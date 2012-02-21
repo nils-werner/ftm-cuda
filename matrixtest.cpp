@@ -5,9 +5,14 @@
 
 using namespace std;
 
-int main ()
-{
-	Matrix test(10,10);
+int main () {
+
+	Matrix test(20,10);
+	Matrix b(10,20);
+
+	cout << test.getRows() << " " << test.getCols();
+
+	test.get(0,0);
 
 	return 0;
 }

@@ -3,13 +3,11 @@
 Matrix::Matrix() {
 	this->rows = 0;
 	this->cols = 0;
-
-	this->matrix = (float**) malloc(sizeof(float*));
 }
 
 Matrix::Matrix(int rows, int cols) {
 	Matrix();
-	this->resize(rows, cols);
+	resize(rows, cols);
 }
 
 Matrix::Matrix(const Matrix& m) {
@@ -26,15 +24,15 @@ void Matrix::resize(int rows, int cols) {
 			free(this->matrix[i]);
 		}
 		free(this->matrix);
+
+		this->matrix = (float**) malloc(rows * sizeof(float*));
+		for (i = 0; i < rows; i++){
+			this->matrix[i] = (float*) malloc(cols * sizeof(float));
+		}
 	}
 
 	this->rows = rows;
 	this->cols = cols;
-
-	this->matrix = (float**) malloc(rows * sizeof(float*));
-	for (i = 0; i < rows; i++){
-		this->matrix[i] = (float*) malloc(cols * sizeof(float));
-	}
 
 	return;
 }
@@ -87,4 +85,14 @@ Matrix Matrix::pow(int power) {
 	}
 
 	return result;
+}
+
+void Matrix::fill() {
+	int i, j;
+
+	for(i = 0; i < this->rows; i++) {
+		for(j = 0; j < this->cols; j++) {
+			this->matrix[i][j] = rand();
+		}
+	}
 }
