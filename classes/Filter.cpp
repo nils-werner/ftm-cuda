@@ -1,8 +1,8 @@
 #include "Filter.h"
 
-Filter::Filter() {
+Filter::Filter(float length = 0.65) {
 	// Saiten-Koeffizienten
-	this->l = 0.65;
+	this->l = length;
 	this->Ts = 60.97;
 	this->rho = 1140;
 	this->A = 0.5188e-6;
