@@ -21,7 +21,7 @@ Filter::Filter(float length = 0.65) {
 
 	// Abtastrate und Samplelänge
 	this->T = 44100;
-	this->seconds = 10;
+	this->seconds = 1;
 	this->samples = seconds*T;
 	this->filters = 30;
 
@@ -29,14 +29,14 @@ Filter::Filter(float length = 0.65) {
 	this->blocksize = 100;
 
 	// Ausgangssignal
-	y = (float*) malloc(sizeof(float));
+	y = (float*) malloc(samples * sizeof(float));
 
 
 	this->createMatrices();
 
 	for(i = 0; i < samples; i++) {
-		y[i] = MC.multiply(Mstate).get(0,0);
-		Mstate = MA.multiply(Mstate);
+		y[i] = this->MC.multiply(Mstate).get(0,0);
+		this->Mstate = this->MA.multiply(Mstate);
 	}
 
 	std::cout << y;
