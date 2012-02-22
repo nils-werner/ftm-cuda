@@ -35,7 +35,7 @@ Filter::Filter(float length = 0.65) {
 	this->createMatrices();
 
 //	cout << MC.toString() << endl << endl;
-//	cout << MA.toString() << endl << endl;
+	cout << MA.toString() << endl << endl;
 //	cout << Mstate.toString() << endl << endl;
 
 	for(i = 0; i < this->samples; i++) {
@@ -55,32 +55,37 @@ void Filter::createMatrices() {
 	this->MA.resize(2 * this->filters, 2 * this->filters);
 	this->Mstate.resize(2 * this->filters, 1);
 
-	for(i = 0; i < this->filters; i++) {
+	for(i = 1; i < this->filters+1; i++) {
 		gamma = i * ( M_PI / this->l );
 		sigma = (1 / (2 * this->rho * this->A) ) * (this->d3 * pow(gamma,2) - this->d1);
 		omega = sqrt(
-				  ( (this->E * this->I) / (this->rho * this->A) )
-				- ( (pow(this->d3, 2) / pow(2 * this->rho * this->A, 2)) * pow(gamma, 4) )
+				  (
+					( (this->E * this->I) / (this->rho * this->A) )
+					- ( pow(this->d3, 2) / pow(2 * this->rho * this->A, 2) ) * pow(gamma, 4) 
+				  )
 				+ ( (this->Ts / (this->rho * this->A) ) * pow(gamma, 2) )
 				+ ( pow(this->d1 / (2 * this->rho * this->A), 2) )
 			);
 		
 		a = sin(i * M_PI * this->xa / this->l);
 
-		b = this->T * sin(omega * this->l / this->T) / (omega * this->l / this->T);
-		c1 = -2 * exp(sigma * this->l / this->T) * cos(omega * this->l / this->T);
-		c0 = exp( 2 * sigma * this->l / T);
+		b = this->T * sin(omega * 1 / this->T) / (omega * 1 / this->T);
+		c1 = -2 * exp(sigma * 1 / this->T) * cos(omega * 1 / this->T);
+		c0 = exp( 2 * sigma * 1 / this->T);
 
-		this->MC.set(0, 2*i  , 0);
-		this->MC.set(0, 2*i+1, a);
+		cout << i << " sigma " << sigma << endl;
+		cout << "   omega " << omega << endl;
 
-		this->MA.set(2*i  , 2*i  , 0);
-		this->MA.set(2*i  , 2*i+1, -c0);
-		this->MA.set(2*i+1, 2*i  , 1);
-		this->MA.set(2*i+1, 2*i+1, -c1);
+		this->MC.set(0, 2*i-1, 0);
+		this->MC.set(0, 2*i  , a);
 
-		this->Mstate.set(2*i  , 0, 1);
-		this->Mstate.set(2*i+1, 0, 0);
+		this->MA.set(2*i-1, 2*i-1, 0);
+		this->MA.set(2*i-1, 2*i  , -c0);
+		this->MA.set(2*i  , 2*i-1, 1);
+		this->MA.set(2*i  , 2*i  , -c1);
+
+		this->Mstate.set(2*i-1, 0, 1);
+		this->Mstate.set(2*i  , 0, 0);
 
 	}
 }
