@@ -34,12 +34,16 @@ Filter::Filter(float length = 0.65) {
 
 	this->createMatrices();
 
-	for(i = 0; i < samples; i++) {
-		y[i] = this->MC.multiply(Mstate).get(0,0);
-		this->Mstate = this->MA.multiply(Mstate);
+//	cout << MC.toString() << endl << endl;
+//	cout << MA.toString() << endl << endl;
+//	cout << Mstate.toString() << endl << endl;
+
+	for(i = 0; i < this->samples; i++) {
+		y[i] = this->MC.multiply(this->Mstate).get(0,0);
+		this->Mstate = this->MA.multiply(this->Mstate);
 	}
 
-	std::cout << y;
+//	std::cout << y;
 }
 
 void Filter::createMatrices() {
@@ -67,16 +71,16 @@ void Filter::createMatrices() {
 		c1 = -2 * exp(sigma * this->l / this->T) * cos(omega * this->l / this->T);
 		c0 = exp( 2 * sigma * this->l / T);
 
-		this->MC.set(0, i  , 0);
-		this->MC.set(0, i+1, a);
+		this->MC.set(0, 2*i  , 0);
+		this->MC.set(0, 2*i+1, a);
 
-		this->MA.set(i  , i  , 0);
-		this->MA.set(i  , i+1, -c0);
-		this->MA.set(i+1, i  , 1);
-		this->MA.set(i+1, i+1, -c1);
+		this->MA.set(2*i  , 2*i  , 0);
+		this->MA.set(2*i  , 2*i+1, -c0);
+		this->MA.set(2*i+1, 2*i  , 1);
+		this->MA.set(2*i+1, 2*i+1, -c1);
 
-		this->Mstate.set(i  , 0, 1);
-		this->Mstate.set(i+1, 0, 0);
+		this->Mstate.set(2*i  , 0, 1);
+		this->Mstate.set(2*i+1, 0, 0);
 
 	}
 }
