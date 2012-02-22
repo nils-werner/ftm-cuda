@@ -121,6 +121,10 @@ string Matrix::toString() {
 	int i, j;
 	string result("");
 
+	val << "\n\n" << this->rows << "x" << this->cols << " Matrix\n";
+	result += val.str();
+
+
 	for(i = 0; i < this->rows; i++) {
 		for(j = 0; j < this->cols; j++) {
 			val.str("");
