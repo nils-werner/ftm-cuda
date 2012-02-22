@@ -28,7 +28,7 @@ Matrix::Matrix(const Matrix& m) {
 }
 
 void Matrix::resize(int rows, int cols) {
-	int i;
+	int i, j;
 
 	if(this->rows > 0 && this->cols > 0) {
 		for(i = 0; i < this->rows; i++) {
@@ -41,6 +41,8 @@ void Matrix::resize(int rows, int cols) {
 	this->matrix = (float**) malloc(rows * sizeof(float*));
 	for (i = 0; i < rows; i++){
 		this->matrix[i] = (float*) malloc(cols * sizeof(float));
+		for(j = 0; j < cols; j++)
+			this->matrix[i][j] = 0;
 	}
 
 	this->rows = rows;
