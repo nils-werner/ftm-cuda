@@ -7,16 +7,26 @@ using namespace std;
 
 int main () {
 
-	Matrix test;
+	Matrix a(4,3);
 
-	test.resize(20,10);
+	a.set(0,2,1);
+	a.set(1,1,1);
+	a.set(2,0,1);
 
-	cout << test.getRows() << " " << test.getCols() << endl;
+	cout << a.toString() << endl << endl;
 
-	test.fill();
-	Matrix b(test);
+	Matrix b(3,4);
 
-	cout << b.get(0,0) << endl;
+	b.set(2,0,1);
+	b.set(1,0,1);
+	b.set(0,2,1);
+	b.set(0,1,1);
+	b.set(0,0,2);
+
+	cout << b.toString() << endl << endl;
+
+	Matrix c = a.multiply(b);
+	cout << c.toString();
 
 	return 0;
 }
