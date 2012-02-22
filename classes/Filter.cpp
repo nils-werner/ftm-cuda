@@ -48,7 +48,8 @@ Filter::Filter(float length = 0.65) {
 
 void Filter::createMatrices() {
 	int i;
-	double gamma, sigma, omega;
+	double gamma, sigma;
+	int omega;
 	double a, b, c1, c0;
 
 	this->MC.resize(1, 2 * this->filters);
