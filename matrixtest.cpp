@@ -7,12 +7,16 @@ using namespace std;
 
 int main () {
 
-	Matrix test(20,10);
-	Matrix b(10,20);
+	Matrix test;
 
-	cout << test.getRows() << " " << test.getCols();
+	test.resize(20,10);
 
-	test.get(0,0);
+	cout << test.getRows() << " " << test.getCols() << endl;
+
+	test.fill();
+	Matrix b(test);
+
+	cout << b.get(0,0) << endl;
 
 	return 0;
 }
