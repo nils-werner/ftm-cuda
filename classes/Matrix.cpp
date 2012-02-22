@@ -85,7 +85,7 @@ Matrix Matrix::multiply(const Matrix& m) {
 
 	for(i = 0; i < this->rows; i++) {
 		for(j = 0; j < m.cols; j++) {
-			for(k = 0; k < m.cols; k++) {
+			for(k = 0; k < m.rows; k++) {
 				sum = sum + (this->matrix[i][k] * m.matrix[k][j]);
 			}
 			result.set(i,j, sum);
