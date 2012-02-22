@@ -1,4 +1,10 @@
 #include "Matrix.h"
+#include <string>
+#include <iostream>
+#include <string>
+#include <sstream>
+
+using namespace std;
 
 Matrix::Matrix() {
 	this->rows = 0;
@@ -101,4 +107,22 @@ void Matrix::fill() {
 			this->matrix[i][j] = rand();
 		}
 	}
+}
+
+string Matrix::toString() {
+	std::ostringstream val;
+	int i, j;
+	string result("");
+
+	for(i = 0; i < this->rows; i++) {
+		for(j = 0; j < this->cols; j++) {
+			val.str("");
+			val << this->matrix[i][j];
+			result += val.str();
+			result += "\t";
+		}
+		result += "\n";
+	}
+
+	return result;
 }

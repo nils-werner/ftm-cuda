@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 
 class Matrix {
 
@@ -28,6 +29,7 @@ class Matrix {
 		Matrix pow(int power);
 
 		void fill();
+		std::string toString();
 
 };
 
