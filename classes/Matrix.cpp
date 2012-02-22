@@ -6,6 +6,7 @@ Matrix::Matrix() {
 }
 
 Matrix::Matrix(int rows, int cols) {
+	resize(rows, cols);
 }
 
 Matrix::Matrix(const Matrix& m) {
