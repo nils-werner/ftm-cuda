@@ -9,9 +9,15 @@ Matrix::Matrix(int rows, int cols) {
 }
 
 Matrix::Matrix(const Matrix& m) {
-	this->rows = m.rows;
-	this->cols = m.cols;
-	this->matrix = m.matrix;
+	int i, j;
+
+	resize(m.rows, m.cols);
+
+	for(i = 0; i < this->rows; i++) {
+		for(j = 0; j < this->cols; j++) {
+			this->matrix[i][j] = m.matrix[i][j];
+		}
+	}
 }
 
 void Matrix::resize(int rows, int cols) {
