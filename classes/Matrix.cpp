@@ -72,20 +72,25 @@ int* Matrix::getSize() {
 
 
 
-Matrix Matrix::multiply(Matrix m) {
+Matrix Matrix::multiply(const Matrix& m) {
 	int i, j, k;
 	float sum = 0;
-	Matrix result(this->getRows(), m.getCols());
 
-	for(i = 0; i < result.getRows(); i++) {
-		for(j = 0; j < result.getCols(); j++) {
-			for(k = 0; k < this->getCols(); k++) {
-				sum = sum + this->get(i,k) * m.get(k,j);
+	if(this->cols != m.rows)
+		throw 30;
+
+	Matrix result(this->rows, m.cols);
+
+	for(i = 0; i < this->rows; i++) {
+		for(j = 0; j < m.cols; j++) {
+			for(k = 0; k < m.cols; k++) {
+				sum = sum + (this->matrix[i][k] * m.matrix[k][j]);
 			}
 			result.set(i,j, sum);
 			sum = 0;
 		}
 	}
+	return result;
 }
 
 Matrix Matrix::pow(int power) {

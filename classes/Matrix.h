@@ -25,7 +25,7 @@ class Matrix {
 		int getRows();
 		int getCols();
 
-		Matrix multiply(Matrix otherMatrix);
+		Matrix multiply(const Matrix& m);
 		Matrix pow(int power);
 
 		void fill();
