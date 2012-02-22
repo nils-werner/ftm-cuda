@@ -6,8 +6,6 @@ Matrix::Matrix() {
 }
 
 Matrix::Matrix(int rows, int cols) {
-	Matrix();
-	resize(rows, cols);
 }
 
 Matrix::Matrix(const Matrix& m) {
@@ -25,10 +23,11 @@ void Matrix::resize(int rows, int cols) {
 		}
 		free(this->matrix);
 
-		this->matrix = (float**) malloc(rows * sizeof(float*));
-		for (i = 0; i < rows; i++){
-			this->matrix[i] = (float*) malloc(cols * sizeof(float));
-		}
+	}
+
+	this->matrix = (float**) malloc(rows * sizeof(float*));
+	for (i = 0; i < rows; i++){
+		this->matrix[i] = (float*) malloc(cols * sizeof(float));
 	}
 
 	this->rows = rows;
