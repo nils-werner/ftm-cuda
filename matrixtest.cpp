@@ -6,27 +6,20 @@
 using namespace std;
 
 int main () {
+	int x = 60;
 
-	Matrix a(4,3);
-
-	a.set(0,2,1);
-	a.set(1,1,1);
-	a.set(2,0,1);
+	Matrix a(x,x);
+	a.identity();
 
 	cout << a.toString() << endl << endl;
 
-	Matrix b(3,4);
+	Matrix b(x,1);
+	b.fill();
 
-	b.set(2,0,1);
-	b.set(1,0,1);
-	b.set(0,2,1);
-	b.set(0,1,1);
-	b.set(0,0,2);
+	Matrix c(1,x);
+	c.fill();
 
-	cout << b.toString() << endl << endl;
-
-	Matrix c = a.multiply(b);
-	cout << c.toString();
+	cout << c.multiply(a).toString();
 
 	return 0;
 }

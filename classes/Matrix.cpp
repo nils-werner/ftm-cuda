@@ -32,7 +32,7 @@ Matrix::Matrix(Matrix& m) {
 }
 
 Matrix::~Matrix() {
-	delete[] matrix;
+	//delete[] matrix;
 }
 
 void Matrix::resize(int rows, int cols) {
