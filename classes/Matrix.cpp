@@ -42,6 +42,9 @@ Matrix::~Matrix() {
 void Matrix::resize(int rows, int cols) {
 	int i, j;
 
+	assert(rows > 0);
+	assert(cols > 0);
+
 	delete matrix;
 	matrix = new float[rows * cols];
 
@@ -117,6 +120,8 @@ Matrix Matrix::multiply(Matrix& m) {
 Matrix Matrix::pow(int power) {
 	int i;
 	Matrix result(*this);
+
+	assert(power > 0);
 
 	for(i = 1; i < power; i++) {
 		result = this->multiply(result);
