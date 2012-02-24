@@ -30,9 +30,11 @@ Filter::Filter(float length = 0.65) {
 
 	this->createMatrices();
 
+	MCA = MC.multiply(MA);
+
 	cout << "";
 	for(i = 0; i < this->samples; i++) {
-		cout << this->MC.multiply(this->Mstate).get(0,0) << ", ";
+		cout << this->MCA.multiply(this->Mstate).get(0,0) << ", ";
 		this->Mstate = this->MA.multiply(this->Mstate);
 	}
 	cout << "";
@@ -41,7 +43,7 @@ Filter::Filter(float length = 0.65) {
 void Filter::createMatrices() {
 	int i, mu;
 	double gamma, sigma;
-	int omega;
+	double omega;
 	double a, b, c1, c0;
 
 	this->MC.resize(1, 2 * this->filters);
@@ -54,13 +56,15 @@ void Filter::createMatrices() {
 		sigma = (1 / (2 * this->rho * this->A) ) * (this->d3 * pow(gamma,2) - this->d1);
 		omega = sqrt(
 				  (
-					( (this->E * this->I) / (this->rho * this->A) )
-					- ( pow(this->d3, 2) / pow(2 * this->rho * this->A, 2) ) * pow(gamma, 4) 
+					(
+						( (this->E * this->I) / (this->rho * this->A) )
+						- ( pow(this->d3, 2) / pow(2 * this->rho * this->A, 2) )
+					) * pow(gamma, 4) 
 				  )
 				+ ( (this->Ts / (this->rho * this->A) ) * pow(gamma, 2) )
-				+ ( pow(this->d1 / (2 * this->rho * this->A), 2) )
+				// + ( pow(this->d1 / (2 * this->rho * this->A), 2) )
 			);
-		
+
 		a = sin(mu * M_PI * this->xa / this->l);
 
 		b = this->T * sin(omega * 1 / this->T) / (omega * 1 / this->T);

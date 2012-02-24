@@ -25,7 +25,7 @@ class Filter {
 		int blocksize;
 
 		// Matrizen
-		Matrix MC, MA, Mstate;
+		Matrix MC, MA, Mstate, MCA;
 
 		// Ausgangssignal
 		float* y;
