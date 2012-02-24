@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <cassert>
 
 using namespace std;
 
@@ -54,6 +55,9 @@ void Matrix::resize(int rows, int cols) {
 }
 
 int Matrix::getindex(int row, int col) {
+	//assert(row < this->rows);
+	//assert(col < this->cols); // TODO: Das hier failed, wieso?!
+
 	return row * this->cols + col;
 }
 
@@ -91,8 +95,7 @@ Matrix Matrix::multiply(Matrix& m) {
 	int i, j, k;
 	float sum = 0;
 
-	if(this->cols != m.rows)
-		throw 30;
+	assert(this->cols == m.rows);
 
 	Matrix result(this->rows, m.cols);
 
@@ -132,8 +135,7 @@ void Matrix::fill() {
 void Matrix::identity() {
 	int i, j;
 
-	if(this->rows != this->cols)
-		throw 200;
+	assert(this->rows == this->cols);
 
 	for(i = 0; i < this->rows; i++) {
 		for(j = 0; j < this->cols; j++) {
