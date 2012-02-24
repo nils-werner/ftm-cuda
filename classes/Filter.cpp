@@ -1,11 +1,13 @@
 #include "Filter.h"
 #include <vector>
+#include <cassert>
 #include <sndfile.hh>
 
 using namespace std;
 
 Filter::Filter(float length = 0.65) {
 	int i;
+	float* sample;
 
 	// Saiten-Koeffizienten
 	this->l = length;
@@ -42,12 +44,20 @@ Filter::Filter(float length = 0.65) {
 	cout << MC.toString();
 #endif
 
+	SndfileHandle outfile("filter.wav", SFM_WRITE, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 1, this->T);
+	assert(outfile);
+
+	sample = new float[this->samples];
+
 	for(i = 0; i < this->samples; i++) {
-#if DEBUG == 0
-		cout << this->MCA.multiply(this->Mstate).get(0,0) << ", ";
+		sample[i] = this->MCA.multiply(this->Mstate).get(0,0)/128;
+#if DEBUG == 10
+		cout << sample[i] << ", ";
 #endif
 		this->Mstate = this->MA.multiply(this->Mstate);
 	}
+
+	outfile.write(&sample[0],this->samples);
 }
 
 void Filter::createMatrices() {

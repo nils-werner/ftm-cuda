@@ -1,7 +1,7 @@
 .PHONY: all clear
 
 DEBUG = 0
-LIBS = -lasound
+LIBS = -lasound -lsndfile
 OBJS = classes/Filter.o classes/Matrix.o classes/Buffer.o
 CPPFLAGS := -DDEBUG=$(DEBUG)
 
