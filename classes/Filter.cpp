@@ -1,7 +1,4 @@
 #include "Filter.h"
-#include <vector>
-#include <cassert>
-#include <sndfile.hh>
 
 using namespace std;
 

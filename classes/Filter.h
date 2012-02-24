@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+#include <cassert>
+#include <sndfile.hh>
 #include "Matrix.h"
 
 class Filter {
