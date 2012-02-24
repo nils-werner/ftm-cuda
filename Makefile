@@ -1,4 +1,4 @@
-.PHONY: all clear
+.PHONY: all clear preview
 
 DEBUG = 0
 LIBS = -lasound -lsndfile
@@ -11,6 +11,10 @@ clear:
 	- rm bin/*
 	- rm classes/*.o
 	- rm *.o
+
+preview: bin/iirfilter
+	./bin/iirfilter
+	cvlc filter.wav vlc://quit
 
 bin/countwave: alsa/countwave.c
 	gcc -o bin/countwave alsa/countwave.c $(LIBS)
