@@ -30,6 +30,7 @@ class Matrix {
 
 		void fill();
 		std::string toString();
+		std::string stat();
 
 };
 

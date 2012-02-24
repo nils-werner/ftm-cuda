@@ -72,6 +72,13 @@ int* Matrix::getSize() {
 	return size;
 }
 
+string Matrix::stat() {
+	std::ostringstream val;
+
+	val << this->rows << "x" << this->cols << " Matrix\n";
+	return val.str();
+}
+
 
 
 Matrix Matrix::multiply(const Matrix& m) {
@@ -121,7 +128,7 @@ string Matrix::toString() {
 	int i, j;
 	string result("");
 
-	val << "\n\n" << this->rows << "x" << this->cols << " Matrix\n";
+	val << "\n\n" << this->stat();
 	result += val.str();
 
 
