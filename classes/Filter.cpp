@@ -35,12 +35,12 @@ Filter::Filter(float length = 0.65) {
 	this->createMatrices();
 
 //	cout << MC.toString() << endl << endl;
-	cout << MA.toString() << endl << endl;
+//	cout << MA.toString() << endl << endl;
 //	cout << Mstate.toString() << endl << endl;
 
 	for(i = 0; i < this->samples; i++) {
-		y[i] = this->MC.multiply(this->Mstate).get(0,0);
-		this->Mstate = this->MA.multiply(this->Mstate);
+//		y[i] = this->MC.multiply(this->Mstate).get(0,0);
+//		this->Mstate = this->MA.multiply(this->Mstate);
 	}
 
 //	std::cout << y;
@@ -76,6 +76,8 @@ void Filter::createMatrices() {
 
 		cout << i << " sigma " << sigma << endl;
 		cout << "   omega " << omega << endl;
+
+		cout << 2*i << endl;
 
 		this->MC.set(0, 2*i-1, 0);
 		this->MC.set(0, 2*i  , a);
