@@ -1,6 +1,7 @@
 #include "Matrix.h"
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <sstream>
 #include <cassert>
@@ -152,6 +153,7 @@ string Matrix::toString() {
 	int i, j;
 	string result("");
 
+	val << setprecision(4) << noshowpoint;
 	val << "\n\n" << this->stat();
 	result += val.str();
 
