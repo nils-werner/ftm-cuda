@@ -10,13 +10,15 @@
 class Matrix {
 
 	private:
-		float** matrix;
+		float* matrix;
 		int rows, cols;
+		int getindex(int row, int col);
 
 	public:
 		Matrix();
 		Matrix(int rows, int cols);
-		Matrix(const Matrix& m);
+		Matrix(Matrix& m);
+		~Matrix();
 
 		void resize(int rows, int cols);
 		void set(int row, int col, float value);
@@ -25,7 +27,7 @@ class Matrix {
 		int getRows();
 		int getCols();
 
-		Matrix multiply(const Matrix& m);
+		Matrix multiply(Matrix& m);
 		Matrix pow(int power);
 
 		void fill();

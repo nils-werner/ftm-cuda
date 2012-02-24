@@ -7,42 +7,41 @@
 using namespace std;
 
 Matrix::Matrix() {
-	this->rows = 0;
-	this->cols = 0;
+	matrix = new float[1];
+	this->rows = 1;
+	this->cols = 1;
 }
 
 Matrix::Matrix(int rows, int cols) {
 	resize(rows, cols);
 }
 
-Matrix::Matrix(const Matrix& m) {
+Matrix::Matrix(Matrix& m) {
 	int i, j;
 
 	resize(m.rows, m.cols);
 
 	for(i = 0; i < this->rows; i++) {
 		for(j = 0; j < this->cols; j++) {
-			this->matrix[i][j] = m.matrix[i][j];
+			set(i, j, m.get(i, j));
 		}
 	}
+}
+
+Matrix::~Matrix() {
+	delete[] matrix;
 }
 
 void Matrix::resize(int rows, int cols) {
 	int i, j;
 
-	if(this->rows > 0 && this->cols > 0) {
-		for(i = 0; i < this->rows; i++) {
-			free(this->matrix[i]);
+	delete matrix;
+	matrix = new float[rows * cols];
+
+	for(i = 0; i < rows; i++) {
+		for(j = 0; j < cols; j++) {
+			set(i, j, 0);
 		}
-		free(this->matrix);
-
-	}
-
-	this->matrix = (float**) malloc(rows * sizeof(float*));
-	for (i = 0; i < rows; i++){
-		this->matrix[i] = (float*) malloc(cols * sizeof(float));
-		for(j = 0; j < cols; j++)
-			this->matrix[i][j] = 0;
 	}
 
 	this->rows = rows;
@@ -51,12 +50,16 @@ void Matrix::resize(int rows, int cols) {
 	return;
 }
 
+int Matrix::getindex(int row, int col) {
+	return row * this->cols + col;
+}
+
 void Matrix::set(int row, int col, float value) {
-	this->matrix[row][col] = value;
+	this->matrix[getindex(row, col)] = value;
 }
 
 float Matrix::get(int row, int col) {
-	return matrix[row][col];
+	return matrix[getindex(row, col)];
 }
 
 int Matrix::getRows() {
@@ -81,7 +84,7 @@ string Matrix::stat() {
 
 
 
-Matrix Matrix::multiply(const Matrix& m) {
+Matrix Matrix::multiply(Matrix& m) {
 	int i, j, k;
 	float sum = 0;
 
@@ -93,7 +96,7 @@ Matrix Matrix::multiply(const Matrix& m) {
 	for(i = 0; i < this->rows; i++) {
 		for(j = 0; j < m.cols; j++) {
 			for(k = 0; k < m.rows; k++) {
-				sum = sum + (this->matrix[i][k] * m.matrix[k][j]);
+				sum = sum + (get(i,k) * m.get(k,j));
 			}
 			result.set(i,j, sum);
 			sum = 0;
@@ -118,7 +121,7 @@ void Matrix::fill() {
 
 	for(i = 0; i < this->rows; i++) {
 		for(j = 0; j < this->cols; j++) {
-			this->matrix[i][j] = rand();
+			set(i, j, rand());
 		}
 	}
 }
@@ -132,9 +135,9 @@ void Matrix::identity() {
 	for(i = 0; i < this->rows; i++) {
 		for(j = 0; j < this->cols; j++) {
 			if(i == j)
-				this->matrix[i][j] = 1;
+				set(i, j, 1);
 			else
-				this->matrix[i][j] = 0;
+				set(i, j, 0);
 		}
 	}
 }
@@ -151,7 +154,7 @@ string Matrix::toString() {
 	for(i = 0; i < this->rows; i++) {
 		for(j = 0; j < this->cols; j++) {
 			val.str("");
-			val << this->matrix[i][j];
+			val << get(i, j);
 			result += val.str();
 			result += "\t";
 		}
