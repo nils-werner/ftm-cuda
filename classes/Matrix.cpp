@@ -23,7 +23,9 @@ Matrix::Matrix(int rows, int cols) {
 
 Matrix::Matrix(Matrix& m) {
 	int i, j;
-
+	matrix = new float[1];
+	this->rows = 1;
+	this->cols = 1;
 	resize(m.rows, m.cols);
 
 	for(i = 0; i < this->rows; i++) {
@@ -43,21 +45,21 @@ void Matrix::resize(int rows, int cols) {
 	delete matrix;
 	matrix = new float[rows * cols];
 
+	this->rows = rows;
+	this->cols = cols;
+
 	for(i = 0; i < rows; i++) {
 		for(j = 0; j < cols; j++) {
 			set(i, j, 0);
 		}
 	}
 
-	this->rows = rows;
-	this->cols = cols;
-
 	return;
 }
 
 int Matrix::getindex(int row, int col) {
-	//assert(row < this->rows);
-	//assert(col < this->cols); // TODO: Das hier failed, wieso?!
+	assert(row < this->rows);
+	assert(col < this->cols);
 
 	return row * this->cols + col;
 }
