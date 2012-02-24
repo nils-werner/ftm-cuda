@@ -13,6 +13,9 @@ Matrix::Matrix() {
 }
 
 Matrix::Matrix(int rows, int cols) {
+	matrix = new float[1];
+	this->rows = 1;
+	this->cols = 1;
 	resize(rows, cols);
 }
 
