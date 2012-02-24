@@ -32,6 +32,15 @@ Filter::Filter(float length = 0.65) {
 
 	MCA = MC.multiply(MA);
 
+	/*
+	cout << "MA";
+	cout << MA.toString();
+	cout << "MCA";
+	cout << MCA.toString();
+	cout << "MC";
+	cout << MC.toString();
+	*/
+
 	cout << "";
 	for(i = 0; i < this->samples; i++) {
 		cout << this->MCA.multiply(this->Mstate).get(0,0) << ", ";
