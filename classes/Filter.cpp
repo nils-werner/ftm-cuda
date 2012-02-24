@@ -28,9 +28,6 @@ Filter::Filter(float length = 0.65) {
 	// Blockverarbeitungs-Länge
 	this->blocksize = 100;
 
-	// Ausgangssignal
-	y = (float*) malloc(samples * sizeof(float));
-
 	this->createMatrices();
 
 
@@ -38,8 +35,6 @@ Filter::Filter(float length = 0.65) {
 		std::cout << this->MC.multiply(this->Mstate).get(0,0);
 		this->Mstate = this->MA.multiply(this->Mstate);
 	}
-
-	std::cout << y;
 }
 
 void Filter::createMatrices() {
