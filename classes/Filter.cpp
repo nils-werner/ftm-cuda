@@ -47,7 +47,7 @@ Filter::Filter(float length = 0.65) {
 }
 
 void Filter::createMatrices() {
-	int i;
+	int i, mu;
 	double gamma, sigma;
 	int omega;
 	double a, b, c1, c0;
@@ -56,8 +56,9 @@ void Filter::createMatrices() {
 	this->MA.resize(2 * this->filters, 2 * this->filters);
 	this->Mstate.resize(2 * this->filters, 1);
 
-	for(i = 1; i < this->filters+1; i++) {
-		gamma = i * ( M_PI / this->l );
+	for(i = 0; i < this->filters; i++) {
+		mu = i+1;
+		gamma = mu * ( M_PI / this->l );
 		sigma = (1 / (2 * this->rho * this->A) ) * (this->d3 * pow(gamma,2) - this->d1);
 		omega = sqrt(
 				  (
@@ -68,27 +69,25 @@ void Filter::createMatrices() {
 				+ ( pow(this->d1 / (2 * this->rho * this->A), 2) )
 			);
 		
-		a = sin(i * M_PI * this->xa / this->l);
+		a = sin(mu * M_PI * this->xa / this->l);
 
 		b = this->T * sin(omega * 1 / this->T) / (omega * 1 / this->T);
 		c1 = -2 * exp(sigma * 1 / this->T) * cos(omega * 1 / this->T);
 		c0 = exp( 2 * sigma * 1 / this->T);
 
-		cout << i << " sigma " << sigma << endl;
-		cout << "   omega " << omega << endl;
+		cout << i << " " << mu << " sigma " << sigma << endl;
+		cout << "      omega " << omega << endl;
 
-		cout << 2*i << endl;
+		this->MC.set(0, 2*i  , 0);
+		this->MC.set(0, 2*i+1, a);
 
-		this->MC.set(0, 2*i-1, 0);
-		this->MC.set(0, 2*i  , a);
+		this->MA.set(2*i  , 2*i  , 0);
+		this->MA.set(2*i  , 2*i+1, -c0);
+		this->MA.set(2*i+1, 2*i  , 1);
+		this->MA.set(2*i+1, 2*i+1, -c1);
 
-		this->MA.set(2*i-1, 2*i-1, 0);
-		this->MA.set(2*i-1, 2*i  , -c0);
-		this->MA.set(2*i  , 2*i-1, 1);
-		this->MA.set(2*i  , 2*i  , -c1);
-
-		this->Mstate.set(2*i-1, 0, 1);
-		this->Mstate.set(2*i  , 0, 0);
+		this->Mstate.set(2*i  , 0, 1);
+		this->Mstate.set(2*i+1, 0, 0);
 
 	}
 }
