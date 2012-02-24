@@ -1,5 +1,6 @@
 #include "Filter.h"
 #include <vector>
+#include <sndfile.hh>
 
 using namespace std;
 
