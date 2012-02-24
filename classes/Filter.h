@@ -31,10 +31,12 @@ class Filter {
 		float* y;
 
 	public:
-		Filter(float lenght);
+		Filter(float length);
 	
 	private:
+		void initializeCoefficients(float length);
 		void createMatrices();
+		void generateSignal();
 
 };
 

@@ -6,9 +6,12 @@
 using namespace std;
 
 Filter::Filter(float length = 0.65) {
-	int i;
-	float* sample;
+	this->initializeCoefficients(length);
+	this->createMatrices();
+	this->generateSignal();
+}
 
+void Filter::initializeCoefficients(float length) {
 	// Saiten-Koeffizienten
 	this->l = length;
 	this->Ts = 60.97;
@@ -30,34 +33,6 @@ Filter::Filter(float length = 0.65) {
 
 	// Blockverarbeitungs-Länge
 	this->blocksize = 100;
-
-	this->createMatrices();
-
-	MCA = MC.multiply(MA);
-
-#if DEBUG == 2
-	cout << "MA";
-	cout << MA.toString();
-	cout << "MCA";
-	cout << MCA.toString();
-	cout << "MC";
-	cout << MC.toString();
-#endif
-
-	SndfileHandle outfile("filter.wav", SFM_WRITE, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 1, this->T);
-	assert(outfile);
-
-	sample = new float[this->samples];
-
-	for(i = 0; i < this->samples; i++) {
-		sample[i] = this->MCA.multiply(this->Mstate).get(0,0)/128;
-#if DEBUG == 10
-		cout << sample[i] << ", ";
-#endif
-		this->Mstate = this->MA.multiply(this->Mstate);
-	}
-
-	outfile.write(&sample[0],this->samples);
 }
 
 void Filter::createMatrices() {
@@ -108,4 +83,35 @@ void Filter::createMatrices() {
 		this->Mstate.set(2*i+1, 0, 0);
 
 	}
+}
+
+void Filter::generateSignal() {
+	int i;
+	float* sample;
+
+	MCA = MC.multiply(MA);
+
+#if DEBUG == 2
+	cout << "MA";
+	cout << MA.toString();
+	cout << "MCA";
+	cout << MCA.toString();
+	cout << "MC";
+	cout << MC.toString();
+#endif
+
+	SndfileHandle outfile("filter.wav", SFM_WRITE, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 1, this->T);
+	assert(outfile);
+
+	sample = new float[this->samples];
+
+	for(i = 0; i < this->samples; i++) {
+		sample[i] = this->MCA.multiply(this->Mstate).get(0,0)/128;
+#if DEBUG == 10
+		cout << sample[i] << ", ";
+#endif
+		this->Mstate = this->MA.multiply(this->Mstate);
+	}
+
+	outfile.write(&sample[0],this->samples);
 }
