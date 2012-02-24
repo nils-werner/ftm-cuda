@@ -32,21 +32,21 @@ Filter::Filter(float length = 0.65) {
 
 	MCA = MC.multiply(MA);
 
-	/*
+#if DEBUG == 2
 	cout << "MA";
 	cout << MA.toString();
 	cout << "MCA";
 	cout << MCA.toString();
 	cout << "MC";
 	cout << MC.toString();
-	*/
+#endif
 
-	cout << "";
 	for(i = 0; i < this->samples; i++) {
+#if DEBUG == 0
 		cout << this->MCA.multiply(this->Mstate).get(0,0) << ", ";
+#endif
 		this->Mstate = this->MA.multiply(this->Mstate);
 	}
-	cout << "";
 }
 
 void Filter::createMatrices() {
@@ -80,8 +80,10 @@ void Filter::createMatrices() {
 		c1 = -2 * exp(sigma * 1 / this->T) * cos(omega * 1 / this->T);
 		c0 = exp( 2 * sigma * 1 / this->T);
 
-//		cout << i << " " << mu << " sigma " << sigma << endl;
-//		cout << "      omega " << omega << endl;
+#if DEBUG == 1
+		cout << i << " " << mu << " sigma " << sigma << endl;
+		cout << "      omega " << omega << endl;
+#endif
 
 		this->MC.set(0, 2*i  , 0);
 		this->MC.set(0, 2*i+1, a);

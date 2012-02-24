@@ -1,7 +1,9 @@
 .PHONY: all clear
 
+DEBUG = 0
 LIBS = -lasound
 OBJS = classes/Filter.o classes/Matrix.o classes/Buffer.o
+CPPFLAGS := -DDEBUG=$(DEBUG)
 
 all: bin/countcards bin/countwave bin/listpcm bin/playback bin/iirfilter bin/matrixtest
 
@@ -23,10 +25,10 @@ bin/playback: alsa/playback.c
 	gcc -o bin/playback alsa/playback.c $(LIBS)
 
 bin/iirfilter: main.cpp $(OBJS)
-	g++ -o bin/iirfilter main.cpp $(LIBS)
+	g++ -o bin/iirfilter main.cpp $(LIBS) $(CPPFLAGS)
 
 bin/matrixtest: matrixtest.cpp $(OBJS)
-	g++ -o bin/matrixtest matrixtest.cpp $(LIBS)
+	g++ -o bin/matrixtest matrixtest.cpp $(LIBS) $(CPPFLAGS)
 
 %.o: %.cpp %.h
 	g++ -c $(FLAGS) -o $@ $<
