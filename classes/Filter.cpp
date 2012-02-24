@@ -30,12 +30,12 @@ Filter::Filter(float length = 0.65) {
 
 	this->createMatrices();
 
-	cout << "sig = [";
+	cout << "";
 	for(i = 0; i < this->samples; i++) {
-		cout << this->MC.multiply(this->Mstate).get(0,0) << " ";
+		cout << this->MC.multiply(this->Mstate).get(0,0) << ", ";
 		this->Mstate = this->MA.multiply(this->Mstate);
 	}
-	cout << "];";
+	cout << "";
 }
 
 void Filter::createMatrices() {
