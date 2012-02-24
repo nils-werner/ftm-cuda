@@ -29,6 +29,7 @@ class Matrix {
 		Matrix pow(int power);
 
 		void fill();
+		void identity();
 		std::string toString();
 		std::string stat();
 

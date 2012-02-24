@@ -123,6 +123,22 @@ void Matrix::fill() {
 	}
 }
 
+void Matrix::identity() {
+	int i, j;
+
+	if(this->rows != this->cols)
+		throw 200;
+
+	for(i = 0; i < this->rows; i++) {
+		for(j = 0; j < this->cols; j++) {
+			if(i == j)
+				this->matrix[i][j] = 1;
+			else
+				this->matrix[i][j] = 0;
+		}
+	}
+}
+
 string Matrix::toString() {
 	std::ostringstream val;
 	int i, j;
