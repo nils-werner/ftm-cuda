@@ -1,7 +1,4 @@
-#include <iostream>
-#include "classes/Filter.cpp"
-#include "classes/Matrix.cpp"
-#include "classes/Buffer.cpp"
+#include "main.h"
 
 using namespace std;
 

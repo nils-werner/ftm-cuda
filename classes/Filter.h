@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+#include <cassert>
+#include <sndfile.hh>
 #include "Matrix.h"
 
 class Filter {
@@ -31,10 +33,12 @@ class Filter {
 		float* y;
 
 	public:
-		Filter(float lenght);
+		Filter(float length);
 	
 	private:
+		void initializeCoefficients(float length);
 		void createMatrices();
+		void generateSignal();
 
 };
 
