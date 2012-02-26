@@ -20,7 +20,7 @@ Matrix::Matrix(Matrix& m) {
 	matrix = new float[1];
 	this->rows = 1;
 	this->cols = 1;
-	resize(m.rows, m.cols);
+	resize(m.getRows(), m.getCols());
 
 	for(i = 0; i < this->rows; i++) {
 		for(j = 0; j < this->cols; j++) {
@@ -95,13 +95,13 @@ Matrix Matrix::multiply(Matrix& m) {
 	int i, j, k;
 	float sum = 0;
 
-	assert(this->cols == m.rows);
+	assert(this->cols == m.getRows());
 
-	Matrix result(this->rows, m.cols);
+	Matrix result(this->rows, m.getCols());
 
 	for(i = 0; i < this->rows; i++) {
-		for(j = 0; j < m.cols; j++) {
-			for(k = 0; k < m.rows; k++) {
+		for(j = 0; j < m.getCols(); j++) {
+			for(k = 0; k < m.getRows(); k++) {
 				sum = sum + (get(i,k) * m.get(k,j));
 			}
 			result.set(i,j, sum);
