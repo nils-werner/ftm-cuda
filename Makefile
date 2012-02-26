@@ -2,7 +2,7 @@
 
 DEBUG = 0
 LIBS = -lasound -lsndfile
-OBJS = classes/Filter.o classes/Matrix.o classes/Buffer.o
+OBJS = classes/Filter.o classes/Matrix.o classes/BlockDiagMatrix.o classes/Buffer.o
 CPPFLAGS := -DDEBUG=$(DEBUG)
 
 all: bin/countcards bin/countwave bin/listpcm bin/playback bin/iirfilter bin/matrixtest
