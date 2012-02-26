@@ -1,5 +1,20 @@
 #include "BlockDiagMatrix.h"
 
+BlockDiagMatrix::BlockDiagMatrix() : Matrix() {
+}
+
+BlockDiagMatrix::BlockDiagMatrix(int rows, int cols, int blocksize) : Matrix(rows, cols) {
+	this->blocksize = blocksize;
+}
+
+BlockDiagMatrix::BlockDiagMatrix(Matrix& m) : Matrix(m) {
+}
+
+void BlockDiagMatrix::resize(int rows, int cols, int blocksize) {
+	this->blocksize = blocksize;
+	return Matrix::resize(rows, cols);
+}
+
 Matrix BlockDiagMatrix::multiply(Matrix& m) {
 	int i, j, k;
 	float sum = 0;

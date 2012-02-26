@@ -7,10 +7,15 @@
 #include "Matrix.h"
 
 class BlockDiagMatrix : public Matrix {
+	protected:
+		int blocksize;
+
 	public:
-		BlockDiagMatrix() : Matrix() {}
-		BlockDiagMatrix(int rows, int cols) : Matrix(rows, cols) {}
-		BlockDiagMatrix(Matrix& m) : Matrix(m) {}
+		BlockDiagMatrix();
+		BlockDiagMatrix(int rows, int cols, int blocksize);
+		BlockDiagMatrix(Matrix& m);
+
+		void resize(int rows, int cols, int blocksize);
 
 		Matrix multiply(Matrix& m);
 };

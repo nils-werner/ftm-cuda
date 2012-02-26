@@ -39,7 +39,7 @@ void Filter::createMatrices() {
 	double a, b, c1, c0;
 
 	this->MC.resize(1, 2 * this->filters);
-	this->MA.resize(2 * this->filters, 2 * this->filters);
+	this->MA.resize(2 * this->filters, 2 * this->filters, 2);
 	this->Mstate.resize(2 * this->filters, 1);
 
 	for(i = 0; i < this->filters; i++) {
