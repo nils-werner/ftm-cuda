@@ -3,16 +3,38 @@
 using namespace std;
 
 BlockDiagMatrix::BlockDiagMatrix() : Matrix() {
+	this->blocksize = 1;
+}
+
+BlockDiagMatrix::BlockDiagMatrix(int rows, int cols) : Matrix(rows, cols) {
+	assert(rows == cols);
+
+	this->blocksize = 1;
 }
 
 BlockDiagMatrix::BlockDiagMatrix(int rows, int cols, int blocksize) : Matrix(rows, cols) {
+	assert(rows == cols);
+	assert(rows % blocksize == 0);
+
 	this->blocksize = blocksize;
 }
 
 BlockDiagMatrix::BlockDiagMatrix(Matrix& m) : Matrix(m) {
+	assert(m.getRows() == m.getCols());
+
+	this->blocksize = 1;
+}
+
+BlockDiagMatrix::BlockDiagMatrix(Matrix& m, int blocksize) : Matrix(m) {
+	assert(m.getRows() == m.getCols());
+
+	this->blocksize = blocksize;
 }
 
 void BlockDiagMatrix::resize(int rows, int cols, int blocksize) {
+	assert(rows == cols);
+	assert(rows % blocksize == 0);
+
 	this->blocksize = blocksize;
 	return Matrix::resize(rows, cols);
 }
@@ -29,7 +51,6 @@ Matrix BlockDiagMatrix::multiply(Matrix& m) {
 		for(j = 0; j < m.getCols(); j++) {
 			from = blocksize * (i / blocksize);
 			to = from + blocksize;
-			//cout << from << " " << to << endl;
 			for(k = from; k < to; k++) {
 				sum = sum + (get(i,k) * m.get(k,j));
 			}

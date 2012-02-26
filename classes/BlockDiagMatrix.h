@@ -12,8 +12,10 @@ class BlockDiagMatrix : public Matrix {
 
 	public:
 		BlockDiagMatrix();
+		BlockDiagMatrix(int rows, int cols);
 		BlockDiagMatrix(int rows, int cols, int blocksize);
 		BlockDiagMatrix(Matrix& m);
+		BlockDiagMatrix(Matrix& m, int blocksize);
 
 		void resize(int rows, int cols, int blocksize);
 

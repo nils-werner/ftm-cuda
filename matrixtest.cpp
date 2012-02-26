@@ -22,5 +22,7 @@ int main () {
 
 	cout << c.multiply(a).toString();
 
+	BlockDiagMatrix z(10,10,2);
+
 	return 0;
 }
