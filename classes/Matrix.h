@@ -13,7 +13,7 @@
 
 class Matrix {
 
-	private:
+	protected:
 		float* matrix;
 		int rows, cols;
 		int getindex(int row, int col);

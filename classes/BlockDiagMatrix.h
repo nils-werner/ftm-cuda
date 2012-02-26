@@ -11,6 +11,8 @@ class BlockDiagMatrix : public Matrix {
 		BlockDiagMatrix() : Matrix() {}
 		BlockDiagMatrix(int rows, int cols) : Matrix(rows, cols) {}
 		BlockDiagMatrix(Matrix& m) : Matrix(m) {}
+
+		Matrix multiply(Matrix& m);
 };
 
 #endif
