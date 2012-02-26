@@ -12,8 +12,10 @@ clear:
 	- rm classes/*.o
 	- rm *.o
 
-preview: bin/iirfilter
-	./bin/iirfilter
+time: bin/iirfilter
+	time -p ./bin/iirfilter
+
+preview: time
 	cvlc filter.wav vlc://quit
 
 bin/countwave: alsa/countwave.c
