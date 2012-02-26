@@ -10,6 +10,7 @@
 #include <cassert>
 #include <sndfile.hh>
 #include "Matrix.h"
+#include "BlockDiagMatrix.h"
 
 class Filter {
 
@@ -27,7 +28,8 @@ class Filter {
 		int blocksize;
 
 		// Matrizen
-		Matrix MC, MA, Mstate, MCA;
+		Matrix MC, Mstate, MCA;
+		BlockDiagMatrix MA;
 
 		// Ausgangssignal
 		float* y;
