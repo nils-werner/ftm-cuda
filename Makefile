@@ -28,7 +28,7 @@ bin/countcards: alsa/countcards.c
 bin/playback: alsa/playback.c
 	gcc -o bin/playback alsa/playback.c $(LIBS)
 
-bin/iirfilter: main.cpp $(OBJS)
+bin/iirfilter: main.cpp main.h $(OBJS)
 	g++ -o bin/iirfilter main.cpp $(LIBS) $(CPPFLAGS)
 
 bin/matrixtest: matrixtest.cpp $(OBJS)
