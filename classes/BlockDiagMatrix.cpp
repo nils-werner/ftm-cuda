@@ -1,5 +1,7 @@
 #include "BlockDiagMatrix.h"
 
+using namespace std;
+
 BlockDiagMatrix::BlockDiagMatrix() : Matrix() {
 }
 
@@ -16,7 +18,7 @@ void BlockDiagMatrix::resize(int rows, int cols, int blocksize) {
 }
 
 Matrix BlockDiagMatrix::multiply(Matrix& m) {
-	int i, j, k;
+	int i, j, k, from, to;
 	float sum = 0;
 
 	assert(this->cols == m.getRows());
@@ -25,7 +27,10 @@ Matrix BlockDiagMatrix::multiply(Matrix& m) {
 
 	for(i = 0; i < this->rows; i++) {
 		for(j = 0; j < m.getCols(); j++) {
-			for(k = 0; k < m.getRows(); k++) {
+			from = blocksize * (i / blocksize);
+			to = from + blocksize;
+			//cout << from << " " << to << endl;
+			for(k = from; k < to; k++) {
 				sum = sum + (get(i,k) * m.get(k,j));
 			}
 			result.set(i,j, sum);
