@@ -7,22 +7,20 @@
 using namespace std;
 
 int main () {
-	int x = 60;
+	int x = 6;
 
-	Matrix a(x,x);
+	BlockDiagMatrix a;
+	a.resize(x,x,2);
+
 	a.identity();
 
-	cout << a.toString() << endl << endl;
 
-	Matrix b(x,1);
+	BlockDiagMatrix b(x,x,2);
 	b.fill();
 
-	Matrix c(1,x);
-	c.fill();
-
-	cout << c.multiply(a).toString();
-
-	BlockDiagMatrix z(10,10,2);
+	cout << a.toString() << endl;
+	cout << b.toString() << endl;
+	cout << a.multiply(b).toString();
 
 	return 0;
 }
