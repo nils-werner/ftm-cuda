@@ -17,7 +17,7 @@ void Filter::initializeCoefficients(float length) {
 	this->E = 5.4e9;
 	this->I = 0.171e-12;
 	this->d1 = 8e-5;
-	this->d3 = -1.4e-5;
+	this->d3 = -0.1e-5;
 
 	// Abtastpunkt
 	this->xa = 0.1;
@@ -51,12 +51,17 @@ void Filter::createMatrices() {
 		omega = sqrt(
 				  (
 					(
-						( (this->E * this->I) / (this->rho * this->A) )
-						- ( pow(this->d3, 2) / pow(2 * this->rho * this->A, 2) )
-					) * pow(gamma, 4) 
+						(this->E * this->I)/(this->rho * this->A)
+					      - pow(this->d3, 2)/pow(2 * this->rho * this->A, 2)
+					) * pow(gamma, 4)
 				  )
-				+ ( (this->Ts / (this->rho * this->A) ) * pow(gamma, 2) )
-				// + ( pow(this->d1 / (2 * this->rho * this->A), 2) )
+				+ (	(
+						(this->Ts)/(this->rho * this->A) 
+					      + (this->d1 + this->d3)/(2*pow(this->rho*this->A,2))
+					) * pow(gamma, 2) )
+				+ (
+					pow((this->d1)/(2 * this->rho * this->A), 2)
+				  )
 			);
 
 		a = sin(mu * M_PI * this->xa / this->l);
