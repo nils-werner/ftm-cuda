@@ -91,7 +91,7 @@ string Matrix::stat() {
 
 
 
-Matrix Matrix::multiply(Matrix& m) {
+Matrix Matrix::multiply(Matrix m) {
 	int i, j, k;
 	float sum = 0;
 

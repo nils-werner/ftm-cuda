@@ -31,7 +31,7 @@ class Matrix {
 		int getRows();
 		int getCols();
 
-		Matrix multiply(Matrix& m);
+		Matrix multiply(Matrix m);
 		Matrix pow(int power);
 
 		void fill();
