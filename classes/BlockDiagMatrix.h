@@ -18,8 +18,13 @@ class BlockDiagMatrix : public Matrix {
 		BlockDiagMatrix(Matrix& m, int blocksize);
 
 		void resize(int rows, int cols, int blocksize);
+		int getBlocksize();
+		void setBlocksize(int blocksize);
+		std::string toString();
 
 		Matrix multiply(Matrix& m);
+		void fill();
+		BlockDiagMatrix multiply(BlockDiagMatrix& m);
 };
 
 #endif
