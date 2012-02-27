@@ -28,8 +28,8 @@ class Filter {
 		int blocksize;
 
 		// Matrizen
-		Matrix MC, Mstate, MCA;
-		BlockDiagMatrix MA;
+		Matrix MatrixC, state, MatrixCA;
+		BlockDiagMatrix MatrixA;
 
 		// Ausgangssignal
 		float* y;
