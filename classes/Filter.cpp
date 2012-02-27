@@ -17,7 +17,7 @@ void Filter::initializeCoefficients(float length) {
 	this->E = 5.4e9;
 	this->I = 0.171e-12;
 	this->d1 = 8e-5;
-	this->d3 = -0.1e-5;
+	this->d3 = -1.4e-5;
 
 	// Abtastpunkt
 	this->xa = 0.1;
