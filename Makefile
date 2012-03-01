@@ -1,4 +1,4 @@
-.PHONY: all clear preview
+.PHONY: all clean preview
 
 DEBUG = 0
 LIBS = -lasound -lsndfile
@@ -7,10 +7,10 @@ CPPFLAGS := -DDEBUG=$(DEBUG)
 
 all: bin/countcards bin/countwave bin/listpcm bin/playback bin/iirfilter bin/matrixtest
 
-clear:
-	- rm bin/*
-	- rm classes/*.o
-	- rm *.o
+clean:
+	- rm -f bin/*
+	- rm -f classes/*.o
+	- rm -f *.o
 
 time: bin/iirfilter
 	time -p ./bin/iirfilter
