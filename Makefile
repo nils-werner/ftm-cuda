@@ -1,11 +1,32 @@
+MODE = cuda
+
+CUDA_INSTALL_PATH ?= /usr/baetz/cuda
+CXX := g++
+CC := gcc
+LINK := g++ -fPIC
+NVCC := nvcc
+
+
+# Includes
+INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include 
+
+# Common flags
+COMMONFLAGS += $(INCLUDES)
+NVCCFLAGS += $(COMMONFLAGS)
+CXXFLAGS += $(COMMONFLAGS) -DDEBUG=$(DEBUG)
+CFLAGS += $(COMMONFLAGS)
+
 .PHONY: all clean preview
 
 DEBUG = 0
-LIBS = -lasound -lsndfile
-OBJS = classes/Filter.o classes/Matrix.o classes/BlockDiagMatrix.o classes/Buffer.o
-CPPFLAGS := -DDEBUG=$(DEBUG)
+LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -lasound -lsndfile
+ifeq ($(MODE),cuda)
+	LIBS += -lcudart
+endif
 
-all: build/countcards build/countwave build/listpcm build/playback build/iirfilter build/matrixtest
+OBJS = classes/Filter.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o classes/Buffer.cpp.o main.cpp.o
+
+all: build/iirfilter build/matrixtest
 
 clean:
 	- rm -f build/*
@@ -18,23 +39,14 @@ time: build/iirfilter
 preview: time
 	cvlc filter.wav vlc://quit
 
-build/countwave: alsa/countwave.c
-	gcc -o build/countwave alsa/countwave.c $(LIBS)
+build/%: main.cpp.o
+	$(LINK) -o $@ $< $(LIBS)
 
-build/listpcm: alsa/listpcm.c
-	gcc -o build/listpcm alsa/listpcm.c $(LIBS)
+%.c.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-build/countcards: alsa/countcards.c
-	gcc -o build/countcards alsa/countcards.c $(LIBS)
+%.cu.o: %.cu
+	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
-build/playback: alsa/playback.c
-	gcc -o build/playback alsa/playback.c $(LIBS)
-
-build/iirfilter: main.cpp main.h $(OBJS)
-	g++ -o build/iirfilter main.cpp $(LIBS) $(CPPFLAGS)
-
-build/matrixtest: matrixtest.cpp $(OBJS)
-	g++ -o build/matrixtest matrixtest.cpp $(LIBS) $(CPPFLAGS)
-
-%.o: %.cpp %.h
-	g++ -c $(FLAGS) -o $@ $<
+%.cpp.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
