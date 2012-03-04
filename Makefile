@@ -1,3 +1,5 @@
+MODE = cuda
+
 CUDA_INSTALL_PATH ?= /usr/baetz/cuda
 CXX := g++
 CC := gcc
@@ -17,7 +19,11 @@ CFLAGS += $(COMMONFLAGS)
 .PHONY: all clean preview
 
 DEBUG = 0
-LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -lcudart -lasound -lsndfile
+LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -lasound -lsndfile
+ifeq ($(MODE),cuda)
+	LIBS += -lcudart
+endif
+
 OBJS = classes/Filter.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o classes/Buffer.cpp.o main.cpp.o
 
 all: build/iirfilter build/matrixtest
