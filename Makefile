@@ -16,7 +16,7 @@ NVCCFLAGS += $(COMMONFLAGS)
 CXXFLAGS += $(COMMONFLAGS) -DDEBUG=$(DEBUG)
 CFLAGS += $(COMMONFLAGS)
 
-.PHONY: all clean preview
+.PHONY: all cpu clean time preview
 
 DEBUG = 0
 LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -lasound -lsndfile
@@ -24,10 +24,14 @@ ifeq ($(MODE),cuda)
 	LIBS += -lcudart
 endif
 
-OBJS = classes/Filter.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o classes/Buffer.cpp.o main.cpp.o
+
+### PHONY RULES ###
 
 all: build/iirfilter build/matrixtest
 
+cpu: MODE := cpu
+cpu: all
+	
 clean:
 	- rm -f build/*
 	- rm -f classes/*.o
@@ -39,7 +43,17 @@ time: build/iirfilter
 preview: time
 	cvlc filter.wav vlc://quit
 
-build/%: main.cpp.o
+
+### ABHAENGIGKEITEN ###
+
+iirfilter.cpp.o: classes/Filter.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o
+
+
+
+
+### DATEIENDUNGEN ###
+
+build/%: %.cpp.o
 	$(LINK) -o $@ $< $(LIBS)
 
 %.c.o: %.c
