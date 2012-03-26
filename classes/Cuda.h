@@ -20,4 +20,7 @@ class Cuda {
 		void invoke();
 };
 
+__global__ void CudaClassKernel() {
+};
+
 #endif

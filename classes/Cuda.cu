@@ -34,4 +34,5 @@ void Cuda::invoke() {
 	MatMulKernel<<<dimGrid, dimBlock>>>(d_A, d_B, d_C);
 	CUT_CHECK_ERROR("Kernel execution failed\n");
 	*/
+	CudaClassKernel<<<1, 1>>>();
 }
