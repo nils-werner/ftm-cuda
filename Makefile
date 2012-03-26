@@ -42,7 +42,7 @@ preview: time
 
 ### ABHAENGIGKEITEN ###
 
-iirfilter.cpp.o: classes/Filter.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o classes/Cuda.cu.o
+iirfilter.cpp.o: classes/Filter.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o classes/Cuda.cu.o classes/CudaMatrix.cu.o classes/CudaBlockDiagMatrix.cu.o
 matrixtest.cpp.o: classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o
 
 
