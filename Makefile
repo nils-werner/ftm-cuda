@@ -54,11 +54,11 @@ matrixtest.cpp.o: classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o
 build/%: %.cpp.o
 	$(LINK) -o $@ $< $(LIBS)
 
-%.c.o: %.c
+%.c.o: %.c %.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-%.cu.o: %.cu
+%.cu.o: %.cu %.h
 	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
-%.cpp.o: %.cpp
+%.cpp.o: %.cpp %.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
