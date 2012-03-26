@@ -1,5 +1,3 @@
-MODE = cuda
-
 CUDA_INSTALL_PATH := /usr/baetz/cuda
 CUDA_SDK_PATH := /HOMES/werner/NVIDIA_GPU_Computing_SDK
 CXX := g++
@@ -25,11 +23,6 @@ LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -L$(CUDA_SDK_PATH)/C/lib -lcudart -lcutil_x
 
 
 ### PHONY RULES ###
-
-cpu: all
-
-cuda: LIBS += -lcudart
-cuda: all
 
 all: build/iirfilter build/matrixtest
 	
