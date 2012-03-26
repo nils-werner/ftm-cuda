@@ -1,6 +1,7 @@
 MODE = cuda
 
-CUDA_INSTALL_PATH ?= /usr/baetz/cuda
+CUDA_INSTALL_PATH := /usr/baetz/cuda
+CUDA_SDK_PATH := /HOMES/werner/NVIDIA_GPU_Computing_SDK
 CXX := g++
 CC := gcc
 LINK := g++ -fPIC
@@ -8,7 +9,7 @@ NVCC := nvcc
 
 
 # Includes
-INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include 
+INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include -I$(CUDA_SDK_PATH)/C/common/inc
 
 # Common flags
 COMMONFLAGS += $(INCLUDES)
@@ -19,7 +20,7 @@ CFLAGS += $(COMMONFLAGS)
 .PHONY: all cpu clean time preview
 
 DEBUG = 0
-LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -lasound -lsndfile
+LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -L$(CUDA_SDK_PATH)/C/lib -lcudart -lcutil_x86_64 -lasound -lsndfile
 
 
 
