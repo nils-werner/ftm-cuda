@@ -3,29 +3,29 @@
 __global__ void CudaClassKernel() {
 };
 
-void Cuda::copyToDevice(void** hostData, void** deviceData) {
+void Cuda::copyToDevice(void* hostData, void* deviceData, size_t size) {
 	/*
-	CUDA_SAFE_CALL(cudaMalloc((void**)&d_A.elements, size));
-	CUDA_SAFE_CALL(cudaMemcpy(d_A.elements, A.elements, size, cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**)&deviceData, size));
+	CUDA_SAFE_CALL(cudaMemcpy(deviceData, hostData, size, cudaMemcpyHostToDevice));
 	*/
 }
 
-void Cuda::copyToHost(void** deviceData, void** hostData) {
+void Cuda::copyToHost(void* deviceData, void* hostData, size_t size) {
 	/*
-	CUDA_SAFE_CALL(cudaMalloc((void**)&d_B.elements, size));
-	CUDA_SAFE_CALL(cudaMemcpy(d_B.elements, B.elements, size, cudaMemcpyDeviceToHost));
+	CUDA_SAFE_CALL(cudaMalloc((void**)&deviceData, size));
+	CUDA_SAFE_CALL(cudaMemcpy(deviceData, hostData, size, cudaMemcpyDeviceToHost));
 	*/
 }
 
-void Cuda::malloc(void** devicePtr, int devicesize) {
+void Cuda::malloc(void* devicePtr, size_t size) {
 	/*
-	CUDA_SAFE_CALL(cudaMalloc((void**)&d_C.elements, size));
+	CUDA_SAFE_CALL(cudaMalloc((void**)&devicePtr, size));
 	*/
 }
 
-void Cuda::free(void** deviceData) {
+void Cuda::free(void* deviceData) {
 	/*
-	cudaFree(d_A.elements);
+	cudaFree(deviceData);
 	*/
 }
 
