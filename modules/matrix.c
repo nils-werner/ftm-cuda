@@ -11,6 +11,10 @@ Matrix m_new(int rows, int cols) {
 	return m;
 }
 
+void m_free(Matrix m) {
+	free(m.elements);
+}
+
 void m_set(Matrix m, int row, int col, float value) {
 	m.elements[row * m.rows + col] = value;
 }
@@ -58,7 +62,18 @@ void m_fill(Matrix m) {
 
 	for(i = 0; i < m.rows; i++) {
 		for(j = 0; j < m.cols; j++) {
-			m_set(m, i, j, rand());
+			m_set(m, i, j, fl_rand());
 		}
+	}
+}
+
+void m_print(Matrix m) {
+	int i, j;
+
+	for(i = 0; i < m.rows; i++) {
+		for(j = 0; j < m.cols; j++) {
+			printf("%5.2f ", m_get(m, i, j));
+		}
+		printf("\n");
 	}
 }
