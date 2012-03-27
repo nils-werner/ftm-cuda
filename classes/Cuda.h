@@ -13,10 +13,10 @@ class Cuda {
 	private:
 		int blocksize, gridsize;
 
-		void copyToDevice();
-		void copyToHost();
-		void malloc();
-		void free();
+		void copyToDevice(void**,void**);
+		void copyToHost(void**,void**);
+		void malloc(void**, int);
+		void free(void**);
 		void invoke();
 };
 

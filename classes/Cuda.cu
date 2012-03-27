@@ -1,26 +1,26 @@
 #include "Cuda.h"
 
-void Cuda::copyToDevice() {
+void Cuda::copyToDevice(void** hostData, void** deviceData) {
 	/*
 	CUDA_SAFE_CALL(cudaMalloc((void**)&d_A.elements, size));
 	CUDA_SAFE_CALL(cudaMemcpy(d_A.elements, A.elements, size, cudaMemcpyHostToDevice));
 	*/
 }
 
-void Cuda::copyToHost() {
+void Cuda::copyToHost(void** deviceData, void** hostData) {
 	/*
 	CUDA_SAFE_CALL(cudaMalloc((void**)&d_B.elements, size));
 	CUDA_SAFE_CALL(cudaMemcpy(d_B.elements, B.elements, size, cudaMemcpyDeviceToHost));
 	*/
 }
 
-void Cuda::malloc() {
+void Cuda::malloc(void** devicePtr, int devicesize) {
 	/*
 	CUDA_SAFE_CALL(cudaMalloc((void**)&d_C.elements, size));
 	*/
 }
 
-void Cuda::free() {
+void Cuda::free(void** deviceData) {
 	/*
 	cudaFree(d_A.elements);
 	*/
