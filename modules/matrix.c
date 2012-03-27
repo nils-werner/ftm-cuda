@@ -27,9 +27,11 @@ Matrix m_multiply(Matrix a, Matrix b) {
 	int i, j, k;
 	float sum = 0;
 
-	assert(a.cols = b.rows);
+	assert(a.cols == b.rows);
 
 	Matrix m = m_new(a.rows, b.cols);
+
+	m_print(m);
 
 	for(i = 0; i < a.rows; i++) {
 		for(j = 0; j < b.cols; j++) {
@@ -40,6 +42,7 @@ Matrix m_multiply(Matrix a, Matrix b) {
 			sum = 0;
 		}
 	}
+	return m;
 }
 
 void m_identity(Matrix m) {
@@ -70,10 +73,13 @@ void m_fill(Matrix m) {
 void m_print(Matrix m) {
 	int i, j;
 
+	printf("Matrix %dx%d\n\n", m.rows, m.cols);
+
 	for(i = 0; i < m.rows; i++) {
 		for(j = 0; j < m.cols; j++) {
 			printf("%5.2f ", m_get(m, i, j));
 		}
 		printf("\n");
 	}
+	printf("\n\n");
 }
