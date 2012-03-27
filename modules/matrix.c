@@ -59,11 +59,15 @@ void m_identity(Matrix m) {
 }
 
 void m_fill(Matrix m) {
+	m_filllimit(m, 0.0, 1.0);
+}
+
+void m_filllimit(Matrix m, float min, float max) {
 	int i, j;
 
 	for(i = 0; i < m.rows; i++) {
 		for(j = 0; j < m.cols; j++) {
-			m_set(m, i, j, fl_rand());
+			m_set(m, i, j, (fl_rand() * (max-min)) + min);
 		}
 	}
 }

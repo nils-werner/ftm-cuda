@@ -19,6 +19,7 @@ float m_get(Matrix, int, int);
 Matrix m_multiply(Matrix, Matrix);
 void m_identity(Matrix);
 void m_fill(Matrix);
+void m_filllimit(Matrix, float, float);
 void m_print(Matrix);
 
 
