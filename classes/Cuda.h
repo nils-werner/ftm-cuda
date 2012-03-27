@@ -14,6 +14,8 @@ class Cuda {
 		int blocksize, gridsize;
 
 	public:
+		Cuda();
+		void setDevice(int);
 		void copyToDevice(void*, void*, size_t);
 		void copyToHost(void*, void*, size_t);
 		void malloc(void*, size_t);
