@@ -125,7 +125,7 @@ void generateSignal() {
 		for(j = 0; j < block_CA_line.cols; j++) {
 			m_set(block_CA, i-1, j, m_get(block_CA_line, 0, j));
 		}
-		MatrixA_powtmp = m_multiply(MatrixA_pow, MatrixA);
+		MatrixA_powtmp = m_multiplyblockdiag(MatrixA_pow, MatrixA, 2);
 		MatrixA_pow = MatrixA_powtmp;
 	}
 
@@ -156,7 +156,7 @@ void generateSignal() {
 			printf("%f, ", sample[i+j]);
 #endif
 		}
-		statetmp = m_multiply(MatrixA_pow,state);
+		statetmp = m_multiplyblockdiag(MatrixA_pow,state,2);
 		state = statetmp;
 		i = i + blocksize;
 	}
