@@ -29,6 +29,7 @@ all: build/iirfilter build/matrixtest build/cudatest
 clean:
 	- rm -f build/*
 	- rm -f classes/*.o
+	- rm -f modules/*.o
 	- rm -f *.o
 
 time: build/iirfilter
