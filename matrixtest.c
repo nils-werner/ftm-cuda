@@ -3,13 +3,13 @@
 int main () {
 	int x = 6;
 
-	Matrix a = m_new(x,x);
-	m_fill(a);
+	Matrix a = m_new(100,60);
+	m_filllimit(a,-3,3);
 	m_print(a);
 
 
-	Matrix b = m_new(x,x);
-	m_identity(b);
+	Matrix b = m_new(60,1);
+	m_filllimit(b,-4,10);
 	m_print(b);
 
 	Matrix c = m_multiply(a,b);
