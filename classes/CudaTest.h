@@ -5,6 +5,8 @@
 
 #include "Cuda.h"
 
+#define CUDATEST_THREAD_CNT 200
+
 class CudaTest : public Cuda {
 	public:
 		void invoke();

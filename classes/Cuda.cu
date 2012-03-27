@@ -8,21 +8,21 @@ Cuda::Cuda() {
 }
 
 void Cuda::setDevice(int deviceID) {
-	assert(cudaSetDevice(deviceID));
+	assert(!cudaSetDevice(deviceID));
 }
 
 void Cuda::copyToDevice(void* hostData, void* deviceData, size_t size) {
-	CUDA_SAFE_CALL(cudaMalloc((void**)&deviceData, size));
+	//CUDA_SAFE_CALL(cudaMalloc((void**)&deviceData, size));
+	mallocOnDevice(&deviceData, size);
 	CUDA_SAFE_CALL(cudaMemcpy(deviceData, hostData, size, cudaMemcpyHostToDevice));
 }
 
 void Cuda::copyToHost(void* deviceData, void* hostData, size_t size) {
-	CUDA_SAFE_CALL(cudaMalloc((void**)&deviceData, size));
 	CUDA_SAFE_CALL(cudaMemcpy(deviceData, hostData, size, cudaMemcpyDeviceToHost));
 }
 
-void Cuda::malloc(void* devicePtr, size_t size) {
-	CUDA_SAFE_CALL(cudaMalloc((void**)&devicePtr, size));
+void Cuda::mallocOnDevice(void** devicePtr, size_t size) {
+	CUDA_SAFE_CALL(cudaMalloc((void**) &devicePtr, size));
 }
 
 void Cuda::free(void* deviceData) {

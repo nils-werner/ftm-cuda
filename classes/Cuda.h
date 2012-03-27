@@ -18,7 +18,7 @@ class Cuda {
 		void setDevice(int);
 		void copyToDevice(void*, void*, size_t);
 		void copyToHost(void*, void*, size_t);
-		void malloc(void*, size_t);
+		void mallocOnDevice(void**, size_t);
 		void free(void*);
 		void invoke();
 };

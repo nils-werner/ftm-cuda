@@ -44,7 +44,7 @@ preview: time
 
 build/iirfilter: classes/Filter.cpp.o classes/Buffer.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o classes/Cuda.cu.o classes/CudaMatrix.cu.o classes/CudaBlockDiagMatrix.cu.o
 build/matrixtest: classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o
-build/cudatest: classes/CudaTest.cu.o
+build/cudatest: classes/Cuda.cu.o classes/CudaTest.cu.o
 
 
 
