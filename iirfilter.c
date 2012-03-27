@@ -139,9 +139,6 @@ void generateSignal() {
 	m_print(block_CA);
 	printf("state");
 	m_print(state);
-
-	m_print(m_multiply(block_CA,state));
-	return;
 #endif
 
 	for(i = 0; i < samples;) {
@@ -160,7 +157,7 @@ void generateSignal() {
 #endif
 		}
 		statetmp = m_multiply(MatrixA_pow,state);
-		state = state;
+		state = statetmp;
 		i = i + blocksize;
 	}
 
@@ -171,5 +168,5 @@ void generateSignal() {
 
 	SNDFILE *outfile = sf_open("filter.wav", SFM_WRITE, &info);
 	assert(outfile);
-	sf_writef_float(outfile, &sample[0],samples);
+	sf_writef_float(outfile, sample,samples);
 }
