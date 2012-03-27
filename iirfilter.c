@@ -96,8 +96,9 @@ void generateSignal() {
 	int i, j;
 	float* sample;
 	Matrix block_CA, block_CA_line, block_samples;
-	Matrix MatrixA_pow;
+	Matrix MatrixA_pow, MatrixA_powtmp;
 	Matrix MatrixCA;
+	Matrix statetmp;
 
 	MatrixCA = m_multiply(MatrixC, MatrixA);
 
@@ -122,10 +123,12 @@ void generateSignal() {
 	for(i = 1; i <= blocksize; i++) {
 		block_CA_line = m_multiply(MatrixC, MatrixA_pow);
 		for(j = 0; j < block_CA_line.cols; j++) {
-			m_set(block_CA,i-1,j,m_get(block_CA_line,0,j));
+			m_set(block_CA, i-1, j, m_get(block_CA_line, 0, j));
 		}
-		MatrixA_pow = m_multiply(MatrixA_pow, MatrixA);
+		MatrixA_powtmp = m_multiply(MatrixA_pow, MatrixA);
+		MatrixA_pow = MatrixA_powtmp;
 	}
+
 
 	//MatrixA_pow.setBlocksize(2);
 
@@ -134,6 +137,11 @@ void generateSignal() {
 	m_print(MatrixA);
 	printf("block_CA");
 	m_print(block_CA);
+	printf("state");
+	m_print(state);
+
+	m_print(m_multiply(block_CA,state));
+	return;
 #endif
 
 	for(i = 0; i < samples;) {
@@ -151,7 +159,8 @@ void generateSignal() {
 			printf("%f, ", sample[i+j]);
 #endif
 		}
-		state = m_multiply(MatrixA_pow,state);
+		statetmp = m_multiply(MatrixA_pow,state);
+		state = state;
 		i = i + blocksize;
 	}
 
