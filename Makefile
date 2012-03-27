@@ -24,7 +24,7 @@ LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -L$(CUDA_SDK_PATH)/C/lib -lcudart -lcutil_x
 
 ### PHONY RULES ###
 
-all: build/iirfilter build/matrixtest
+all: build/iirfilter build/matrixtest build/cudatest
 	
 clean:
 	- rm -f build/*
@@ -42,8 +42,9 @@ preview: time
 
 ### ABHAENGIGKEITEN ###
 
-iirfilter.cpp.o: classes/Filter.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o classes/Cuda.cu.o classes/CudaMatrix.cu.o classes/CudaBlockDiagMatrix.cu.o
-matrixtest.cpp.o: classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o
+build/iirfilter: classes/Filter.cpp.o classes/Buffer.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o classes/Cuda.cu.o classes/CudaMatrix.cu.o classes/CudaBlockDiagMatrix.cu.o
+build/matrixtest: classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o
+build/cudatest: classes/CudaTest.cu.o
 
 
 
@@ -52,7 +53,7 @@ matrixtest.cpp.o: classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o
 ### DATEIENDUNGEN ###
 
 build/%: %.cpp.o
-	$(LINK) -o $@ $< $(LIBS)
+	$(LINK) -o $@ $^ $(LIBS)
 
 %.c.o: %.c %.h
 	$(CC) $(CFLAGS) -c $< -o $@

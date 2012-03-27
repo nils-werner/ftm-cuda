@@ -10,17 +10,15 @@
 #include <cutil.h>
 
 class Cuda {
-	private:
+	protected:
 		int blocksize, gridsize;
 
+	public:
 		void copyToDevice(void**,void**);
 		void copyToHost(void**,void**);
 		void malloc(void**, int);
 		void free(void**);
 		void invoke();
-};
-
-__global__ void CudaClassKernel() {
 };
 
 #endif

@@ -1,8 +1,8 @@
 #include <iostream>
-#include "classes/Filter.cpp"
-#include "classes/Matrix.cpp"
-#include "classes/BlockDiagMatrix.cpp"
-#include "classes/Buffer.cpp"
+#include "classes/Filter.h"
+#include "classes/Matrix.h"
+#include "classes/BlockDiagMatrix.h"
+#include "classes/Buffer.h"
 
 using namespace std;
 

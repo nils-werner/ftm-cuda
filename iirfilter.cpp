@@ -1,4 +1,4 @@
-#include "main.h"
+#include "iirfilter.h"
 
 using namespace std;
 

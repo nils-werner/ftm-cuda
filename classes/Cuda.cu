@@ -1,5 +1,8 @@
 #include "Cuda.h"
 
+__global__ void CudaClassKernel() {
+};
+
 void Cuda::copyToDevice(void** hostData, void** deviceData) {
 	/*
 	CUDA_SAFE_CALL(cudaMalloc((void**)&d_A.elements, size));
