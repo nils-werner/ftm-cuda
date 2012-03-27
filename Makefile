@@ -42,9 +42,9 @@ preview: time
 
 ### ABHAENGIGKEITEN ###
 
-build/iirfilter: classes/Filter.cpp.o classes/Buffer.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o classes/Cuda.cu.o classes/CudaMatrix.cu.o classes/CudaBlockDiagMatrix.cu.o
-build/matrixtest: classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o
-build/cudatest: classes/Cuda.cu.o classes/CudaTest.cu.o
+build/iirfilter: iirfilter.cpp.o classes/Filter.cpp.o classes/Buffer.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o classes/Cuda.cu.o classes/CudaMatrix.cu.o classes/CudaBlockDiagMatrix.cu.o
+build/matrixtest: matrixtest.c.o modules/matrix.c.o 
+build/cudatest: cudatest.cpp.o classes/Cuda.cu.o classes/CudaTest.cu.o
 
 
 
@@ -52,7 +52,7 @@ build/cudatest: classes/Cuda.cu.o classes/CudaTest.cu.o
 
 ### DATEIENDUNGEN ###
 
-build/%: %.cpp.o
+build/%: 
 	$(LINK) -o $@ $^ $(LIBS)
 
 %.c.o: %.c %.h
