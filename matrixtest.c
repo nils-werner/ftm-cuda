@@ -5,6 +5,15 @@ int main () {
 
 	Matrix a = m_new(x,x);
 	m_fill(a);
+	m_print(a);
+
+
+	Matrix b = m_new(x,x);
+	m_identity(b);
+	m_print(b);
+
+	Matrix c = m_multiply(a,b);
+	m_print(c);
 
 	/*
 	BlockDiagMatrix a;
