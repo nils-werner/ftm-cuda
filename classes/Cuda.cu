@@ -27,12 +27,9 @@ void Cuda::free() {
 }
 
 void Cuda::invoke() {
-	/*
-	dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
-	dim3 dimGrid(B.width / dimBlock.x, A.height / dimBlock.y);
+	dim3 dimBlock(blocksize, blocksize);
+	dim3 dimGrid(1 / dimBlock.x, 1 / dimBlock.y);
 
-	MatMulKernel<<<dimGrid, dimBlock>>>(d_A, d_B, d_C);
+	CudaClassKernel<<<dimGrid, dimBlock>>>();
 	CUT_CHECK_ERROR("Kernel execution failed\n");
-	*/
-	CudaClassKernel<<<1, 1>>>();
 }
