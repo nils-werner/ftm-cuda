@@ -13,7 +13,7 @@ INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include -I$(CUDA_SDK_PATH)/C/common/inc
 COMMONFLAGS += $(INCLUDES)
 NVCCFLAGS += $(COMMONFLAGS)
 CXXFLAGS += $(COMMONFLAGS) -DDEBUG=$(DEBUG)
-CFLAGS += $(COMMONFLAGS)
+CFLAGS += $(COMMONFLAGS) -DDEBUG=$(DEBUG)
 
 .PHONY: all cpu clean time preview
 
@@ -29,6 +29,7 @@ all: build/iirfilter build/matrixtest build/cudatest
 clean:
 	- rm -f build/*
 	- rm -f classes/*.o
+	- rm -f modules/*.o
 	- rm -f *.o
 
 time: build/iirfilter
@@ -42,9 +43,9 @@ preview: time
 
 ### ABHAENGIGKEITEN ###
 
-build/iirfilter: classes/Filter.cpp.o classes/Buffer.cpp.o classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o classes/Cuda.cu.o classes/CudaMatrix.cu.o classes/CudaBlockDiagMatrix.cu.o
-build/matrixtest: classes/Matrix.cpp.o classes/BlockDiagMatrix.cpp.o
-build/cudatest: classes/Cuda.cu.o classes/CudaTest.cu.o
+build/iirfilter: iirfilter.c.o modules/matrix.c.o modules/utils.c.o
+build/matrixtest: matrixtest.c.o modules/matrix.c.o modules/utils.c.o
+build/cudatest: cudatest.cpp.o classes/Cuda.cu.o classes/CudaTest.cu.o
 
 
 
@@ -52,7 +53,7 @@ build/cudatest: classes/Cuda.cu.o classes/CudaTest.cu.o
 
 ### DATEIENDUNGEN ###
 
-build/%: %.cpp.o
+build/%: 
 	$(LINK) -o $@ $^ $(LIBS)
 
 %.c.o: %.c %.h

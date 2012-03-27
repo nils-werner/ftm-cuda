@@ -1,14 +1,21 @@
-#include <iostream>
-#include "classes/Filter.h"
-#include "classes/Matrix.h"
-#include "classes/BlockDiagMatrix.h"
-#include "classes/Buffer.h"
-
-using namespace std;
+#include "matrixtest.h"
 
 int main () {
 	int x = 6;
 
+	Matrix a = m_new(100,60);
+	m_filllimit(a,-3,3);
+	m_print(a);
+
+
+	Matrix b = m_new(60,1);
+	m_filllimit(b,-4,10);
+	m_print(b);
+
+	Matrix c = m_multiply(a,b);
+	m_print(c);
+
+	/*
 	BlockDiagMatrix a;
 	a.resize(x,x,2);
 
@@ -21,6 +28,7 @@ int main () {
 	cout << a.toString() << endl;
 	cout << b.toString() << endl;
 	cout << a.multiply(b).toString();
+	*/
 
 	return 0;
 }
