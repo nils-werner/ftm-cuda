@@ -31,8 +31,6 @@ Matrix m_multiply(Matrix a, Matrix b) {
 
 	Matrix m = m_new(a.rows, b.cols);
 
-	m_print(m);
-
 	for(i = 0; i < a.rows; i++) {
 		for(j = 0; j < b.cols; j++) {
 			for(k = 0; k < b.rows; k++) {
