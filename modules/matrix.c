@@ -16,11 +16,11 @@ void m_free(Matrix m) {
 }
 
 void m_set(Matrix m, int row, int col, float value) {
-	m.elements[row * m.rows + col] = value;
+	m.elements[row * m.cols + col] = value;
 }
 
 float m_get(Matrix m, int row, int col) {
-	return m.elements[row * m.rows + col];
+	return m.elements[row * m.cols + col];
 }
 
 Matrix m_multiply(Matrix a, Matrix b) {
