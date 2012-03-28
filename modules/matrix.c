@@ -97,7 +97,8 @@ void m_filllimit(Matrix m, float min, float max) {
 void m_print(Matrix m) {
 	int i, j;
 
-	printf("Matrix %dx%d\n\n", m.rows, m.cols);
+	m_stat(m);
+	printf("\n");
 
 	for(i = 0; i < m.rows; i++) {
 		for(j = 0; j < m.cols; j++) {
@@ -106,4 +107,8 @@ void m_print(Matrix m) {
 		printf("\n");
 	}
 	printf("\n\n");
+}
+
+void m_stat(Matrix m) {
+	printf("Matrix %dx%d\n", m.rows, m.cols);
 }

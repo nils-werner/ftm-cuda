@@ -22,6 +22,7 @@ void m_identity(Matrix);
 void m_fill(Matrix);
 void m_filllimit(Matrix, float, float);
 void m_print(Matrix);
+void m_stat(Matrix);
 
 
 // Matrix m_pow(Matrix, int);
