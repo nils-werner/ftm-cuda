@@ -103,11 +103,11 @@ void generateSignal() {
 	MatrixCA = m_multiply(MatrixC, MatrixA);
 
 #if DEBUG == 2
-	printf("MatrixA";
+	printf("MatrixA");
 	m_print(MatrixA);
-	printf("MatrixCA";
+	printf("MatrixCA");
 	m_print(MatrixCA);
-	printf("MatrixC";
+	printf("MatrixC");
 	m_print(MatrixC);
 #endif
 
