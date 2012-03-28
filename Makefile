@@ -24,7 +24,8 @@ LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -L$(CUDA_SDK_PATH)/C/lib -lcudart -lcutil_x
 
 ### PHONY RULES ###
 
-all: build/iirfilter
+default: build/iirfilter
+all: build/iirfilter build/matrixtest build/cudatest
 	
 clean:
 	- rm -f build/*
