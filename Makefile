@@ -31,6 +31,7 @@ clean:
 	- rm -f build/*
 	- rm -f classes/*.o
 	- rm -f modules/*.o
+	- rm -f cuda/*.o
 	- rm -f *.o
 
 time: build/iirfilter
