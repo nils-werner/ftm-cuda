@@ -4,8 +4,8 @@ float l, Ts, rho, A, E, I, d1, d3, xa ;
 int T, seconds, samples, filters, blocksize;
 Matrix MatrixC,MatrixA,state;
 
-int main() {
-	initializeCoefficients(0.65);
+int filter(float length) {
+	initializeCoefficients(length);
 	createMatrices();
 	generateSignal();
 	return 0;

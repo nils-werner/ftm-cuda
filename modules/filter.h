@@ -2,7 +2,7 @@
 #include <math.h>
 #include <sndfile.h>
 
-int main();
+int filter(float);
 void initializeCoefficients(float);
 void createMatrices();
 void generateSignal();
