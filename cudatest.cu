@@ -15,8 +15,6 @@ int main() {
 	m_filllimit(b,-3,3);
 	m_stat(b);
 
-	m_print(m_multiply(a,b));
-	m_print(m_multiply(a,m_multiply(a,b)));
 
 	
 	/*
@@ -54,24 +52,23 @@ int main() {
 	size = dc.rows * dc.cols * sizeof(float);
 	CUDA_SAFE_CALL(cudaMalloc((void**) &dc.elements, size));
 
+	for(int i = 0; i < 5; i++) {
+		b = m_multiply(a,b);
+		m_print(b);
+	}
+
 	dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
 	dim3 dimGrid(b.cols / dimBlock.x, a.rows / dimBlock.y);
 
-	MatrixMultiplyKernel<<<dimGrid, dimBlock>>>(da, db, dc);
-	CUT_CHECK_ERROR("Kernel execution failed\n");
+	for(int i = 0; i < 5; i++) {
+		MatrixMultiplyKernel<<<dimGrid, dimBlock>>>(da, db, db);
+		CUT_CHECK_ERROR("Kernel execution failed\n");
 
-	size = dc.rows * dc.cols * sizeof(float);
-	cudaMemcpy(c.elements, dc.elements, size, cudaMemcpyDeviceToHost);
+		size = db.rows * db.cols * sizeof(float);
+		cudaMemcpy(c.elements, db.elements, size, cudaMemcpyDeviceToHost);
 
-	m_print(c);
-
-	MatrixMultiplyKernel<<<dimGrid, dimBlock>>>(da, dc, dc);
-	CUT_CHECK_ERROR("Kernel execution failed\n");
-
-	size = dc.rows * dc.cols * sizeof(float);
-	cudaMemcpy(c.elements, dc.elements, size, cudaMemcpyDeviceToHost);
-
-	m_print(c);
+		m_print(c);
+	}
 
 	return 0;
 }
