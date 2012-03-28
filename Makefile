@@ -58,7 +58,7 @@ build/%:
 	$(LINK) -o $@ $^ $(LIBS)
 
 %.c.o: %.c %.h
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CXX) $(CFLAGS) -c $< -o $@
 
 %.cu.o: %.cu %.h
 	$(NVCC) $(NVCCFLAGS) -c $< -o $@
