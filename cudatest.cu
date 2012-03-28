@@ -7,15 +7,16 @@ int main() {
 	 *
 	 */
 
-	Matrix a = m_new(10,60);
+	Matrix a = m_new(10,10);
 	m_filllimit(a,-3,3);
 	m_stat(a);
 
-	Matrix b = m_new(60,10);
+	Matrix b = m_new(10,10);
 	m_filllimit(b,-3,3);
 	m_stat(b);
 
 	m_print(m_multiply(a,b));
+	m_print(m_multiply(a,m_multiply(a,b)));
 
 	
 	/*
@@ -57,6 +58,14 @@ int main() {
 	dim3 dimGrid(b.cols / dimBlock.x, a.rows / dimBlock.y);
 
 	MatrixMultiplyKernel<<<dimGrid, dimBlock>>>(da, db, dc);
+	CUT_CHECK_ERROR("Kernel execution failed\n");
+
+	size = dc.rows * dc.cols * sizeof(float);
+	cudaMemcpy(c.elements, dc.elements, size, cudaMemcpyDeviceToHost);
+
+	m_print(c);
+
+	MatrixMultiplyKernel<<<dimGrid, dimBlock>>>(da, dc, dc);
 	CUT_CHECK_ERROR("Kernel execution failed\n");
 
 	size = dc.rows * dc.cols * sizeof(float);
