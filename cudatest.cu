@@ -27,8 +27,14 @@ int main() {
 
 	cudaSetDevice(0);
 
+	cudaStream_t streams[3];
 	Matrix da, db, dc, c;
 	size_t size;
+
+	for(int i = 0; i < 3; i++) {
+		cudaStreamCreate(& streams[i]);
+	}
+
 
 	c = m_new(a.rows, b.cols);
 
