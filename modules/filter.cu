@@ -43,6 +43,8 @@ void createMatrices() {
 	double omega;
 	double a, b, c1, c0;
 
+	cudaSetDevice(0);
+
 	MatrixC = m_new(1, 2 * filters);
 	MatrixA = m_new(2 * filters, 2 * filters); //BLOCKMATRIX
 	state = m_new(2 * filters, 1);
@@ -100,6 +102,8 @@ void generateSignal() {
 	Matrix MatrixCA;
 	Matrix statetmp;
 
+	Matrix dMatrixA_pow, dblock_CA, dstate, dblock_samples;
+
 	MatrixCA = m_multiply(MatrixC, MatrixA);
 
 #if DEBUG == 2
@@ -140,6 +144,18 @@ void generateSignal() {
 	printf("state");
 	m_print(state);
 #endif
+
+	CUDA_SAFE_CALL(cudaMalloc((void**) &dMatrixA_pow.elements, m_size(MatrixA_pow)));
+	CUDA_SAFE_CALL(cudaMemcpy(dMatrixA_pow.elements,MatrixA_pow.elements, m_size(MatrixA_pow), cudaMemcpyHostToDevice));
+
+	CUDA_SAFE_CALL(cudaMalloc((void**) &dblock_CA.elements, m_size(block_CA)));
+	CUDA_SAFE_CALL(cudaMemcpy(dblock_CA.elements,block_CA.elements, m_size(block_CA), cudaMemcpyHostToDevice));
+
+	CUDA_SAFE_CALL(cudaMalloc((void**) &dblock_samples.elements, m_size(block_samples)));
+	CUDA_SAFE_CALL(cudaMemcpy(dblock_samples.elements,block_samples.elements, m_size(block_samples), cudaMemcpyHostToDevice));
+
+	CUDA_SAFE_CALL(cudaMalloc((void**) &dstate.elements, m_size(state)));
+	CUDA_SAFE_CALL(cudaMemcpy(dstate.elements,state.elements, m_size(state), cudaMemcpyHostToDevice));
 
 	for(i = 0; i < samples;) {
 		block_samples = m_multiply(block_CA,state);
