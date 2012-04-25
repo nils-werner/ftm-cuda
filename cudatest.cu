@@ -7,11 +7,13 @@ int main() {
 	 *
 	 */
 
-	Matrix a = m_new(10,10);
+	int matsize = 100;
+
+	Matrix a = m_new(matsize,matsize);
 	m_filllimit(a,-3,3);
 	m_stat(a);
 
-	Matrix b = m_new(10,10);
+	Matrix b = m_new(matsize,matsize);
 	m_filllimit(b,-3,3);
 	m_stat(b);
 
@@ -60,20 +62,29 @@ int main() {
 
 	for(int i = 0; i < 5; i++) {
 		b = m_multiply(a,b);
-		m_print(b);
 	}
 
 	dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
 	dim3 dimGrid(b.cols / dimBlock.x, a.rows / dimBlock.y);
 
 	for(int i = 0; i < 5; i++) {
-		MatrixMultiplyKernel<<<dimGrid, dimBlock>>>(da, db, db);
-		CUT_CHECK_ERROR("Kernel execution failed\n");
-
 		size = db.rows * db.cols * sizeof(float);
-		cudaMemcpy(c.elements, db.elements, size, cudaMemcpyDeviceToHost);
+		if(i % 2 == 0) {
+			MatrixMultiplyKernel<<<dimGrid, dimBlock, 1, streams[0]>>>(da, db, dc);
+			CUT_CHECK_ERROR("Kernel execution failed\n");
 
-		m_print(c);
+			cudaMemcpyAsync(c.elements, db.elements, size, cudaMemcpyDeviceToHost, streams[1]);
+		}
+		else {
+			MatrixMultiplyKernel<<<dimGrid, dimBlock, 1, streams[0]>>>(da, dc, db);
+			CUT_CHECK_ERROR("Kernel execution failed\n");
+
+			cudaMemcpyAsync(c.elements, dc.elements, size, cudaMemcpyDeviceToHost, streams[1]);
+
+		}
+
+		cudaStreamSynchronize(streams[0]);
+		cudaStreamSynchronize(streams[1]);
 	}
 
 	return 0;
