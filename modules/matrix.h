@@ -23,6 +23,7 @@ void m_fill(Matrix);
 void m_filllimit(Matrix, float, float);
 void m_print(Matrix);
 void m_stat(Matrix);
+size_t m_size(Matrix);
 
 
 // Matrix m_pow(Matrix, int);

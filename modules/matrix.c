@@ -112,3 +112,7 @@ void m_print(Matrix m) {
 void m_stat(Matrix m) {
 	printf("Matrix %dx%d\n", m.rows, m.cols);
 }
+
+size_t m_size(Matrix m) {
+	return m.rows * m.cols * sizeof(float);
+}
