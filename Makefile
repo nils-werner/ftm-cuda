@@ -45,7 +45,7 @@ preview: time
 
 ### ABHAENGIGKEITEN ###
 
-build/iirfilter: iirfilter.c.o modules/filter.cu.o modules/matrix.c.o modules/utils.c.o cuda/matrixmultiply.kernel.cu.o cuda/blockdiagmatrixmultiply.kernel.cu.o
+build/iirfilter: iirfilter.cu.o modules/filter.cu.o modules/matrix.c.o modules/utils.c.o cuda/matrixmultiply.kernel.cu.o cuda/blockdiagmatrixmultiply.kernel.cu.o
 build/matrixtest: matrixtest.c.o modules/matrix.c.o modules/utils.c.o
 build/cudatest: cudatest.cu.o modules/matrix.c.o modules/utils.c.o cuda/matrixmultiply.kernel.cu.o cuda/blockdiagmatrixmultiply.kernel.cu.o
 
