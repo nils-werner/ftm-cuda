@@ -157,14 +157,24 @@ void generateSignal() {
 	CUDA_SAFE_CALL(cudaMalloc((void**) &dstate.elements, m_size(state)));
 	CUDA_SAFE_CALL(cudaMemcpy(dstate.elements,state.elements, m_size(state), cudaMemcpyHostToDevice));
 
+	dim3 dimBlockCA(1, 2);
+	dim3 dimGridCA(block_CA.cols / dimBlockCA.x, block_CA.rows / dimBlockCA.y);
+
+	dim3 dimBlockA(2, 2);
+	dim3 dimGridA(MatrixA_pow.cols / dimBlockA.x, MatrixA_pow.rows / dimBlockA.y);
+
 	for(i = 0; i < samples;) {
-		block_samples = m_multiply(block_CA,state);
+	//	block_samples = m_multiply(block_CA,state);
+		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(dblock_CA, dstate, dblock_samples);
 
 #if DEBUG == 4
 		m_print(MatrixA_pow);
 		m_print(block_samples);
 		m_print(state);
 #endif
+	
+		cudaDeviceSynchronize();	
+		cudaMemcpy(block_samples.elements, dblock_samples.elements, m_size(block_samples), cudaMemcpyDeviceToHost);
 
 		for(j = 0; j < blocksize; j++) {
 			sample[i+j] = m_get(block_samples,j,0)/128;
@@ -172,8 +182,9 @@ void generateSignal() {
 			printf("%f, ", sample[i+j]);
 #endif
 		}
-		statetmp = m_multiplyblockdiag(MatrixA_pow,state,2);
-		state = statetmp;
+	//	statetmp = m_multiplyblockdiag(MatrixA_pow,state,2);
+		MatrixMultiplyKernel<<<dimGridA, dimBlockA>>>(dMatrixA_pow, dstate, dstate);
+	//	state = statetmp;
 		i = i + blocksize;
 	}
 
