@@ -97,11 +97,7 @@ void generateSignal() {
 	float* output;
 	Matrix MatrixCA, MatrixCA_line, output_chunk;
 	Matrix MatrixAp, tmp_MatrixAp;
-	Matrix tmp_state;
 
-	Matrix device_MatrixAp, device_MatrixCA, device_state1, device_state2, device_tmp_state, device_output_chunk;
-
-	cudaSetDevice(0);
 
 #if DEBUG == 2
 	printf("MatrixA");
@@ -113,11 +109,15 @@ void generateSignal() {
 	output = (float *) malloc(sizeof(float) * samples);
 	blocksize = 100;
 
+#if MODE == 1
+	Matrix device_MatrixAp, device_MatrixCA, device_state1, device_state2, device_tmp_state, device_output_chunk;
+
 	device_MatrixCA = m_new(blocksize, MatrixA.cols);
 	device_output_chunk = m_new(blocksize,1);
 	device_MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	device_state1 = m_new(2 * filters, 1);
 	device_state2 = m_new(2 * filters, 1);
+#endif
 
 	MatrixCA = m_new(blocksize, MatrixA.cols);
 	output_chunk = m_new(blocksize,1);
@@ -147,6 +147,9 @@ void generateSignal() {
 	m_print(state);
 #endif
 
+#if MODE == 1
+	cudaSetDevice(0);
+
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp.elements, m_size(MatrixAp)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixAp.elements, MatrixAp.elements, m_size(MatrixAp), cudaMemcpyHostToDevice));
 
@@ -167,23 +170,12 @@ void generateSignal() {
 
 	dim3 dimBlockA(1, 1);
 	dim3 dimGridA(state.cols / dimBlockA.x, MatrixAp.rows / dimBlockA.y);
-
+#else
+	Matrix tmp_state;
+#endif
 
 	for(i = 0; i < samples;) {
-#if MODE == 0
-		/*
-	       	 * CPU IMPLEMENTATION
-		 */
-		output_chunk = m_multiply(MatrixCA,state);
-
-		for(j = 0; j < blocksize; j++) {
-			output[i+j] = m_get(output_chunk,j,0)/128;
-		}
-		tmp_state = m_multiplyblockdiag(MatrixAp,state,2);
-		m_free(state);
-		state = tmp_state;
-
-#else
+#if MODE == 1
 		/*
 	       	 * CUDA IMPLEMENTATION
 		 */
@@ -200,6 +192,18 @@ void generateSignal() {
 		device_tmp_state = device_state1;
 		device_state1 = device_state2;
 		device_state2 = device_tmp_state;
+#else
+		/*
+	       	 * CPU IMPLEMENTATION
+		 */
+		output_chunk = m_multiply(MatrixCA,state);
+
+		for(j = 0; j < blocksize; j++) {
+			output[i+j] = m_get(output_chunk,j,0)/128;
+		}
+		tmp_state = m_multiplyblockdiag(MatrixAp,state,2);
+		m_free(state);
+		state = tmp_state;
 #endif
 
 		i = i + blocksize;
