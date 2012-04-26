@@ -96,11 +96,11 @@ void generateSignal() {
 	int i, j;
 	float* sample;
 	Matrix block_CA, block_CA_line, block_samples;
-	Matrix MatrixAp, MatrixAptmp;
+	Matrix MatrixAp, tmp_MatrixAp;
 	Matrix MatrixCA;
-	Matrix statetmp;
+	Matrix tmp_state;
 
-	Matrix dMatrixAp, dblock_CA, dstate1, dstate2, dstatetmp, dblock_samples;
+	Matrix dMatrixAp, dblock_CA, dstate1, dstate2, dtmp_state, dblock_samples;
 
 	cudaSetDevice(0);
 
@@ -136,10 +136,10 @@ void generateSignal() {
 			m_set(block_CA, i-1, j, m_get(block_CA_line, 0, j));
 		}
 		m_free(block_CA_line);
-		MatrixAptmp = m_multiplyblockdiag(MatrixAp, MatrixA, 2);
+		tmp_MatrixAp = m_multiplyblockdiag(MatrixAp, MatrixA, 2);
 
 		m_free(MatrixAp);
-		MatrixAp = MatrixAptmp;
+		MatrixAp = tmp_MatrixAp;
 	}
 
 
@@ -200,12 +200,12 @@ void generateSignal() {
 			printf("%f, ", sample[i+j]);
 #endif
 		}
-	//	statetmp = m_multiplyblockdiag(MatrixAp,state,2);
+	//	tmp_state = m_multiplyblockdiag(MatrixAp,state,2);
 		MatrixMultiplyKernel<<<dimGridA, dimBlockA>>>(dMatrixAp, dstate1, dstate2);
-		dstatetmp = dstate1;
+		dtmp_state = dstate1;
 		dstate1 = dstate2;
-		dstate2 = dstatetmp;
-	//	state = statetmp;
+		dstate2 = dtmp_state;
+	//	state = tmp_state;
 		i = i + blocksize;
 	}
 
