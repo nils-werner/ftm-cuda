@@ -33,6 +33,9 @@ clean:
 	- rm -f modules/*.o
 	- rm -f *.o
 
+md5: time
+	md5sum filter.wav
+
 time: build/iirfilter
 	time -p ./build/iirfilter
 
