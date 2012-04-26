@@ -100,7 +100,7 @@ void generateSignal() {
 	Matrix MatrixCA;
 	Matrix tmp_state;
 
-	Matrix dMatrixAp, dblock_CA, dstate1, dstate2, dtmp_state, dblock_samples;
+	Matrix device_MatrixAp, device_block_CA, device_state1, device_state2, device_tmp_state, device_block_samples;
 
 	cudaSetDevice(0);
 
@@ -118,11 +118,11 @@ void generateSignal() {
 	sample = (float *) malloc(sizeof(float) * samples);
 	blocksize = 100;
 
-	dblock_CA = m_new(blocksize, MatrixA.cols);
-	dblock_samples = m_new(blocksize,1);
-	dMatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
-	dstate1 = m_new(2 * filters, 1);
-	dstate2 = m_new(2 * filters, 1);
+	device_block_CA = m_new(blocksize, MatrixA.cols);
+	device_block_samples = m_new(blocksize,1);
+	device_MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
+	device_state1 = m_new(2 * filters, 1);
+	device_state2 = m_new(2 * filters, 1);
 
 	block_CA = m_new(blocksize, MatrixA.cols);
 	block_samples = m_new(blocksize,1);
@@ -154,20 +154,20 @@ void generateSignal() {
 	m_print(state);
 #endif
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &dMatrixAp.elements, m_size(MatrixAp)));
-	CUDA_SAFE_CALL(cudaMemcpy(dMatrixAp.elements,MatrixAp.elements, m_size(MatrixAp), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp.elements, m_size(MatrixAp)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixAp.elements,MatrixAp.elements, m_size(MatrixAp), cudaMemcpyHostToDevice));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &dblock_CA.elements, m_size(block_CA)));
-	CUDA_SAFE_CALL(cudaMemcpy(dblock_CA.elements,block_CA.elements, m_size(block_CA), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_block_CA.elements, m_size(block_CA)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_block_CA.elements,block_CA.elements, m_size(block_CA), cudaMemcpyHostToDevice));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &dblock_samples.elements, m_size(block_samples)));
-	CUDA_SAFE_CALL(cudaMemcpy(dblock_samples.elements,block_samples.elements, m_size(block_samples), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_block_samples.elements, m_size(block_samples)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_block_samples.elements,block_samples.elements, m_size(block_samples), cudaMemcpyHostToDevice));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &dstate1.elements, m_size(state)));
-	CUDA_SAFE_CALL(cudaMemcpy(dstate1.elements,state.elements, m_size(state), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state1.elements, m_size(state)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_state1.elements,state.elements, m_size(state), cudaMemcpyHostToDevice));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &dstate2.elements, m_size(state)));
-	CUDA_SAFE_CALL(cudaMemcpy(dstate2.elements,state.elements, m_size(state), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state2.elements, m_size(state)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_state2.elements,state.elements, m_size(state), cudaMemcpyHostToDevice));
 
 	dim3 dimBlockCA(1, 1);
 	dim3 dimGridCA(state.cols / dimBlockCA.x, block_CA.rows / dimBlockCA.y);
@@ -178,7 +178,7 @@ void generateSignal() {
 
 	for(i = 0; i < samples;) {
 	//	block_samples = m_multiply(block_CA,state);
-		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(dblock_CA, dstate1, dblock_samples);
+		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(device_block_CA, device_state1, device_block_samples);
 
 #if DEBUG == 4
 		m_print(MatrixAp);
@@ -187,7 +187,7 @@ void generateSignal() {
 #endif
 	
 		cudaDeviceSynchronize();	
-		cudaMemcpy(block_samples.elements, dblock_samples.elements, m_size(block_samples), cudaMemcpyDeviceToHost);
+		cudaMemcpy(block_samples.elements, device_block_samples.elements, m_size(block_samples), cudaMemcpyDeviceToHost);
 
 		//printf("%d\n", i);
 
@@ -201,10 +201,10 @@ void generateSignal() {
 #endif
 		}
 	//	tmp_state = m_multiplyblockdiag(MatrixAp,state,2);
-		MatrixMultiplyKernel<<<dimGridA, dimBlockA>>>(dMatrixAp, dstate1, dstate2);
-		dtmp_state = dstate1;
-		dstate1 = dstate2;
-		dstate2 = dtmp_state;
+		MatrixMultiplyKernel<<<dimGridA, dimBlockA>>>(device_MatrixAp, device_state1, device_state2);
+		device_tmp_state = device_state1;
+		device_state1 = device_state2;
+		device_state2 = device_tmp_state;
 	//	state = tmp_state;
 		i = i + blocksize;
 	}
