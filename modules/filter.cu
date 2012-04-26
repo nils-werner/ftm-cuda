@@ -96,11 +96,11 @@ void generateSignal() {
 	int i, j;
 	float* sample;
 	Matrix block_CA, block_CA_line, block_samples;
-	Matrix MatrixA_pow, MatrixA_powtmp;
+	Matrix MatrixAp, MatrixAptmp;
 	Matrix MatrixCA;
 	Matrix statetmp;
 
-	Matrix dMatrixA_pow, dblock_CA, dstate1, dstate2, dstatetmp, dblock_samples;
+	Matrix dMatrixAp, dblock_CA, dstate1, dstate2, dstatetmp, dblock_samples;
 
 	cudaSetDevice(0);
 
@@ -120,30 +120,30 @@ void generateSignal() {
 
 	dblock_CA = m_new(blocksize, MatrixA.cols);
 	dblock_samples = m_new(blocksize,1);
-	dMatrixA_pow = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
+	dMatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	dstate1 = m_new(2 * filters, 1);
 	dstate2 = m_new(2 * filters, 1);
 
 	block_CA = m_new(blocksize, MatrixA.cols);
 	block_samples = m_new(blocksize,1);
-	MatrixA_pow = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
-	m_identity(MatrixA_pow);
+	MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
+	m_identity(MatrixAp);
 
 
 	for(i = 1; i <= blocksize; i++) {
-		block_CA_line = m_multiply(MatrixC, MatrixA_pow);
+		block_CA_line = m_multiply(MatrixC, MatrixAp);
 		for(j = 0; j < block_CA_line.cols; j++) {
 			m_set(block_CA, i-1, j, m_get(block_CA_line, 0, j));
 		}
 		m_free(block_CA_line);
-		MatrixA_powtmp = m_multiplyblockdiag(MatrixA_pow, MatrixA, 2);
+		MatrixAptmp = m_multiplyblockdiag(MatrixAp, MatrixA, 2);
 
-		m_free(MatrixA_pow);
-		MatrixA_pow = MatrixA_powtmp;
+		m_free(MatrixAp);
+		MatrixAp = MatrixAptmp;
 	}
 
 
-	//MatrixA_pow.setBlocksize(2);
+	//MatrixAp.setBlocksize(2);
 
 #if DEBUG == 3
 	printf("MatrixA");
@@ -154,8 +154,8 @@ void generateSignal() {
 	m_print(state);
 #endif
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &dMatrixA_pow.elements, m_size(MatrixA_pow)));
-	CUDA_SAFE_CALL(cudaMemcpy(dMatrixA_pow.elements,MatrixA_pow.elements, m_size(MatrixA_pow), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &dMatrixAp.elements, m_size(MatrixAp)));
+	CUDA_SAFE_CALL(cudaMemcpy(dMatrixAp.elements,MatrixAp.elements, m_size(MatrixAp), cudaMemcpyHostToDevice));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &dblock_CA.elements, m_size(block_CA)));
 	CUDA_SAFE_CALL(cudaMemcpy(dblock_CA.elements,block_CA.elements, m_size(block_CA), cudaMemcpyHostToDevice));
@@ -173,7 +173,7 @@ void generateSignal() {
 	dim3 dimGridCA(state.cols / dimBlockCA.x, block_CA.rows / dimBlockCA.y);
 
 	dim3 dimBlockA(1, 1);
-	dim3 dimGridA(state.cols / dimBlockA.x, MatrixA_pow.rows / dimBlockA.y);
+	dim3 dimGridA(state.cols / dimBlockA.x, MatrixAp.rows / dimBlockA.y);
 
 
 	for(i = 0; i < samples;) {
@@ -181,7 +181,7 @@ void generateSignal() {
 		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(dblock_CA, dstate1, dblock_samples);
 
 #if DEBUG == 4
-		m_print(MatrixA_pow);
+		m_print(MatrixAp);
 		m_print(block_samples);
 		m_print(state);
 #endif
@@ -200,8 +200,8 @@ void generateSignal() {
 			printf("%f, ", sample[i+j]);
 #endif
 		}
-	//	statetmp = m_multiplyblockdiag(MatrixA_pow,state,2);
-		MatrixMultiplyKernel<<<dimGridA, dimBlockA>>>(dMatrixA_pow, dstate1, dstate2);
+	//	statetmp = m_multiplyblockdiag(MatrixAp,state,2);
+		MatrixMultiplyKernel<<<dimGridA, dimBlockA>>>(dMatrixAp, dstate1, dstate2);
 		dstatetmp = dstate1;
 		dstate1 = dstate2;
 		dstate2 = dstatetmp;
@@ -210,7 +210,7 @@ void generateSignal() {
 	}
 
 
-//	m_print(MatrixA_pow);
+//	m_print(MatrixAp);
 
 	SF_INFO info;
 	info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
