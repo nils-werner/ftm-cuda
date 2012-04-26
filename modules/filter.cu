@@ -246,9 +246,7 @@ void generateSignal() {
 	       	 * CUDA IMPLEMENTATION
 		 */
 
-		cudaStreamSynchronize(streams[0]);
-		cudaStreamSynchronize(streams[1]);
-		cudaStreamSynchronize(streams[2]);
+		cudaThreadSynchronize();
 
 		device_state_tmp = device_state_read;
 		device_state_read = device_state_write;
