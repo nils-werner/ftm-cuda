@@ -169,7 +169,7 @@ void generateSignal() {
 	dim3 dimBlockCA(1, 1);
 	dim3 dimGridCA(state.cols / dimBlockCA.x, block_CA.rows / dimBlockCA.y);
 
-	dim3 dimBlockA(2, 2);
+	dim3 dimBlockA(1, 1);
 	dim3 dimGridA(state.cols / dimBlockA.x, MatrixA_pow.rows / dimBlockA.y);
 
 
@@ -201,7 +201,7 @@ void generateSignal() {
 		MatrixMultiplyKernel<<<dimGridA, dimBlockA>>>(dMatrixA_pow, dstate1, dstate2);
 		dstatetmp = dstate1;
 		dstate1 = dstate2;
-		dstate2 = dstate1;
+		dstate2 = dstatetmp;
 	//	state = statetmp;
 		i = i + blocksize;
 	}
