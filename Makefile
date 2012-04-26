@@ -33,9 +33,14 @@ clean:
 	- rm -f modules/*.o
 	- rm -f cuda/*.o
 	- rm -f *.o
+	- rm filter.wav
 
 md5: time
-	md5sum filter.wav
+ifeq ($(MODE),1)
+	echo "b9d3b1d64a1d6d8b3a97c1121c8e7de4  filter.wav" | md5sum -c --
+else
+	echo "80b65ac4588538469d44e384a42e5829  filter.wav" | md5sum -c --
+endif
 
 time: build/iirfilter
 	time -p ./build/iirfilter
