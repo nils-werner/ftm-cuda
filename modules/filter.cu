@@ -94,7 +94,7 @@ void createMatrices() {
 
 void generateSignal() {
 	int i, j;
-	float* sample;
+	float* output;
 	Matrix MatrixCA, MatrixCA_line, output_chunk;
 	Matrix MatrixAp, tmp_MatrixAp;
 	Matrix tmp_state;
@@ -110,7 +110,7 @@ void generateSignal() {
 	m_print(MatrixC);
 #endif
 
-	sample = (float *) malloc(sizeof(float) * samples);
+	output = (float *) malloc(sizeof(float) * samples);
 	blocksize = 100;
 
 	device_MatrixCA = m_new(blocksize, MatrixA.cols);
@@ -190,9 +190,9 @@ void generateSignal() {
 	//		m_print(output_chunk);
 
 		for(j = 0; j < blocksize; j++) {
-			sample[i+j] = m_get(output_chunk,j,0)/128;
+			output[i+j] = m_get(output_chunk,j,0)/128;
 #if DEBUG == 10
-			printf("%f, ", sample[i+j]);
+			printf("%f, ", output[i+j]);
 #endif
 		}
 	//	tmp_state = m_multiplyblockdiag(MatrixAp,state,2);
@@ -214,5 +214,5 @@ void generateSignal() {
 
 	SNDFILE *outfile = sf_open("filter.wav", SFM_WRITE, &info);
 	assert(outfile);
-	sf_writef_float(outfile, sample,samples);
+	sf_writef_float(outfile, output,samples);
 }
