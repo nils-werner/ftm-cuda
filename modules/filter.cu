@@ -199,6 +199,12 @@ void generateSignal() {
 #if MODE == 1
 	cudaSetDevice(0);
 
+	cudaStream_t streams[3];
+
+	for(int i = 0; i < 3; i++) {
+		cudaStreamCreate(& streams[i]);
+	}
+
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp.elements, m_size(MatrixAp)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixAp.elements, MatrixAp.elements, m_size(MatrixAp), cudaMemcpyHostToDevice));
 
