@@ -7,7 +7,7 @@ NVCC := nvcc
 
 
 # Includes
-INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include -I$(CUDA_SDK_PATH)/C/common/inc
+INCLUDES = -I.
 
 # Common flags
 COMMONFLAGS += $(INCLUDES)
@@ -18,14 +18,14 @@ CFLAGS += $(COMMONFLAGS) -DDEBUG=$(DEBUG)
 .PHONY: all cpu clean time preview
 
 DEBUG = 0
-LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -L$(CUDA_SDK_PATH)/C/lib -lcudart -lcutil_x86_64 -lasound -lsndfile
+LIBS := -lasound -lsndfile
 
 
 
 ### PHONY RULES ###
 
 default: build/iirfilter
-all: build/iirfilter build/matrixtest build/cudatest
+all: build/iirfilter build/matrixtest
 	
 clean:
 	- rm -f build/*
@@ -47,7 +47,7 @@ preview: time
 
 ### ABHAENGIGKEITEN ###
 
-build/iirfilter: iirfilter.c.o modules/filter.c.o modules/matrix.c.o modules/utils.c.o cuda/matrixmultiply.kernel.cu.o cuda/blockdiagmatrixmultiply.kernel.cu.o
+build/iirfilter: iirfilter.c.o modules/filter.c.o modules/matrix.c.o modules/utils.c.o
 build/matrixtest: matrixtest.c.o modules/matrix.c.o modules/utils.c.o
 build/cudatest: cudatest.cu.o modules/matrix.c.o modules/utils.c.o cuda/matrixmultiply.kernel.cu.o cuda/blockdiagmatrixmultiply.kernel.cu.o
 
