@@ -95,11 +95,11 @@ void createMatrices() {
 void generateSignal() {
 	int i, j;
 	float* sample;
-	Matrix MatrixCA, MatrixCA_line, block_samples;
+	Matrix MatrixCA, MatrixCA_line, output_chunk;
 	Matrix MatrixAp, tmp_MatrixAp;
 	Matrix tmp_state;
 
-	Matrix device_MatrixAp, device_MatrixCA, device_state1, device_state2, device_tmp_state, device_block_samples;
+	Matrix device_MatrixAp, device_MatrixCA, device_state1, device_state2, device_tmp_state, device_output_chunk;
 
 	cudaSetDevice(0);
 
@@ -114,13 +114,13 @@ void generateSignal() {
 	blocksize = 100;
 
 	device_MatrixCA = m_new(blocksize, MatrixA.cols);
-	device_block_samples = m_new(blocksize,1);
+	device_output_chunk = m_new(blocksize,1);
 	device_MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	device_state1 = m_new(2 * filters, 1);
 	device_state2 = m_new(2 * filters, 1);
 
 	MatrixCA = m_new(blocksize, MatrixA.cols);
-	block_samples = m_new(blocksize,1);
+	output_chunk = m_new(blocksize,1);
 	MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_identity(MatrixAp);
 
@@ -155,8 +155,8 @@ void generateSignal() {
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA.elements, m_size(MatrixCA)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixCA.elements, MatrixCA.elements, m_size(MatrixCA), cudaMemcpyHostToDevice));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_block_samples.elements, m_size(block_samples)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_block_samples.elements, block_samples.elements, m_size(block_samples), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk.elements, m_size(output_chunk)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_output_chunk.elements, output_chunk.elements, m_size(output_chunk), cudaMemcpyHostToDevice));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state1.elements, m_size(state)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_state1.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
@@ -172,25 +172,25 @@ void generateSignal() {
 
 
 	for(i = 0; i < samples;) {
-	//	block_samples = m_multiply(MatrixCA,state);
-		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(device_MatrixCA, device_state1, device_block_samples);
+	//	output_chunk = m_multiply(MatrixCA,state);
+		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(device_MatrixCA, device_state1, device_output_chunk);
 
 #if DEBUG == 4
 		m_print(MatrixAp);
-		m_print(block_samples);
+		m_print(output_chunk);
 		m_print(state);
 #endif
 	
 		cudaDeviceSynchronize();	
-		cudaMemcpy(block_samples.elements, device_block_samples.elements, m_size(block_samples), cudaMemcpyDeviceToHost);
+		cudaMemcpy(output_chunk.elements, device_output_chunk.elements, m_size(output_chunk), cudaMemcpyDeviceToHost);
 
 		//printf("%d\n", i);
 
 	//	if(i == 0)
-	//		m_print(block_samples);
+	//		m_print(output_chunk);
 
 		for(j = 0; j < blocksize; j++) {
-			sample[i+j] = m_get(block_samples,j,0)/128;
+			sample[i+j] = m_get(output_chunk,j,0)/128;
 #if DEBUG == 10
 			printf("%f, ", sample[i+j]);
 #endif
