@@ -143,7 +143,8 @@ void createMatrices() {
 void generateSignal() {
 	int i, j;
 	float* output;
-	Matrix MatrixCA, MatrixCA_line, output_chunk;
+	Matrix MatrixCA, MatrixCA_line;
+	Matrix output_chunk_read, output_chunk_write, output_chunk_tmp;
 	Matrix MatrixAp, MatrixAp_tmp;
 
 
@@ -158,7 +159,10 @@ void generateSignal() {
 	blocksize = 100;
 
 #if MODE == 1
-	Matrix device_MatrixAp, device_MatrixCA, device_state_read, device_state_write, device_state_tmp, device_output_chunk_read, device_output_chunk_write, device_tmp_output_chunk;
+	Matrix device_MatrixAp;
+	Matrix device_MatrixCA;
+	Matrix device_state_read, device_state_write, device_state_tmp;
+	Matrix device_output_chunk_read, device_output_chunk_write, device_output_chunk_tmp;
 
 	device_MatrixCA = m_new(blocksize, MatrixA.cols);
 	device_output_chunk_read = m_new(blocksize,1);
@@ -169,7 +173,8 @@ void generateSignal() {
 #endif
 
 	MatrixCA = m_new(blocksize, MatrixA.cols);
-	output_chunk = m_new(blocksize,1);
+	output_chunk_read = m_new(blocksize,1);
+	output_chunk_write = m_new(blocksize,1);
 	MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_identity(MatrixAp);
 
@@ -211,11 +216,11 @@ void generateSignal() {
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA.elements, m_size(MatrixCA)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixCA.elements, MatrixCA.elements, m_size(MatrixCA), cudaMemcpyHostToDevice));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_read.elements, m_size(output_chunk)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_output_chunk_read.elements, output_chunk.elements, m_size(output_chunk), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_read.elements, m_size(output_chunk_read)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_output_chunk_read.elements, output_chunk_read.elements, m_size(output_chunk_read), cudaMemcpyHostToDevice));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_write.elements, m_size(output_chunk)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_output_chunk_write.elements, output_chunk.elements, m_size(output_chunk), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_write.elements, m_size(output_chunk_write)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_output_chunk_write.elements, output_chunk_write.elements, m_size(output_chunk_write), cudaMemcpyHostToDevice));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_read.elements, m_size(state)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_state_read.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
@@ -228,6 +233,9 @@ void generateSignal() {
 
 	dim3 dimBlockA(1, 1);
 	dim3 dimGridA(state.cols / dimBlockA.x, MatrixAp.rows / dimBlockA.y);
+
+	MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, device_state_read, device_output_chunk_write);
+	MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, device_state_read, device_state_write);
 #else
 	Matrix state_tmp;
 #endif
@@ -238,34 +246,39 @@ void generateSignal() {
 	       	 * CUDA IMPLEMENTATION
 		 */
 
-		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, device_state_read, device_output_chunk_write);
-		MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, device_state_read, device_state_write);
-
-
 		cudaStreamSynchronize(streams[0]);
-		cudaMemcpyAsync(output_chunk.elements, device_output_chunk_write.elements, m_size(output_chunk), cudaMemcpyDeviceToHost, streams[2]);
-
 		cudaStreamSynchronize(streams[1]);
+		cudaStreamSynchronize(streams[2]);
+
 		device_state_tmp = device_state_read;
 		device_state_read = device_state_write;
 		device_state_write = device_state_tmp;
 
-		cudaStreamSynchronize(streams[2]);
+		device_output_chunk_tmp = device_output_chunk_read;
+		device_output_chunk_read = device_output_chunk_write;
+		device_output_chunk_write = device_output_chunk_tmp;
+
+		output_chunk_tmp = output_chunk_read;
+		output_chunk_read = output_chunk_write;
+		output_chunk_write = output_chunk_tmp;
+
+		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, device_state_read, device_output_chunk_write);
+		MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, device_state_read, device_state_write);
+
+		cudaMemcpyAsync(output_chunk_write.elements, device_output_chunk_read.elements, m_size(output_chunk_write), cudaMemcpyDeviceToHost, streams[2]);
+
 		for(j = 0; j < blocksize; j++) {
-			output[i+j] = m_get(output_chunk,j,0)/128;
+			output[i+j] = m_get(output_chunk_read,j,0)/128;
 		}
 
-		device_tmp_output_chunk = device_output_chunk_read;
-		device_output_chunk_read = device_output_chunk_write;
-		device_output_chunk_write = device_tmp_output_chunk;
 #else
 		/*
 	       	 * CPU IMPLEMENTATION
 		 */
-		output_chunk = m_multiply(MatrixCA,state);
+		output_chunk_write = m_multiply(MatrixCA,state);
 
 		for(j = 0; j < blocksize; j++) {
-			output[i+j] = m_get(output_chunk,j,0)/128;
+			output[i+j] = m_get(output_chunk_write,j,0)/128;
 		}
 		state_tmp = m_multiplyblockdiag(MatrixAp,state,2);
 		m_free(state);
