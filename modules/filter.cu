@@ -97,7 +97,6 @@ void generateSignal() {
 	float* output;
 	Matrix MatrixCA, MatrixCA_line, output_chunk;
 	Matrix MatrixAp, tmp_MatrixAp;
-	Matrix tmp_state;
 
 	Matrix device_MatrixAp, device_MatrixCA, device_state1, device_state2, device_tmp_state, device_output_chunk;
 
