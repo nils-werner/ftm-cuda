@@ -95,22 +95,17 @@ void createMatrices() {
 void generateSignal() {
 	int i, j;
 	float* sample;
-	Matrix block_CA, block_CA_line, block_samples;
+	Matrix MatrixCA, MatrixCA_line, block_samples;
 	Matrix MatrixAp, tmp_MatrixAp;
-	Matrix MatrixCA;
 	Matrix tmp_state;
 
-	Matrix device_MatrixAp, device_block_CA, device_state1, device_state2, device_tmp_state, device_block_samples;
+	Matrix device_MatrixAp, device_MatrixCA, device_state1, device_state2, device_tmp_state, device_block_samples;
 
 	cudaSetDevice(0);
-
-	MatrixCA = m_multiply(MatrixC, MatrixA);
 
 #if DEBUG == 2
 	printf("MatrixA");
 	m_print(MatrixA);
-	printf("MatrixCA");
-	m_print(MatrixCA);
 	printf("MatrixC");
 	m_print(MatrixC);
 #endif
@@ -118,24 +113,24 @@ void generateSignal() {
 	sample = (float *) malloc(sizeof(float) * samples);
 	blocksize = 100;
 
-	device_block_CA = m_new(blocksize, MatrixA.cols);
+	device_MatrixCA = m_new(blocksize, MatrixA.cols);
 	device_block_samples = m_new(blocksize,1);
 	device_MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	device_state1 = m_new(2 * filters, 1);
 	device_state2 = m_new(2 * filters, 1);
 
-	block_CA = m_new(blocksize, MatrixA.cols);
+	MatrixCA = m_new(blocksize, MatrixA.cols);
 	block_samples = m_new(blocksize,1);
 	MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_identity(MatrixAp);
 
 
 	for(i = 1; i <= blocksize; i++) {
-		block_CA_line = m_multiply(MatrixC, MatrixAp);
-		for(j = 0; j < block_CA_line.cols; j++) {
-			m_set(block_CA, i-1, j, m_get(block_CA_line, 0, j));
+		MatrixCA_line = m_multiply(MatrixC, MatrixAp);
+		for(j = 0; j < MatrixCA_line.cols; j++) {
+			m_set(MatrixCA, i-1, j, m_get(MatrixCA_line, 0, j));
 		}
-		m_free(block_CA_line);
+		m_free(MatrixCA_line);
 		tmp_MatrixAp = m_multiplyblockdiag(MatrixAp, MatrixA, 2);
 
 		m_free(MatrixAp);
@@ -148,8 +143,8 @@ void generateSignal() {
 #if DEBUG == 3
 	printf("MatrixA");
 	m_print(MatrixA);
-	printf("block_CA");
-	m_print(block_CA);
+	printf("MatrixCA");
+	m_print(MatrixCA);
 	printf("state");
 	m_print(state);
 #endif
@@ -157,8 +152,8 @@ void generateSignal() {
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp.elements, m_size(MatrixAp)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixAp.elements, MatrixAp.elements, m_size(MatrixAp), cudaMemcpyHostToDevice));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_block_CA.elements, m_size(block_CA)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_block_CA.elements, block_CA.elements, m_size(block_CA), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA.elements, m_size(MatrixCA)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixCA.elements, MatrixCA.elements, m_size(MatrixCA), cudaMemcpyHostToDevice));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_block_samples.elements, m_size(block_samples)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_block_samples.elements, block_samples.elements, m_size(block_samples), cudaMemcpyHostToDevice));
@@ -170,15 +165,15 @@ void generateSignal() {
 	CUDA_SAFE_CALL(cudaMemcpy(device_state2.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
 
 	dim3 dimBlockCA(1, 1);
-	dim3 dimGridCA(state.cols / dimBlockCA.x, block_CA.rows / dimBlockCA.y);
+	dim3 dimGridCA(state.cols / dimBlockCA.x, MatrixCA.rows / dimBlockCA.y);
 
 	dim3 dimBlockA(1, 1);
 	dim3 dimGridA(state.cols / dimBlockA.x, MatrixAp.rows / dimBlockA.y);
 
 
 	for(i = 0; i < samples;) {
-	//	block_samples = m_multiply(block_CA,state);
-		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(device_block_CA, device_state1, device_block_samples);
+	//	block_samples = m_multiply(MatrixCA,state);
+		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(device_MatrixCA, device_state1, device_block_samples);
 
 #if DEBUG == 4
 		m_print(MatrixAp);
