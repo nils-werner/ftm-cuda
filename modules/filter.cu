@@ -110,13 +110,13 @@ void generateSignal() {
 	blocksize = 100;
 
 #if MODE == 1
-	Matrix device_MatrixAp, device_MatrixCA, device_state1, device_state2, device_tmp_state, device_output_chunk;
+	Matrix device_MatrixAp, device_MatrixCA, device_state_read, device_state_write, device_tmp_state, device_output_chunk;
 
 	device_MatrixCA = m_new(blocksize, MatrixA.cols);
 	device_output_chunk = m_new(blocksize,1);
 	device_MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
-	device_state1 = m_new(2 * filters, 1);
-	device_state2 = m_new(2 * filters, 1);
+	device_state_read = m_new(2 * filters, 1);
+	device_state_write = m_new(2 * filters, 1);
 #endif
 
 	MatrixCA = m_new(blocksize, MatrixA.cols);
@@ -159,11 +159,11 @@ void generateSignal() {
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk.elements, m_size(output_chunk)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_output_chunk.elements, output_chunk.elements, m_size(output_chunk), cudaMemcpyHostToDevice));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state1.elements, m_size(state)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_state1.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_read.elements, m_size(state)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_state_read.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state2.elements, m_size(state)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_state2.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_write.elements, m_size(state)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_state_write.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
 
 	dim3 dimBlockCA(1, 1);
 	dim3 dimGridCA(state.cols / dimBlockCA.x, MatrixCA.rows / dimBlockCA.y);
@@ -180,7 +180,7 @@ void generateSignal() {
 	       	 * CUDA IMPLEMENTATION
 		 */
 
-		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(device_MatrixCA, device_state1, device_output_chunk);
+		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(device_MatrixCA, device_state_read, device_output_chunk);
 
 		cudaDeviceSynchronize();	
 		cudaMemcpy(output_chunk.elements, device_output_chunk.elements, m_size(output_chunk), cudaMemcpyDeviceToHost);
@@ -188,10 +188,10 @@ void generateSignal() {
 		for(j = 0; j < blocksize; j++) {
 			output[i+j] = m_get(output_chunk,j,0)/128;
 		}
-		MatrixMultiplyKernel<<<dimGridA, dimBlockA>>>(device_MatrixAp, device_state1, device_state2);
-		device_tmp_state = device_state1;
-		device_state1 = device_state2;
-		device_state2 = device_tmp_state;
+		MatrixMultiplyKernel<<<dimGridA, dimBlockA>>>(device_MatrixAp, device_state_read, device_state_write);
+		device_tmp_state = device_state_read;
+		device_state_read = device_state_write;
+		device_state_write = device_tmp_state;
 #else
 		/*
 	       	 * CPU IMPLEMENTATION
