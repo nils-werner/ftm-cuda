@@ -138,8 +138,6 @@ void generateSignal() {
 	}
 
 
-	//MatrixAp.setBlocksize(2);
-
 #if DEBUG == 3
 	printf("MatrixA");
 	m_print(MatrixA);
@@ -172,40 +170,41 @@ void generateSignal() {
 
 
 	for(i = 0; i < samples;) {
-	//	output_chunk = m_multiply(MatrixCA,state);
-		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(device_MatrixCA, device_state1, device_output_chunk);
-
-#if DEBUG == 4
-		m_print(MatrixAp);
-		m_print(output_chunk);
-		m_print(state);
-#endif
-	
-		cudaDeviceSynchronize();	
-		cudaMemcpy(output_chunk.elements, device_output_chunk.elements, m_size(output_chunk), cudaMemcpyDeviceToHost);
-
-		//printf("%d\n", i);
-
-	//	if(i == 0)
-	//		m_print(output_chunk);
+#if MODE == 0
+		/*
+	       	 * CPU IMPLEMENTATION
+		 */
+		output_chunk = m_multiply(MatrixCA,state);
 
 		for(j = 0; j < blocksize; j++) {
 			output[i+j] = m_get(output_chunk,j,0)/128;
-#if DEBUG == 10
-			printf("%f, ", output[i+j]);
-#endif
 		}
-	//	tmp_state = m_multiplyblockdiag(MatrixAp,state,2);
+		tmp_state = m_multiplyblockdiag(MatrixAp,state,2);
+		m_free(state);
+		state = tmp_state;
+
+#else
+		/*
+	       	 * CUDA IMPLEMENTATION
+		 */
+
+		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(device_MatrixCA, device_state1, device_output_chunk);
+
+		cudaDeviceSynchronize();	
+		cudaMemcpy(output_chunk.elements, device_output_chunk.elements, m_size(output_chunk), cudaMemcpyDeviceToHost);
+
+		for(j = 0; j < blocksize; j++) {
+			output[i+j] = m_get(output_chunk,j,0)/128;
+		}
 		MatrixMultiplyKernel<<<dimGridA, dimBlockA>>>(device_MatrixAp, device_state1, device_state2);
 		device_tmp_state = device_state1;
 		device_state1 = device_state2;
 		device_state2 = device_tmp_state;
-	//	state = tmp_state;
+#endif
+
 		i = i + blocksize;
 	}
 
-
-//	m_print(MatrixAp);
 
 	SF_INFO info;
 	info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;

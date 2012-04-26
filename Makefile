@@ -10,14 +10,14 @@ NVCC := nvcc
 INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include -I$(CUDA_SDK_PATH)/C/common/inc
 
 # Common flags
-COMMONFLAGS += $(INCLUDES)
+COMMONFLAGS += $(INCLUDES) -DDEBUG=$(DEBUG) -DMODE=$(MODE)
 NVCCFLAGS += $(COMMONFLAGS)
-CXXFLAGS += $(COMMONFLAGS) -DDEBUG=$(DEBUG)
-CFLAGS += $(COMMONFLAGS) -DDEBUG=$(DEBUG)
-
+CXXFLAGS += $(COMMONFLAGS)
+CFLAGS += $(COMMONFLAGS)
 .PHONY: all cpu clean time preview
 
 DEBUG = 0
+MODE = 1
 LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -L$(CUDA_SDK_PATH)/C/lib -lcudart -lcutil_x86_64 -lasound -lsndfile
 
 
