@@ -238,19 +238,22 @@ void generateSignal() {
 	       	 * CUDA IMPLEMENTATION
 		 */
 
-		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA>>>(device_MatrixCA, device_state_read, device_output_chunk_write);
-		MatrixMultiplyKernel<<<dimGridA, dimBlockA>>>(device_MatrixAp, device_state_read, device_state_write);
+		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, device_state_read, device_output_chunk_write);
+		MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, device_state_read, device_state_write);
 
-		cudaDeviceSynchronize();
-		cudaMemcpy(output_chunk.elements, device_output_chunk_write.elements, m_size(output_chunk), cudaMemcpyDeviceToHost);
 
-		for(j = 0; j < blocksize; j++) {
-			output[i+j] = m_get(output_chunk,j,0)/128;
-		}
+		cudaStreamSynchronize(streams[0]);
+		cudaMemcpyAsync(output_chunk.elements, device_output_chunk_write.elements, m_size(output_chunk), cudaMemcpyDeviceToHost, streams[2]);
 
+		cudaStreamSynchronize(streams[1]);
 		device_state_tmp = device_state_read;
 		device_state_read = device_state_write;
 		device_state_write = device_state_tmp;
+
+		cudaStreamSynchronize(streams[2]);
+		for(j = 0; j < blocksize; j++) {
+			output[i+j] = m_get(output_chunk,j,0)/128;
+		}
 
 		device_tmp_output_chunk = device_output_chunk_read;
 		device_output_chunk_read = device_output_chunk_write;
