@@ -206,6 +206,20 @@ void generateSignal() {
 
 	cudaStream_t streams[3];
 
+	cudaEvent_t MatrixCA_start, MatrixCA_stop;
+	cudaEvent_t MatrixAp_start, MatrixAp_stop;
+	cudaEvent_t Memcpy_start, Memcpy_stop;
+
+	cudaEventCreate(&MatrixCA_start);
+	cudaEventCreate(&MatrixCA_stop);
+	cudaEventCreate(&MatrixAp_start);
+	cudaEventCreate(&MatrixAp_stop);
+	cudaEventCreate(&Memcpy_start);
+	cudaEventCreate(&Memcpy_stop);
+
+	float MatrixCA_time, MatrixAp_time, Memcpy_time;
+
+
 	for(int i = 0; i < 3; i++) {
 		cudaStreamCreate(& streams[i]);
 	}
@@ -234,8 +248,13 @@ void generateSignal() {
 	dim3 dimBlockA(1, 1);
 	dim3 dimGridA(state.cols / dimBlockA.x, MatrixAp.rows / dimBlockA.y);
 
+	cudaEventRecord(MatrixCA_start, streams[0]);
 	MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, device_state_read, device_output_chunk_write);
+	cudaEventRecord(MatrixCA_stop, streams[0]);
+
+	cudaEventRecord(MatrixAp_start, streams[1]);
 	MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, device_state_read, device_state_write);
+	cudaEventRecord(MatrixAp_stop, streams[1]);
 #else
 	Matrix state_tmp;
 #endif
@@ -247,6 +266,16 @@ void generateSignal() {
 		 */
 
 		cudaThreadSynchronize();
+
+		cudaEventElapsedTime(&MatrixCA_time, MatrixCA_start, MatrixCA_stop);
+		cudaEventElapsedTime(&MatrixAp_time, MatrixAp_start, MatrixAp_stop);
+		cudaEventElapsedTime(&Memcpy_time, Memcpy_start, Memcpy_stop);
+
+		if(i == 5*blocksize) {
+			printf("MatrixCA: %d\n", MatrixCA_time);
+			printf("MatrixAp: %d\n", MatrixAp_time);
+			printf("  Memcpy: %d\n", Memcpy_time);
+		}
 
 		device_state_tmp = device_state_read;
 		device_state_read = device_state_write;
@@ -260,10 +289,17 @@ void generateSignal() {
 		output_chunk_read = output_chunk_write;
 		output_chunk_write = output_chunk_tmp;
 
+		cudaEventRecord(MatrixCA_start, streams[0]);
 		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, device_state_read, device_output_chunk_write);
-		MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, device_state_read, device_state_write);
+		cudaEventRecord(MatrixCA_stop, streams[0]);
 
+		cudaEventRecord(MatrixAp_start, streams[1]);
+		MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, device_state_read, device_state_write);
+		cudaEventRecord(MatrixAp_stop, streams[1]);
+
+		cudaEventRecord(Memcpy_start, streams[2]);
 		cudaMemcpyAsync(output_chunk_write.elements, device_output_chunk_read.elements, m_size(output_chunk_write), cudaMemcpyDeviceToHost, streams[2]);
+		cudaEventRecord(Memcpy_stop, streams[2]);
 
 		for(j = 0; j < blocksize; j++) {
 			output[i+j] = m_get(output_chunk_read,j,0)/128;
