@@ -135,7 +135,10 @@ void generateSignal() {
 		for(j = 0; j < block_CA_line.cols; j++) {
 			m_set(block_CA, i-1, j, m_get(block_CA_line, 0, j));
 		}
+		m_free(block_CA_line);
 		MatrixA_powtmp = m_multiplyblockdiag(MatrixA_pow, MatrixA, 2);
+
+		m_free(MatrixA_pow);
 		MatrixA_pow = MatrixA_powtmp;
 	}
 
