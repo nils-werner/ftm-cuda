@@ -11,6 +11,18 @@ int filter(float length) {
 	return 0;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 void initializeCoefficients(float length) {
 	// Saiten-Koeffizienten
 	l = length;
@@ -36,6 +48,22 @@ void initializeCoefficients(float length) {
 
 	assert(samples % blocksize == 0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void createMatrices() {
 	int i, mu;
@@ -91,6 +119,26 @@ void createMatrices() {
 
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void generateSignal() {
 	int i, j;
