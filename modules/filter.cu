@@ -96,7 +96,7 @@ void generateSignal() {
 	int i, j;
 	float* output;
 	Matrix MatrixCA, MatrixCA_line, output_chunk;
-	Matrix MatrixAp, tmp_MatrixAp;
+	Matrix MatrixAp, MatrixAp_tmp;
 
 
 #if DEBUG == 2
@@ -110,7 +110,7 @@ void generateSignal() {
 	blocksize = 100;
 
 #if MODE == 1
-	Matrix device_MatrixAp, device_MatrixCA, device_state_read, device_state_write, device_tmp_state, device_output_chunk_read, device_output_chunk_write, device_tmp_output_chunk;
+	Matrix device_MatrixAp, device_MatrixCA, device_state_read, device_state_write, device_state_tmp, device_output_chunk_read, device_output_chunk_write, device_tmp_output_chunk;
 
 	device_MatrixCA = m_new(blocksize, MatrixA.cols);
 	device_output_chunk_read = m_new(blocksize,1);
@@ -132,10 +132,10 @@ void generateSignal() {
 			m_set(MatrixCA, i-1, j, m_get(MatrixCA_line, 0, j));
 		}
 		m_free(MatrixCA_line);
-		tmp_MatrixAp = m_multiplyblockdiag(MatrixAp, MatrixA, 2);
+		MatrixAp_tmp = m_multiplyblockdiag(MatrixAp, MatrixA, 2);
 
 		m_free(MatrixAp);
-		MatrixAp = tmp_MatrixAp;
+		MatrixAp = MatrixAp_tmp;
 	}
 
 
@@ -175,7 +175,7 @@ void generateSignal() {
 	dim3 dimBlockA(1, 1);
 	dim3 dimGridA(state.cols / dimBlockA.x, MatrixAp.rows / dimBlockA.y);
 #else
-	Matrix tmp_state;
+	Matrix state_tmp;
 #endif
 
 	for(i = 0; i < samples;) {
@@ -194,9 +194,9 @@ void generateSignal() {
 			output[i+j] = m_get(output_chunk,j,0)/128;
 		}
 
-		device_tmp_state = device_state_read;
+		device_state_tmp = device_state_read;
 		device_state_read = device_state_write;
-		device_state_write = device_tmp_state;
+		device_state_write = device_state_tmp;
 
 		device_tmp_output_chunk = device_output_chunk_read;
 		device_output_chunk_read = device_output_chunk_write;
@@ -210,9 +210,9 @@ void generateSignal() {
 		for(j = 0; j < blocksize; j++) {
 			output[i+j] = m_get(output_chunk,j,0)/128;
 		}
-		tmp_state = m_multiplyblockdiag(MatrixAp,state,2);
+		state_tmp = m_multiplyblockdiag(MatrixAp,state,2);
 		m_free(state);
-		state = tmp_state;
+		state = state_tmp;
 #endif
 
 		i = i + blocksize;
