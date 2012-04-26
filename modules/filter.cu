@@ -43,8 +43,6 @@ void createMatrices() {
 	double omega;
 	double a, b, c1, c0;
 
-	cudaSetDevice(0);
-
 	MatrixC = m_new(1, 2 * filters);
 	MatrixA = m_new(2 * filters, 2 * filters); //BLOCKMATRIX
 	state = m_new(2 * filters, 1);
@@ -103,6 +101,8 @@ void generateSignal() {
 	Matrix statetmp;
 
 	Matrix dMatrixA_pow, dblock_CA, dstate1, dstate2, dstatetmp, dblock_samples;
+
+	cudaSetDevice(0);
 
 	MatrixCA = m_multiply(MatrixC, MatrixA);
 
