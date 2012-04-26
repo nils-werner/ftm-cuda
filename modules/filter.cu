@@ -155,19 +155,19 @@ void generateSignal() {
 #endif
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp.elements, m_size(MatrixAp)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixAp.elements,MatrixAp.elements, m_size(MatrixAp), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixAp.elements, MatrixAp.elements, m_size(MatrixAp), cudaMemcpyHostToDevice));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_block_CA.elements, m_size(block_CA)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_block_CA.elements,block_CA.elements, m_size(block_CA), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpy(device_block_CA.elements, block_CA.elements, m_size(block_CA), cudaMemcpyHostToDevice));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_block_samples.elements, m_size(block_samples)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_block_samples.elements,block_samples.elements, m_size(block_samples), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpy(device_block_samples.elements, block_samples.elements, m_size(block_samples), cudaMemcpyHostToDevice));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state1.elements, m_size(state)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_state1.elements,state.elements, m_size(state), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpy(device_state1.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state2.elements, m_size(state)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_state2.elements,state.elements, m_size(state), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpy(device_state2.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
 
 	dim3 dimBlockCA(1, 1);
 	dim3 dimGridCA(state.cols / dimBlockCA.x, block_CA.rows / dimBlockCA.y);
