@@ -11,6 +11,7 @@
 int main(int argc, char *argv[]) {
 	int blocksize = 100;
 	float length = 0.65;
+	int samples = 44100;
 
 	if(argc > 1)
 		length = atof(argv[1]);
@@ -18,8 +19,11 @@ int main(int argc, char *argv[]) {
 	if(argc > 2)
 		blocksize = atoi(argv[2]);
 
-	printf("Running filter with length %fcm in chunks of %d\n", length, blocksize);	
+	if(argc > 3)
+		samples = atoi(argv[3])*44100;
 
-	filter(length, blocksize);
+	printf("Running filter with length %fcm, %d samples in chunks of %d\n", length, samples, blocksize);	
+
+	filter(length, samples, blocksize);
 	return 0;
 }

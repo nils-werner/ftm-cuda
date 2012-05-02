@@ -9,8 +9,8 @@
 #include <cuda_runtime.h>
 #include <cutil.h>
 
-int filter(float, int);
-void initializeCoefficients(float, int);
+int filter(float, int, int);
+void initializeCoefficients(float, int, int);
 void createMatrices();
 void createBlockprocessingMatrices();
 void generateSignal();

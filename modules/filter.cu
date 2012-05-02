@@ -13,8 +13,8 @@ Matrix output_chunk_read, output_chunk_write, output_chunk_tmp;
  * @return int 0
  */
 
-int filter(float length, int bs) {
-	initializeCoefficients(length, bs);
+int filter(float par_length, int par_samples, int par_blocksize) {
+	initializeCoefficients(par_length, par_blocksize, par_samples);
 	createMatrices();
 	createBlockprocessingMatrices();
 	generateSignal();
@@ -39,7 +39,7 @@ int filter(float length, int bs) {
  * @return void
  */
 
-void initializeCoefficients(float length, int bs) {
+void initializeCoefficients(float length, int par_blocksize, int par_samples) {
 	// Saiten-Koeffizienten
 	l = length;
 	Ts = 60.97;
@@ -56,10 +56,10 @@ void initializeCoefficients(float length, int bs) {
 	// Abtastrate und Samplelänge
 	T = 44100;
 	seconds = 10;
-	samples = seconds*T;
+	samples = par_samples;
 	filters = 30;
 
-	blocksize = bs;
+	blocksize = par_blocksize;
 
 	assert(samples % blocksize == 0);
 }
