@@ -15,7 +15,7 @@ Matrix MatrixC,MatrixA,state;
 int filter(float length) {
 	initializeCoefficients(length);
 	createMatrices();
-	generateSignal();
+	generateSignal(100);
 	return 0;
 }
 
@@ -164,11 +164,11 @@ void createMatrices() {
  * allocated earlier and being filled by the filter. These values are then passed on to the sndfile library and
  * written to the file `filter.wav`.
  *
- * @param void
+ * @param int blocksize
  * @return void
  */
 
-void generateSignal() {
+void generateSignal(int blocksize) {
 	int i, j;
 	float* output;
 	Matrix MatrixCA, MatrixCA_line;
@@ -184,7 +184,6 @@ void generateSignal() {
 #endif
 
 	output = (float *) malloc(sizeof(float) * samples);
-	blocksize = 100;
 
 #if MODE == 1
 	Matrix device_MatrixAp;

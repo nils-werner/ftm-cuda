@@ -12,6 +12,6 @@
 int filter(float);
 void initializeCoefficients(float);
 void createMatrices();
-void generateSignal();
+void generateSignal(int);
 
 #endif
