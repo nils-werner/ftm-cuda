@@ -1,3 +1,3 @@
 #include "modules/filter.h"
 
-int main();
+int main(int, char**);

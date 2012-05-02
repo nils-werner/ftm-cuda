@@ -13,10 +13,10 @@ Matrix output_chunk_read, output_chunk_write, output_chunk_tmp;
  * @return int 0
  */
 
-int filter(float length) {
+int filter(float length, int blocksize) {
 	initializeCoefficients(length);
 	createMatrices();
-	createBlockprocessingMatrices(100);
+	createBlockprocessingMatrices(blocksize);
 	generateSignal();
 	return 0;
 }
