@@ -4,6 +4,14 @@ float l, Ts, rho, A, E, I, d1, d3, xa ;
 int T, seconds, samples, filters, blocksize;
 Matrix MatrixC,MatrixA,state;
 
+
+/**
+ * Wrapper for the methods required in the filter, just calls them in the correct order
+ *
+ * @param int length
+ * @return int 0
+ */
+
 int filter(float length) {
 	initializeCoefficients(length);
 	createMatrices();
@@ -21,7 +29,13 @@ int filter(float length) {
 
 
 
-
+/**
+ * Initializes coefficients for a standard Nylon-b-String. The values are, with exception for
+ * length (l) are hard-coded according to the values in \cite{rabenstein03}.
+ *
+ * @param float length
+ * @return void
+ */
 
 void initializeCoefficients(float length) {
 	// Saiten-Koeffizienten
@@ -63,7 +77,13 @@ void initializeCoefficients(float length) {
 
 
 
-
+/**
+ * Creates the required matrices by calculating the required number of poles using the equations
+ * to be found in \cite{rabenstein03}. The matrices generated are not yet in blockprocessing form.
+ *
+ * @param void
+ * @return void
+ */
 
 void createMatrices() {
 	int i, mu;
@@ -138,7 +158,15 @@ void createMatrices() {
 
 
 
-
+/**
+ * Generates matrices suitable for blockprocessing, then generates the signal using the matrices generated earlier.
+ * The signal is generated in chunks the size of the first parameter. The space for the resulting signal is pre-
+ * allocated earlier and being filled by the filter. These values are then passed on to the sndfile library and
+ * written to the file `filter.wav`.
+ *
+ * @param void
+ * @return void
+ */
 
 void generateSignal() {
 	int i, j;
