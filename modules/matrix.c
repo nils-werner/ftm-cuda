@@ -1,5 +1,13 @@
 #include "matrix.h"
 
+/**
+ * Creates a new matrix by allocating space and pre-initializing size information
+ *
+ * @param int rows
+ * @param int cols
+ * @return void
+ */
+
 Matrix m_new(int rows, int cols) {
 	Matrix m;
 
@@ -11,17 +19,51 @@ Matrix m_new(int rows, int cols) {
 	return m;
 }
 
+/**
+ * Frees the space allocated in a matrix
+ *
+ * @param Matrix m
+ * @return void
+ */
+
 void m_free(Matrix m) {
 	free(m.elements);
 }
+
+/**
+ * Sets a specific cell in a matrix
+ *
+ * @param Matrix m
+ * @param int row
+ * @param int col
+ * @param float value
+ * @return void
+ */
 
 void m_set(Matrix m, int row, int col, float value) {
 	m.elements[row * m.cols + col] = value;
 }
 
+/**
+ * Fetches the value of a specific cell in a matrix
+ *
+ * @param Matrix m
+ * @param int row
+ * @param int col
+ * @return float
+ */
+
 float m_get(Matrix m, int row, int col) {
 	return m.elements[row * m.cols + col];
 }
+
+/**
+ * Multiplies two generic matrices
+ *
+ * @param Matrix a
+ * @param Matrix b
+ * @return Matrix
+ */
 
 Matrix m_multiply(Matrix a, Matrix b) {
 	int i, j, k;
@@ -42,6 +84,15 @@ Matrix m_multiply(Matrix a, Matrix b) {
 	}
 	return m;
 }
+
+/**
+ * Multiplies two blockdiagonal matrices in a more efficient manner.
+ *
+ * @param Matrix a
+ * @param Matrix b
+ * @param int blocksize
+ * @return Matrix
+ */
 
 Matrix m_multiplyblockdiag(Matrix a, Matrix b, int blocksize) {
 	int i, j, k, from, to;
@@ -65,6 +116,13 @@ Matrix m_multiplyblockdiag(Matrix a, Matrix b, int blocksize) {
 	return m;
 }
 
+/**
+ * Fills a square matrix with 1 on the main diagonal, 0 elswhere
+ *
+ * @param Matrix m
+ * @return void
+ */
+
 void m_identity(Matrix m) {
 	int i, j;
 
@@ -80,9 +138,25 @@ void m_identity(Matrix m) {
 	}
 }
 
+/**
+ * Fills a matrix with random numbers from 0 to 1
+ *
+ * @param Matrix m
+ * @return void
+ */
+
 void m_fill(Matrix m) {
 	m_filllimit(m, 0.0, 1.0);
 }
+
+/**
+ * Fills a matrix with random numbers between the parameters min and max
+
+ * @param Matrix m
+ * @param float min
+ * @param float max
+ * @return void
+ */
 
 void m_filllimit(Matrix m, float min, float max) {
 	int i, j;
@@ -93,6 +167,13 @@ void m_filllimit(Matrix m, float min, float max) {
 		}
 	}
 }
+
+/**
+ * Prints an entire matrix to stdout
+ *
+ * @param Matrix m
+ * @return void
+ */
 
 void m_print(Matrix m) {
 	int i, j;
@@ -109,9 +190,23 @@ void m_print(Matrix m) {
 	printf("\n\n");
 }
 
+/**
+ * Prints basic size information of a matrix to stdout
+ *
+ * @param Matrix m
+ * @return void
+ */
+
 void m_stat(Matrix m) {
 	printf("Matrix %dx%d\n", m.rows, m.cols);
 }
+
+/**
+ * Returns the size of an existing matrix to be used in memory allocation.
+ *
+ * @param Matrix m
+ * @return size_t
+ */
 
 size_t m_size(Matrix m) {
 	return m.rows * m.cols * sizeof(float);
