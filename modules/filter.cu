@@ -2,8 +2,9 @@
 
 float l, Ts, rho, A, E, I, d1, d3, xa ;
 int T, seconds, samples, filters, blocksize;
-Matrix MatrixC,MatrixA,state;
-
+Matrix MatrixC, MatrixA, state;
+Matrix MatrixAp, MatrixCA;
+Matrix output_chunk_read, output_chunk_write, output_chunk_tmp;
 
 /**
  * Wrapper for the methods required in the filter, just calls them in the correct order
@@ -15,7 +16,8 @@ Matrix MatrixC,MatrixA,state;
 int filter(float length) {
 	initializeCoefficients(length);
 	createMatrices();
-	generateSignal(100);
+	createBlockprocessingMatrices(100);
+	generateSignal();
 	return 0;
 }
 
@@ -155,25 +157,77 @@ void createMatrices() {
 
 
 
+/**
+ * Generates matrices suitable for blockprocessing
+ *
+ * @param int blocksize
+ * @return void
+ */ 
+
+void createBlockprocessingMatrices(int blocksize) {
+	int i, j;
+	Matrix MatrixCA_line, MatrixAp_tmp;
+
+	MatrixCA = m_new(blocksize, MatrixA.cols);
+	output_chunk_read = m_new(blocksize,1);
+	output_chunk_write = m_new(blocksize,1);
+	MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
+	m_identity(MatrixAp);
+
+
+	for(i = 1; i <= blocksize; i++) {
+		MatrixCA_line = m_multiply(MatrixC, MatrixAp);
+		for(j = 0; j < MatrixCA_line.cols; j++) {
+			m_set(MatrixCA, i-1, j, m_get(MatrixCA_line, 0, j));
+		}
+		m_free(MatrixCA_line);
+		MatrixAp_tmp = m_multiplyblockdiag(MatrixAp, MatrixA, 2);
+
+		m_free(MatrixAp);
+		MatrixAp = MatrixAp_tmp;
+	}
+
+#if DEBUG == 3
+	printf("MatrixA");
+	m_print(MatrixA);
+	printf("MatrixCA");
+	m_print(MatrixCA);
+	printf("state");
+	m_print(state);
+#endif
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 /**
- * Generates matrices suitable for blockprocessing, then generates the signal using the matrices generated earlier.
+ * Generates the signal using the matrices generated earlier.
  * The signal is generated in chunks the size of the first parameter. The space for the resulting signal is pre-
  * allocated earlier and being filled by the filter. These values are then passed on to the sndfile library and
  * written to the file `filter.wav`.
  *
- * @param int blocksize
+ * @param void
  * @return void
  */
 
-void generateSignal(int blocksize) {
+void generateSignal() {
 	int i, j;
 	float* output;
-	Matrix MatrixCA, MatrixCA_line;
-	Matrix output_chunk_read, output_chunk_write, output_chunk_tmp;
-	Matrix MatrixAp, MatrixAp_tmp;
 
 
 #if DEBUG == 2
@@ -197,38 +251,7 @@ void generateSignal(int blocksize) {
 	device_MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	device_state_read = m_new(2 * filters, 1);
 	device_state_write = m_new(2 * filters, 1);
-#endif
 
-	MatrixCA = m_new(blocksize, MatrixA.cols);
-	output_chunk_read = m_new(blocksize,1);
-	output_chunk_write = m_new(blocksize,1);
-	MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
-	m_identity(MatrixAp);
-
-
-	for(i = 1; i <= blocksize; i++) {
-		MatrixCA_line = m_multiply(MatrixC, MatrixAp);
-		for(j = 0; j < MatrixCA_line.cols; j++) {
-			m_set(MatrixCA, i-1, j, m_get(MatrixCA_line, 0, j));
-		}
-		m_free(MatrixCA_line);
-		MatrixAp_tmp = m_multiplyblockdiag(MatrixAp, MatrixA, 2);
-
-		m_free(MatrixAp);
-		MatrixAp = MatrixAp_tmp;
-	}
-
-
-#if DEBUG == 3
-	printf("MatrixA");
-	m_print(MatrixA);
-	printf("MatrixCA");
-	m_print(MatrixCA);
-	printf("state");
-	m_print(state);
-#endif
-
-#if MODE == 1
 	cudaSetDevice(0);
 
 	cudaStream_t streams[3];

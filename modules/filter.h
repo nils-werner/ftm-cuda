@@ -12,6 +12,7 @@
 int filter(float);
 void initializeCoefficients(float);
 void createMatrices();
-void generateSignal(int);
+void createBlockprocessingMatrices(int);
+void generateSignal();
 
 #endif
