@@ -10,9 +10,9 @@
 #include <cutil.h>
 
 int filter(float, int);
-void initializeCoefficients(float);
+void initializeCoefficients(float, int);
 void createMatrices();
-void createBlockprocessingMatrices(int);
+void createBlockprocessingMatrices();
 void generateSignal();
 
 #endif

@@ -41,6 +41,9 @@ void m_free(Matrix m) {
  */
 
 void m_set(Matrix m, int row, int col, float value) {
+	assert(row < m.rows);
+	assert(col < m.cols);
+
 	m.elements[row * m.cols + col] = value;
 }
 
@@ -54,6 +57,9 @@ void m_set(Matrix m, int row, int col, float value) {
  */
 
 float m_get(Matrix m, int row, int col) {
+	assert(row < m.rows);
+	assert(col < m.cols);
+
 	return m.elements[row * m.cols + col];
 }
 
@@ -126,7 +132,7 @@ Matrix m_multiplyblockdiag(Matrix a, Matrix b, int blocksize) {
 void m_identity(Matrix m) {
 	int i, j;
 
-	assert(m.rows = m.cols);
+	assert(m.rows == m.cols);
 
 	for(i = 0; i < m.rows; i++) {
 		for(j = 0; j < m.cols; j++) {
