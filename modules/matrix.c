@@ -217,3 +217,19 @@ void m_stat(Matrix m) {
 size_t m_size(Matrix m) {
 	return m.rows * m.cols * sizeof(float);
 }
+
+/**
+ * Swaps two matrix pointers, called by reference
+ *
+ * @param *Matrix a
+ * @param *Matrix b
+ * @return void
+ */
+
+void m_swap(Matrix *a, Matrix *b) {
+	Matrix *tmp;
+
+	tmp = a;
+	a = b;
+	b = tmp;
+}

@@ -241,8 +241,8 @@ void generateSignal() {
 #if MODE == 1
 	Matrix device_MatrixAp;
 	Matrix device_MatrixCA;
-	Matrix device_state_read, device_state_write, device_state_tmp;
-	Matrix device_output_chunk_read, device_output_chunk_write, device_output_chunk_tmp;
+	Matrix device_state_read, device_state_write;
+	Matrix device_output_chunk_read, device_output_chunk_write;
 
 	device_MatrixCA = m_new(blocksize, MatrixA.cols);
 	device_output_chunk_read = m_new(blocksize,1);
@@ -326,17 +326,9 @@ void generateSignal() {
 			printf("  Memcpy: %d\n", Memcpy_time);
 		}
 
-		device_state_tmp = device_state_read;
-		device_state_read = device_state_write;
-		device_state_write = device_state_tmp;
-
-		device_output_chunk_tmp = device_output_chunk_read;
-		device_output_chunk_read = device_output_chunk_write;
-		device_output_chunk_write = device_output_chunk_tmp;
-
-		output_chunk_tmp = output_chunk_read;
-		output_chunk_read = output_chunk_write;
-		output_chunk_write = output_chunk_tmp;
+		m_swap(&device_state_read, &device_state_write);
+		m_swap(&device_output_chunk_read, &device_output_chunk_write);
+		m_swap(&output_chunk_read, &output_chunk_write);
 
 		cudaEventRecord(MatrixCA_start, streams[0]);
 		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, device_state_read, device_output_chunk_write);
