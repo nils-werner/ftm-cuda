@@ -35,6 +35,11 @@ clean:
 	- rm -f *.o
 	- rm filter.wav
 
+cpu: MODE=0
+cpu: clean all
+
+gpu: clean all
+
 md5: time
 ifeq ($(MODE),1)
 	echo "b9d3b1d64a1d6d8b3a97c1121c8e7de4  filter.wav" | md5sum -c --
