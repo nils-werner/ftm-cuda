@@ -11,7 +11,7 @@
 int main(int argc, char *argv[]) {
 	int blocksize = 100;
 	float length = 0.65;
-	int samples = 44100;
+	int samples = 441000;
 
 	if(argc > 1)
 		length = atof(argv[1]);
