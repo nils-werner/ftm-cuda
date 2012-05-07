@@ -300,10 +300,10 @@ void generateSignal() {
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_write.elements, m_size(state)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_state_write.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
 
-	dim3 dimBlockCA(1, synth.blocksize/10);
+	dim3 dimBlockCA(1, synth.blocksize/10); // @TODO Optimierungspotential
 	dim3 dimGridCA(state.cols / dimBlockCA.x, MatrixCA.rows / dimBlockCA.y);
 
-	dim3 dimBlockA(1, 1);
+	dim3 dimBlockA(1, synth.blocksize/10); // @TODO Optimierungspotential
 	dim3 dimGridA(state.cols / dimBlockA.x, MatrixAp.rows / dimBlockA.y);
 
 	cudaEventRecord(MatrixCA_start, streams[0]);
