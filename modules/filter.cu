@@ -14,8 +14,8 @@ Matrix *pointer_output_chunk_read, *pointer_output_chunk_write;
  * @return int 0
  */
 
-int filter(float par_length, int par_samples, int par_blocksize) {
-	initializeCoefficients(par_length, par_blocksize, par_samples);
+int filter(float length, int samples, int blocksize) {
+	initializeCoefficients(length, blocksize, samples);
 	createMatrices();
 	createBlockprocessingMatrices();
 	generateSignal();
@@ -40,7 +40,7 @@ int filter(float par_length, int par_samples, int par_blocksize) {
  * @return void
  */
 
-void initializeCoefficients(float length, int par_blocksize, int par_samples) {
+void initializeCoefficients(float length, int blocksize, int samples) {
 	// Saiten-Koeffizienten
 	string.l = length;
 	string.Ts = 60.97;
@@ -57,9 +57,9 @@ void initializeCoefficients(float length, int par_blocksize, int par_samples) {
 	// Abtastrate und Samplelänge
 	synth.T = 44100;
 	synth.seconds = 10;
-	synth.samples = par_samples;
+	synth.samples = samples;
 	synth.filters = 30;
-	synth.blocksize = par_blocksize;
+	synth.blocksize = blocksize;
 
 	assert(synth.samples % synth.blocksize == 0);
 }
