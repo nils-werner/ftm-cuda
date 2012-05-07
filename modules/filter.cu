@@ -345,7 +345,7 @@ void generateSignal() {
 		cudaEventRecord(MatrixCA_stop, streams[0]);
 
 		cudaEventRecord(MatrixAp_start, streams[1]);
-		MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, *pointer_device_state_read, *pointer_device_state_write);
+		BlockDiagMatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, *pointer_device_state_read, *pointer_device_state_write, 2);
 		cudaEventRecord(MatrixAp_stop, streams[1]);
 
 		cudaEventRecord(Memcpy_start, streams[2]);
