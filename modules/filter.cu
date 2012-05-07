@@ -1,7 +1,7 @@
 #include "iirfilter.h"
 
-float l, Ts, rho, A, E, I, d1, d3, xa ;
-int T, seconds, samples, filters, blocksize;
+String string;
+Synthesizer synth;
 Matrix MatrixC, MatrixA, state;
 Matrix MatrixAp, MatrixCA;
 Matrix output_chunk_read, output_chunk_write;
@@ -42,27 +42,26 @@ int filter(float par_length, int par_samples, int par_blocksize) {
 
 void initializeCoefficients(float length, int par_blocksize, int par_samples) {
 	// Saiten-Koeffizienten
-	l = length;
-	Ts = 60.97;
-	rho = 1140;
-	A = 0.5188e-6;
-	E = 5.4e9;
-	I = 0.171e-12;
-	d1 = 8e-5;
-	d3 = -1.4e-5;
+	string.l = length;
+	string.Ts = 60.97;
+	string.rho = 1140;
+	string.A = 0.5188e-6;
+	string.E = 5.4e9;
+	string.I = 0.171e-12;
+	string.d1 = 8e-5;
+	string.d3 = -1.4e-5;
 
 	// Abtastpunkt
-	xa = 0.1;
+	string.xa = 0.1;
 
 	// Abtastrate und Samplelänge
-	T = 44100;
-	seconds = 10;
-	samples = par_samples;
-	filters = 30;
+	synth.T = 44100;
+	synth.seconds = 10;
+	synth.samples = par_samples;
+	synth.filters = 30;
+	synth.blocksize = par_blocksize;
 
-	blocksize = par_blocksize;
-
-	assert(samples % blocksize == 0);
+	assert(synth.samples % synth.blocksize == 0);
 }
 
 
@@ -93,35 +92,35 @@ void createMatrices() {
 	double omega;
 	double a, b, c1, c0;
 
-	MatrixC = m_new(1, 2 * filters);
-	MatrixA = m_new(2 * filters, 2 * filters); //BLOCKMATRIX
-	state = m_new(2 * filters, 1);
+	MatrixC = m_new(1, 2 * synth.filters);
+	MatrixA = m_new(2 * synth.filters, 2 * synth.filters); //BLOCKMATRIX
+	state = m_new(2 * synth.filters, 1);
 
-	for(i = 0; i < filters; i++) {
+	for(i = 0; i < synth.filters; i++) {
 		mu = i+1;
-		gamma = mu * ( M_PI / l );
-		sigma = (1 / (2 * rho * A) ) * (d3 * pow(gamma,2) - d1);
+		gamma = mu * ( M_PI / string.l );
+		sigma = (1 / (2 * string.rho * string.A) ) * (string.d3 * pow(gamma,2) - string.d1);
 		omega = sqrt(
 				  (
 					(
-						(E * I)/(rho * A)
-					      - pow(d3, 2)/pow(2 * rho * A, 2)
+						(string.E * string.I)/(string.rho * string.A)
+					      - pow(string.d3, 2)/pow(2 * string.rho * string.A, 2)
 					) * pow(gamma, 4)
 				  )
 				+ (	(
-						(Ts)/(rho * A) 
-					      + (d1 + d3)/(2*pow(rho*A,2))
+						(string.Ts)/(string.rho * string.A) 
+					      + (string.d1 + string.d3)/(2*pow(string.rho*string.A,2))
 					) * pow(gamma, 2) )
 				+ (
-					pow((d1)/(2 * rho * A), 2)
+					pow((string.d1)/(2 * string.rho * string.A), 2)
 				  )
 			);
 
-		a = sin(mu * M_PI * xa / l);
+		a = sin(mu * M_PI * string.xa / string.l);
 
-		b = T * sin(omega * 1 / T) / (omega * 1 / T);
-		c1 = -2 * exp(sigma * 1 / T) * cos(omega * 1 / T);
-		c0 = exp( 2 * sigma * 1 / T);
+		b = synth.T * sin(omega * 1 / synth.T) / (omega * 1 / synth.T);
+		c1 = -2 * exp(sigma * 1 / synth.T) * cos(omega * 1 / synth.T);
+		c0 = exp( 2 * sigma * 1 / synth.T);
 
 #if DEBUG == 1
 		printf("%d %d sigma %f\n", i, mu, sigma);
@@ -168,16 +167,16 @@ void createBlockprocessingMatrices() {
 	int i, j;
 	Matrix MatrixCA_line, MatrixAp_tmp;
 
-	MatrixCA = m_new(blocksize, MatrixA.cols);
-	output_chunk_read = m_new(blocksize,1);
-	output_chunk_write = m_new(blocksize,1);
+	MatrixCA = m_new(synth.blocksize, MatrixA.cols);
+	output_chunk_read = m_new(synth.blocksize,1);
+	output_chunk_write = m_new(synth.blocksize,1);
 	pointer_output_chunk_read = &output_chunk_read;
 	pointer_output_chunk_write = &output_chunk_write;
 	MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_identity(MatrixAp);
 
 
-	for(i = 1; i <= blocksize; i++) {
+	for(i = 1; i <= synth.blocksize; i++) {
 		MatrixCA_line = m_multiply(MatrixC, MatrixAp);
 		for(j = 0; j < MatrixCA_line.cols; j++) {
 			m_set(MatrixCA, i-1, j, m_get(MatrixCA_line, 0, j));
@@ -239,7 +238,7 @@ void generateSignal() {
 	m_print(MatrixC);
 #endif
 
-	output = (float *) malloc(sizeof(float) * samples);
+	output = (float *) malloc(sizeof(float) * synth.samples);
 
 #if MODE == 1
 	Matrix device_MatrixAp;
@@ -249,12 +248,12 @@ void generateSignal() {
 	Matrix device_output_chunk_read, device_output_chunk_write;
 	Matrix *pointer_device_output_chunk_read, *pointer_device_output_chunk_write;
 
-	device_output_chunk_read = m_new(blocksize,1);
-	device_output_chunk_write = m_new(blocksize,1);
-	device_MatrixCA = m_new(blocksize, MatrixA.cols);
+	device_output_chunk_read = m_new(synth.blocksize,1);
+	device_output_chunk_write = m_new(synth.blocksize,1);
+	device_MatrixCA = m_new(synth.blocksize, MatrixA.cols);
 	device_MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
-	device_state_read = m_new(2 * filters, 1);
-	device_state_write = m_new(2 * filters, 1);
+	device_state_read = m_new(2 * synth.filters, 1);
+	device_state_write = m_new(2 * synth.filters, 1);
 
 	pointer_device_state_read = &device_state_read;
 	pointer_device_state_write = &device_state_write;
@@ -301,7 +300,7 @@ void generateSignal() {
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_write.elements, m_size(state)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_state_write.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
 
-	dim3 dimBlockCA(1, blocksize/10);
+	dim3 dimBlockCA(1, synth.blocksize/10);
 	dim3 dimGridCA(state.cols / dimBlockCA.x, MatrixCA.rows / dimBlockCA.y);
 
 	dim3 dimBlockA(1, 1);
@@ -318,7 +317,7 @@ void generateSignal() {
 	Matrix state_tmp;
 #endif
 
-	for(i = 0; i < samples;) {
+	for(i = 0; i < synth.samples;) {
 #if MODE == 1
 		/*
 	       	 * CUDA IMPLEMENTATION
@@ -330,7 +329,7 @@ void generateSignal() {
 		cudaEventElapsedTime(&MatrixAp_time, MatrixAp_start, MatrixAp_stop);
 		cudaEventElapsedTime(&Memcpy_time, Memcpy_start, Memcpy_stop);
 
-		if(i == 5*blocksize) {
+		if(i == 5*synth.blocksize) {
 			printf("MatrixCA: %d\n", MatrixCA_time);
 			printf("MatrixAp: %d\n", MatrixAp_time);
 			printf("  Memcpy: %d\n", Memcpy_time);
@@ -352,7 +351,7 @@ void generateSignal() {
 		cudaMemcpyAsync(pointer_output_chunk_write->elements, pointer_device_output_chunk_read->elements, m_size(output_chunk_write), cudaMemcpyDeviceToHost, streams[2]);
 		cudaEventRecord(Memcpy_stop, streams[2]);
 
-		for(j = 0; j < blocksize; j++) {
+		for(j = 0; j < synth.blocksize; j++) {
 			output[i+j] = m_get(*pointer_output_chunk_read,j,0)/128;
 		}
 
@@ -362,7 +361,7 @@ void generateSignal() {
 		 */
 		output_chunk_write = m_multiply(MatrixCA,state);
 
-		for(j = 0; j < blocksize; j++) {
+		for(j = 0; j < synth.blocksize; j++) {
 			output[i+j] = m_get(output_chunk_write,j,0)/128;
 		}
 		state_tmp = m_multiplyblockdiag(MatrixAp,state,2);
@@ -370,16 +369,16 @@ void generateSignal() {
 		state = state_tmp;
 #endif
 
-		i = i + blocksize;
+		i = i + synth.blocksize;
 	}
 
 
 	SF_INFO info;
 	info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 	info.channels = 1;
-	info.samplerate = T;
+	info.samplerate = synth.T;
 
 	SNDFILE *outfile = sf_open("filter.wav", SFM_WRITE, &info);
 	assert(outfile);
-	sf_writef_float(outfile, output,samples);
+	sf_writef_float(outfile, output,synth.samples);
 }

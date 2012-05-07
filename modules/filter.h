@@ -9,6 +9,26 @@
 #include <cuda_runtime.h>
 #include <cutil.h>
 
+typedef struct {
+	float l;
+	float Ts;
+	float rho;
+	float A;
+	float E;
+	float I;
+	float d1;
+	float d3;
+	float xa;
+} String;
+
+typedef struct {
+	int T;
+	int seconds;
+	int samples;
+	int filters;
+	int blocksize;
+} Synthesizer;
+
 int filter(float, int, int);
 void initializeCoefficients(float, int, int);
 void createMatrices();
