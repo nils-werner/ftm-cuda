@@ -2,7 +2,6 @@
 
 String string;
 Synthesizer synth;
-float* output;
 Matrix MatrixC, MatrixA, state;
 Matrix MatrixAp, MatrixCA;
 Matrix output_chunk_read, output_chunk_write;
@@ -18,7 +17,7 @@ Matrix *pointer_output_chunk_read, *pointer_output_chunk_write;
 int filter(float length, int samples, int blocksize) {
 	initializeCoefficients(length, blocksize, samples);
 
-	output = (float *) malloc(sizeof(float) * synth.samples);
+	float * output = (float *) malloc(sizeof(float) * synth.samples);
 	createMatrices();
 	createBlockprocessingMatrices();
 
@@ -29,7 +28,7 @@ int filter(float length, int samples, int blocksize) {
 	m_print(MatrixC);
 #endif
 
-	generateSignalGPU();
+	generateSignalGPU(output, string, synth);
 	writeFile("filter.wav", output, synth.samples, synth.T);
 	return 0;
 }
@@ -237,7 +236,7 @@ void createBlockprocessingMatrices() {
  * @return void
  */
 
-void generateSignalCPU() {
+void generateSignalCPU(float * output, String string, Synthesizer synth) {
 	int i, j;
 	Matrix state_tmp;
 
@@ -281,7 +280,7 @@ void generateSignalCPU() {
  * @return void
  */
 
-void generateSignalGPU() {
+void generateSignalGPU(float * output, String string, Synthesizer synth) {
 	int i, j;
 
 	Matrix device_MatrixAp;
