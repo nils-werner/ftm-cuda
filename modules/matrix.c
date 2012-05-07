@@ -226,10 +226,8 @@ size_t m_size(Matrix m) {
  * @return void
  */
 
-void m_swap(Matrix *a, Matrix *b) {
-	Matrix *tmp;
-
-	tmp = a;
-	a = b;
-	b = tmp;
+void m_swap(Matrix **a, Matrix **b) {
+	Matrix *tmp = *a;
+	*a = *b;
+	*b = tmp;
 }

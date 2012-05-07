@@ -4,7 +4,8 @@ float l, Ts, rho, A, E, I, d1, d3, xa ;
 int T, seconds, samples, filters, blocksize;
 Matrix MatrixC, MatrixA, state;
 Matrix MatrixAp, MatrixCA;
-Matrix output_chunk_read, output_chunk_write, output_chunk_tmp;
+Matrix output_chunk_read, output_chunk_write;
+Matrix *pointer_output_chunk_read, *pointer_output_chunk_write;
 
 /**
  * Wrapper for the methods required in the filter, just calls them in the correct order
@@ -170,6 +171,8 @@ void createBlockprocessingMatrices() {
 	MatrixCA = m_new(blocksize, MatrixA.cols);
 	output_chunk_read = m_new(blocksize,1);
 	output_chunk_write = m_new(blocksize,1);
+	pointer_output_chunk_read = &output_chunk_read;
+	pointer_output_chunk_write = &output_chunk_write;
 	MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_identity(MatrixAp);
 
@@ -242,14 +245,21 @@ void generateSignal() {
 	Matrix device_MatrixAp;
 	Matrix device_MatrixCA;
 	Matrix device_state_read, device_state_write;
+	Matrix *pointer_device_state_read, *pointer_device_state_write;
 	Matrix device_output_chunk_read, device_output_chunk_write;
+	Matrix *pointer_device_output_chunk_read, *pointer_device_output_chunk_write;
 
-	device_MatrixCA = m_new(blocksize, MatrixA.cols);
 	device_output_chunk_read = m_new(blocksize,1);
 	device_output_chunk_write = m_new(blocksize,1);
+	device_MatrixCA = m_new(blocksize, MatrixA.cols);
 	device_MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	device_state_read = m_new(2 * filters, 1);
 	device_state_write = m_new(2 * filters, 1);
+
+	pointer_device_state_read = &device_state_read;
+	pointer_device_state_write = &device_state_write;
+	pointer_device_output_chunk_read = &device_output_chunk_read;
+	pointer_device_output_chunk_write = &device_output_chunk_write;
 
 	cudaSetDevice(0);
 
@@ -298,11 +308,11 @@ void generateSignal() {
 	dim3 dimGridA(state.cols / dimBlockA.x, MatrixAp.rows / dimBlockA.y);
 
 	cudaEventRecord(MatrixCA_start, streams[0]);
-	MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, device_state_read, device_output_chunk_write);
+	MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, *pointer_device_state_read, *pointer_device_output_chunk_write);
 	cudaEventRecord(MatrixCA_stop, streams[0]);
 
 	cudaEventRecord(MatrixAp_start, streams[1]);
-	MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, device_state_read, device_state_write);
+	MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, *pointer_device_state_read, *pointer_device_state_write);
 	cudaEventRecord(MatrixAp_stop, streams[1]);
 #else
 	Matrix state_tmp;
@@ -326,24 +336,24 @@ void generateSignal() {
 			printf("  Memcpy: %d\n", Memcpy_time);
 		}
 
-		m_swap(&device_state_read, &device_state_write);
-		m_swap(&device_output_chunk_read, &device_output_chunk_write);
-		m_swap(&output_chunk_read, &output_chunk_write);
+		m_swap(&pointer_device_state_read, &pointer_device_state_write);
+		m_swap(&pointer_device_output_chunk_read, &pointer_device_output_chunk_write);
+		m_swap(&pointer_output_chunk_read, &pointer_output_chunk_write);
 
 		cudaEventRecord(MatrixCA_start, streams[0]);
-		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, device_state_read, device_output_chunk_write);
+		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, *pointer_device_state_read, *pointer_device_output_chunk_write);
 		cudaEventRecord(MatrixCA_stop, streams[0]);
 
 		cudaEventRecord(MatrixAp_start, streams[1]);
-		MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, device_state_read, device_state_write);
+		MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, *pointer_device_state_read, *pointer_device_state_write);
 		cudaEventRecord(MatrixAp_stop, streams[1]);
 
 		cudaEventRecord(Memcpy_start, streams[2]);
-		cudaMemcpyAsync(output_chunk_write.elements, device_output_chunk_read.elements, m_size(output_chunk_write), cudaMemcpyDeviceToHost, streams[2]);
+		cudaMemcpyAsync(pointer_output_chunk_write->elements, pointer_device_output_chunk_read->elements, m_size(output_chunk_write), cudaMemcpyDeviceToHost, streams[2]);
 		cudaEventRecord(Memcpy_stop, streams[2]);
 
 		for(j = 0; j < blocksize; j++) {
-			output[i+j] = m_get(output_chunk_read,j,0)/128;
+			output[i+j] = m_get(*pointer_output_chunk_read,j,0)/128;
 		}
 
 #else
