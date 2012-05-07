@@ -301,7 +301,7 @@ void generateSignal() {
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_write.elements, m_size(state)));
 	CUDA_SAFE_CALL(cudaMemcpy(device_state_write.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
 
-	dim3 dimBlockCA(1, 1);
+	dim3 dimBlockCA(1, blocksize/10);
 	dim3 dimGridCA(state.cols / dimBlockCA.x, MatrixCA.rows / dimBlockCA.y);
 
 	dim3 dimBlockA(1, 1);
