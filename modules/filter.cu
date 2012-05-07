@@ -2,6 +2,7 @@
 
 String string;
 Synthesizer synth;
+float* output;
 Matrix MatrixC, MatrixA, state;
 Matrix MatrixAp, MatrixCA;
 Matrix output_chunk_read, output_chunk_write;
@@ -16,9 +17,20 @@ Matrix *pointer_output_chunk_read, *pointer_output_chunk_write;
 
 int filter(float length, int samples, int blocksize) {
 	initializeCoefficients(length, blocksize, samples);
+
+	output = (float *) malloc(sizeof(float) * synth.samples);
 	createMatrices();
 	createBlockprocessingMatrices();
-	generateSignal();
+
+#if DEBUG == 2
+	printf("MatrixA");
+	m_print(MatrixA);
+	printf("MatrixC");
+	m_print(MatrixC);
+#endif
+
+	generateSignalGPU();
+	writeFile();
 	return 0;
 }
 
@@ -217,30 +229,61 @@ void createBlockprocessingMatrices() {
 
 
 /**
- * Generates the signal using the matrices generated earlier.
- * The signal is generated in chunks the size of the first parameter. The space for the resulting signal is pre-
- * allocated earlier and being filled by the filter. These values are then passed on to the sndfile library and
- * written to the file `filter.wav`.
+ * Generates the signal on the CPU using the matrices generated earlier.
+ * The signal is generated in chunks the size of synth.blocksize. The space for the resulting signal has been pre-
+ * allocated earlier and is being filled by the filter.
  *
  * @param void
  * @return void
  */
 
-void generateSignal() {
+void generateSignalCPU() {
 	int i, j;
-	float* output;
+	Matrix state_tmp;
+
+	for(i = 0; i < synth.samples;) {
+		output_chunk_write = m_multiply(MatrixCA,state);
+
+		for(j = 0; j < synth.blocksize; j++) {
+			output[i+j] = m_get(output_chunk_write,j,0)/128;
+		}
+		state_tmp = m_multiplyblockdiag(MatrixAp,state,2);
+		m_free(state);
+		state = state_tmp;
+		i = i + synth.blocksize;
+	}
+}
 
 
-#if DEBUG == 2
-	printf("MatrixA");
-	m_print(MatrixA);
-	printf("MatrixC");
-	m_print(MatrixC);
-#endif
 
-	output = (float *) malloc(sizeof(float) * synth.samples);
 
-#if MODE == 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Generates the signal on the GPU using the matrices generated earlier.
+ * The signal is generated in chunks the size of synth.blocksize. The space for the resulting signal has been pre-
+ * allocated earlier and is being filled by the filter.
+ *
+ * @param void
+ * @return void
+ */
+
+void generateSignalGPU() {
+	int i, j;
+
 	Matrix device_MatrixAp;
 	Matrix device_MatrixCA;
 	Matrix device_state_read, device_state_write;
@@ -313,12 +356,8 @@ void generateSignal() {
 	cudaEventRecord(MatrixAp_start, streams[1]);
 	MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, *pointer_device_state_read, *pointer_device_state_write);
 	cudaEventRecord(MatrixAp_stop, streams[1]);
-#else
-	Matrix state_tmp;
-#endif
 
 	for(i = 0; i < synth.samples;) {
-#if MODE == 1
 		/*
 	       	 * CUDA IMPLEMENTATION
 		 */
@@ -355,24 +394,38 @@ void generateSignal() {
 			output[i+j] = m_get(*pointer_output_chunk_read,j,0)/128;
 		}
 
-#else
-		/*
-	       	 * CPU IMPLEMENTATION
-		 */
-		output_chunk_write = m_multiply(MatrixCA,state);
-
-		for(j = 0; j < synth.blocksize; j++) {
-			output[i+j] = m_get(output_chunk_write,j,0)/128;
-		}
-		state_tmp = m_multiplyblockdiag(MatrixAp,state,2);
-		m_free(state);
-		state = state_tmp;
-#endif
-
 		i = i + synth.blocksize;
 	}
+}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * The values from output are passed on to the sndfile library and
+ * written to the file `filter.wav`.
+ *
+ * @param void
+ * @return void
+ */
+
+void writeFile() {
 	SF_INFO info;
 	info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 	info.channels = 1;

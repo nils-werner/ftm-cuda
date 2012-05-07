@@ -33,6 +33,8 @@ int filter(float, int, int);
 void initializeCoefficients(float, int, int);
 void createMatrices();
 void createBlockprocessingMatrices();
-void generateSignal();
+void generateSignalCPU();
+void generateSignalGPU();
+void writeFile();
 
 #endif
