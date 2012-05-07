@@ -30,7 +30,7 @@ int filter(float length, int samples, int blocksize) {
 #endif
 
 	generateSignalGPU();
-	writeFile();
+	writeFile("filter.wav", output, synth.samples, synth.T);
 	return 0;
 }
 
@@ -425,13 +425,13 @@ void generateSignalGPU() {
  * @return void
  */
 
-void writeFile() {
+void writeFile(const char * filename, float* input, int samples, int samplerate) {
 	SF_INFO info;
 	info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 	info.channels = 1;
-	info.samplerate = synth.T;
+	info.samplerate = samplerate;
 
-	SNDFILE *outfile = sf_open("filter.wav", SFM_WRITE, &info);
+	SNDFILE *outfile = sf_open(filename, SFM_WRITE, &info);
 	assert(outfile);
-	sf_writef_float(outfile, output,synth.samples);
+	sf_writef_float(outfile, input, samples);
 }

@@ -35,6 +35,6 @@ void createMatrices();
 void createBlockprocessingMatrices();
 void generateSignalCPU();
 void generateSignalGPU();
-void writeFile();
+void writeFile(const char*, float*, int, int);
 
 #endif
