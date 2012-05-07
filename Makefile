@@ -41,11 +41,7 @@ cpu: clean all
 gpu: clean all
 
 md5: time
-ifeq ($(MODE),1)
-	echo "b9d3b1d64a1d6d8b3a97c1121c8e7de4  filter.wav" | md5sum -c --
-else
-	echo "80b65ac4588538469d44e384a42e5829  filter.wav" | md5sum -c --
-endif
+	md5sum filter.wav
 
 time: build/iirfilter
 	time -p ./build/iirfilter
