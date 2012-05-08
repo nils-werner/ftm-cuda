@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 	int blocksize = 100;
 	float length = 0.65;
 	int samples = 441000;
-	int filters = 50;
+	int filters = 30;
 
 	if(argc == 1)
 		printf("%s stringlength blocksize seconds filters\n", argv[0]);
