@@ -374,11 +374,13 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 		cudaEventElapsedTime(&MatrixAp_time, MatrixAp_start, MatrixAp_stop);
 		cudaEventElapsedTime(&Memcpy_time, Memcpy_start, Memcpy_stop);
 
+#if DEBUG == 10
 		if(i == 5*synth.blocksize) {
 			printf("MatrixCA: %d\n", MatrixCA_time);
 			printf("MatrixAp: %d\n", MatrixAp_time);
 			printf("  Memcpy: %d\n", Memcpy_time);
 		}
+#endif
 
 		m_swap(&pointer_device_state_read, &pointer_device_state_write);
 		m_swap(&pointer_device_output_chunk_read, &pointer_device_output_chunk_write);
