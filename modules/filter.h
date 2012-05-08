@@ -29,7 +29,7 @@ typedef struct {
 	int blocksize;
 } Synthesizer;
 
-int filter(float, int, int, int);
+int filter(int, float, int, int, int);
 void initializeCoefficients(float, int, int, int);
 void createMatrices();
 void createBlockprocessingMatrices();

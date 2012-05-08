@@ -12,7 +12,7 @@ Matrix MatrixAp, MatrixCA;
  * @return int 0
  */
 
-int filter(float length, int samples, int blocksize, int filters) {
+int filter(int mode, float length, int samples, int blocksize, int filters) {
 	initializeCoefficients(length, blocksize, samples, filters);
 
 	float * output = (float *) malloc(sizeof(float) * synth.samples);
@@ -26,7 +26,11 @@ int filter(float length, int samples, int blocksize, int filters) {
 	m_print(MatrixC);
 #endif
 
-	generateSignalGPU(output, string, synth);
+	if(mode == 0)
+		generateSignalCPU(output, string, synth);
+	else
+		generateSignalGPU(output, string, synth);
+
 	writeFile("filter.wav", output, synth.samples, synth.T);
 	return 0;
 }

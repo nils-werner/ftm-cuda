@@ -13,9 +13,17 @@ int main(int argc, char *argv[]) {
 	float length = 0.65;
 	int samples = 441000;
 	int filters = 30;
+	int mode = 1;
 
 	if(argc == 1)
-		printf("%s stringlength blocksize seconds filters\n", argv[0]);
+		printf("%s mode stringlength blocksize seconds filters\n", argv[0]);
+
+	if(argc > 1) {
+		if(0 == strcmp(argv[1], "cpu"))
+			mode = 0;
+		else
+			mode = 1;
+	}
 
 	if(argc > 1)
 		length = atof(argv[1]);
@@ -29,8 +37,8 @@ int main(int argc, char *argv[]) {
 	if(argc > 4)
 		filters = atoi(argv[4]);
 
-	printf("Running %d filters with length %fcm, %d samples in chunks of %d\n", filters, length, samples, blocksize);	
+	printf("Running in mode %d, %d filters with length %fcm, %d samples in chunks of %d\n", mode, filters, length, samples, blocksize);	
 
-	filter(length, samples, blocksize, filters);
+	filter(mode, length, samples, blocksize, filters);
 	return 0;
 }
