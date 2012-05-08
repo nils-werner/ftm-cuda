@@ -4,8 +4,6 @@ String string;
 Synthesizer synth;
 Matrix MatrixC, MatrixA, state;
 Matrix MatrixAp, MatrixCA;
-Matrix output_chunk_read, output_chunk_write;
-Matrix *pointer_output_chunk_read, *pointer_output_chunk_write;
 
 /**
  * Wrapper for the methods required in the filter, just calls them in the correct order
@@ -183,11 +181,6 @@ void createBlockprocessingMatrices() {
 	pointer_MatrixAp_tmp = &MatrixAp_tmp;
 
 	m_new(&MatrixCA, synth.blocksize, MatrixA.cols);
-	m_new(&output_chunk_read, synth.blocksize,1);
-	m_new(&output_chunk_write, synth.blocksize,1);
-
-	pointer_output_chunk_read = &output_chunk_read;
-	pointer_output_chunk_write = &output_chunk_write;
 	m_new(&MatrixAp, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_identity(MatrixAp);
 
@@ -243,20 +236,21 @@ void createBlockprocessingMatrices() {
 
 void generateSignalCPU(float * output, String string, Synthesizer synth) {
 	int i, j;
-	Matrix state_tmp;
+	Matrix state_tmp, output_chunk;
 
 	Matrix *pointer_state_read, *pointer_state_write;
 
+	m_new(&output_chunk, synth.blocksize,1);
 	pointer_state_read = &state;
 	pointer_state_write = &state_tmp;
 
 	m_prepare_multiply(MatrixAp, state, &state_tmp);
 
 	for(i = 0; i < synth.samples;) {
-		m_multiply(MatrixCA, *pointer_state_read, &output_chunk_write);
+		m_multiply(MatrixCA, *pointer_state_read, &output_chunk);
 
 		for(j = 0; j < synth.blocksize; j++) {
-			output[i+j] = m_get(output_chunk_write,j,0)/128;
+			output[i+j] = m_get(output_chunk,j,0)/128;
 		}
 		m_multiplyblockdiag(MatrixAp, *pointer_state_read, pointer_state_write, 2);
 		m_swap(&pointer_state_read, &pointer_state_write);
@@ -297,10 +291,17 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 	Matrix device_MatrixAp;
 	Matrix device_MatrixCA;
 	Matrix device_state_read, device_state_write;
+	Matrix output_chunk_read, output_chunk_write;
+	Matrix *pointer_output_chunk_read, *pointer_output_chunk_write;
+
 	Matrix *pointer_device_state_read, *pointer_device_state_write;
 	Matrix device_output_chunk_read, device_output_chunk_write;
 	Matrix *pointer_device_output_chunk_read, *pointer_device_output_chunk_write;
 
+	pointer_output_chunk_read = &output_chunk_read;
+	pointer_output_chunk_write = &output_chunk_write;
+	m_new(&output_chunk_read, synth.blocksize,1);
+	m_new(&output_chunk_write, synth.blocksize,1);
 	m_new(&device_output_chunk_read, synth.blocksize,1);
 	m_new(&device_output_chunk_write, synth.blocksize,1);
 	m_new(&device_MatrixCA, synth.blocksize, MatrixA.cols);
