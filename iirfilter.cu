@@ -12,6 +12,10 @@ int main(int argc, char *argv[]) {
 	int blocksize = 100;
 	float length = 0.65;
 	int samples = 441000;
+	int filters = 50;
+
+	if(argc == 1)
+		printf("%s stringlength blocksize seconds filters\n", argv[0]);
 
 	if(argc > 1)
 		length = atof(argv[1]);
@@ -22,8 +26,11 @@ int main(int argc, char *argv[]) {
 	if(argc > 3)
 		samples = atoi(argv[3])*44100;
 
-	printf("Running filter with length %fcm, %d samples in chunks of %d\n", length, samples, blocksize);	
+	if(argc > 4)
+		filters = atoi(argv[4]);
 
-	filter(length, samples, blocksize);
+	printf("Running %d filters with length %fcm, %d samples in chunks of %d\n", filters, length, samples, blocksize);	
+
+	filter(length, samples, blocksize, filters);
 	return 0;
 }

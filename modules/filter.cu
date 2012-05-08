@@ -14,8 +14,8 @@ Matrix *pointer_output_chunk_read, *pointer_output_chunk_write;
  * @return int 0
  */
 
-int filter(float length, int samples, int blocksize) {
-	initializeCoefficients(length, blocksize, samples);
+int filter(float length, int samples, int blocksize, int filters) {
+	initializeCoefficients(length, blocksize, samples, filters);
 
 	float * output = (float *) malloc(sizeof(float) * synth.samples);
 	createMatrices();
@@ -51,7 +51,7 @@ int filter(float length, int samples, int blocksize) {
  * @return void
  */
 
-void initializeCoefficients(float length, int blocksize, int samples) {
+void initializeCoefficients(float length, int blocksize, int samples, int filters) {
 	// Saiten-Koeffizienten
 	string.l = length;
 	string.Ts = 60.97;
@@ -69,7 +69,7 @@ void initializeCoefficients(float length, int blocksize, int samples) {
 	synth.T = 44100;
 	synth.seconds = 10;
 	synth.samples = samples;
-	synth.filters = 30;
+	synth.filters = filters;
 	synth.blocksize = blocksize;
 
 	assert(synth.samples % synth.blocksize == 0);
