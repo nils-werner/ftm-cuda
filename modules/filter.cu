@@ -245,17 +245,21 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
 	int i, j;
 	Matrix state_tmp;
 
+	Matrix *pointer_state_read, *pointer_state_write;
+
+	pointer_state_read = &state;
+	pointer_state_write = &state_tmp;
+
 	m_prepare_multiply(MatrixAp, state, &state_tmp);
 
 	for(i = 0; i < synth.samples;) {
-		m_multiply(MatrixCA, state, &output_chunk_write);
+		m_multiply(MatrixCA, *pointer_state_read, &output_chunk_write);
 
 		for(j = 0; j < synth.blocksize; j++) {
 			output[i+j] = m_get(output_chunk_write,j,0)/128;
 		}
-		m_multiplyblockdiag(MatrixAp, state, &state_tmp, 2);
-		m_free(state);
-		state = state_tmp;
+		m_multiplyblockdiag(MatrixAp, *pointer_state_read, pointer_state_write, 2);
+		m_swap(&pointer_state_read, &pointer_state_write);
 		i = i + synth.blocksize;
 	}
 }
