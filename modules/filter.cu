@@ -103,9 +103,9 @@ void createMatrices() {
 	double omega;
 	double a, b, c1, c0;
 
-	MatrixC = m_new(1, 2 * synth.filters);
-	MatrixA = m_new(2 * synth.filters, 2 * synth.filters); //BLOCKMATRIX
-	state = m_new(2 * synth.filters, 1);
+	m_new(&MatrixC, 1, 2 * synth.filters);
+	m_new(&MatrixA, 2 * synth.filters, 2 * synth.filters); //BLOCKMATRIX
+	m_new(&state, 2 * synth.filters, 1);
 
 	for(i = 0; i < synth.filters; i++) {
 		mu = i+1;
@@ -177,26 +177,31 @@ void createMatrices() {
 void createBlockprocessingMatrices() {
 	int i, j;
 	Matrix MatrixCA_line, MatrixAp_tmp;
+	Matrix *pointer_MatrixAp, *pointer_MatrixAp_tmp;
 
-	MatrixCA = m_new(synth.blocksize, MatrixA.cols);
-	output_chunk_read = m_new(synth.blocksize,1);
-	output_chunk_write = m_new(synth.blocksize,1);
+	pointer_MatrixAp = &MatrixAp;
+	pointer_MatrixAp_tmp = &MatrixAp_tmp;
+
+	m_new(&MatrixCA, synth.blocksize, MatrixA.cols);
+	m_new(&output_chunk_read, synth.blocksize,1);
+	m_new(&output_chunk_write, synth.blocksize,1);
+
 	pointer_output_chunk_read = &output_chunk_read;
 	pointer_output_chunk_write = &output_chunk_write;
-	MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
+	m_new(&MatrixAp, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_identity(MatrixAp);
 
+	m_prepare_multiply(MatrixC, MatrixAp, &MatrixCA_line);
+	m_prepare_multiply(MatrixAp, MatrixA, &MatrixAp_tmp);
 
 	for(i = 1; i <= synth.blocksize; i++) {
-		MatrixCA_line = m_multiply(MatrixC, MatrixAp);
+		m_multiply(MatrixC, *pointer_MatrixAp, &MatrixCA_line);
 		for(j = 0; j < MatrixCA_line.cols; j++) {
 			m_set(MatrixCA, i-1, j, m_get(MatrixCA_line, 0, j));
 		}
-		m_free(MatrixCA_line);
-		MatrixAp_tmp = m_multiplyblockdiag(MatrixAp, MatrixA, 2);
+		m_multiplyblockdiag(*pointer_MatrixAp, MatrixA, pointer_MatrixAp_tmp, 2);
 
-		m_free(MatrixAp);
-		MatrixAp = MatrixAp_tmp;
+		m_swap(&pointer_MatrixAp_tmp, &pointer_MatrixAp);
 	}
 
 #if DEBUG == 3
@@ -240,13 +245,15 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
 	int i, j;
 	Matrix state_tmp;
 
+	m_prepare_multiply(MatrixAp, state, &state_tmp);
+
 	for(i = 0; i < synth.samples;) {
-		output_chunk_write = m_multiply(MatrixCA,state);
+		m_multiply(MatrixCA, state, &output_chunk_write);
 
 		for(j = 0; j < synth.blocksize; j++) {
 			output[i+j] = m_get(output_chunk_write,j,0)/128;
 		}
-		state_tmp = m_multiplyblockdiag(MatrixAp,state,2);
+		m_multiplyblockdiag(MatrixAp, state, &state_tmp, 2);
 		m_free(state);
 		state = state_tmp;
 		i = i + synth.blocksize;
@@ -290,12 +297,12 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 	Matrix device_output_chunk_read, device_output_chunk_write;
 	Matrix *pointer_device_output_chunk_read, *pointer_device_output_chunk_write;
 
-	device_output_chunk_read = m_new(synth.blocksize,1);
-	device_output_chunk_write = m_new(synth.blocksize,1);
-	device_MatrixCA = m_new(synth.blocksize, MatrixA.cols);
-	device_MatrixAp = m_new(MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
-	device_state_read = m_new(2 * synth.filters, 1);
-	device_state_write = m_new(2 * synth.filters, 1);
+	m_new(&device_output_chunk_read, synth.blocksize,1);
+	m_new(&device_output_chunk_write, synth.blocksize,1);
+	m_new(&device_MatrixCA, synth.blocksize, MatrixA.cols);
+	m_new(&device_MatrixAp, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
+	m_new(&device_state_read, 2 * synth.filters, 1);
+	m_new(&device_state_write, 2 * synth.filters, 1);
 
 	pointer_device_state_read = &device_state_read;
 	pointer_device_state_write = &device_state_write;
