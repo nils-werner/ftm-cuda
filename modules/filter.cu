@@ -364,15 +364,7 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 	dim3 dimBlockA(1, 1); // @TODO Optimierungspotential; groessere Werte sind kleinere Gridsize
 	dim3 dimGridA(state.cols / dimBlockA.x, MatrixAp.rows / dimBlockA.y);
 
-	cudaEventRecord(MatrixCA_start, streams[0]);
-	MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, *pointer_device_state_read, *pointer_device_output_chunk_write);
-	cudaEventRecord(MatrixCA_stop, streams[0]);
-
-	cudaEventRecord(MatrixAp_start, streams[1]);
-	MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, *pointer_device_state_read, *pointer_device_state_write);
-	cudaEventRecord(MatrixAp_stop, streams[1]);
-
-	for(i = 0; i < synth.samples;) {
+	for(i = -synth.blocksize; i < synth.samples;) {
 		/*
 	       	 * CUDA IMPLEMENTATION
 		 */
@@ -391,9 +383,11 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 		}
 #endif
 
-		m_swap(&pointer_device_state_read, &pointer_device_state_write);
-		m_swap(&pointer_device_output_chunk_read, &pointer_device_output_chunk_write);
-		m_swap(&pointer_output_chunk_read, &pointer_output_chunk_write);
+		if(i >= 0) {
+			m_swap(&pointer_device_state_read, &pointer_device_state_write);
+			m_swap(&pointer_device_output_chunk_read, &pointer_device_output_chunk_write);
+			m_swap(&pointer_output_chunk_read, &pointer_output_chunk_write);
+		}
 
 		cudaEventRecord(MatrixCA_start, streams[0]);
 		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, *pointer_device_state_read, *pointer_device_output_chunk_write);
@@ -403,12 +397,14 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 		BlockDiagMatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[1]>>>(device_MatrixAp, *pointer_device_state_read, *pointer_device_state_write, 2);
 		cudaEventRecord(MatrixAp_stop, streams[1]);
 
-		cudaEventRecord(Memcpy_start, streams[2]);
-		cudaMemcpyAsync(pointer_output_chunk_write->elements, pointer_device_output_chunk_read->elements, m_size(output_chunk_write), cudaMemcpyDeviceToHost, streams[2]);
-		cudaEventRecord(Memcpy_stop, streams[2]);
+		if(i >= 0) {
+			cudaEventRecord(Memcpy_start, streams[2]);
+			cudaMemcpyAsync(pointer_output_chunk_write->elements, pointer_device_output_chunk_read->elements, m_size(output_chunk_write), cudaMemcpyDeviceToHost, streams[2]);
+			cudaEventRecord(Memcpy_stop, streams[2]);
 
-		for(j = 0; j < synth.blocksize; j++) {
-			output[i+j] = m_get(*pointer_output_chunk_read,j,0)/128;
+			for(j = 0; j < synth.blocksize; j++) {
+				output[i+j] = m_get(*pointer_output_chunk_read,j,0)/128;
+			}
 		}
 
 		i = i + synth.blocksize;
