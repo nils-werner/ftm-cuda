@@ -8,6 +8,7 @@
 #include "cuda/blockdiagmatrixmultiply.kernel.h"
 #include <cuda_runtime.h>
 #include <cutil.h>
+#include <sys/time.h>
 
 typedef struct {
 	float l;
