@@ -14,5 +14,5 @@ float fl_rand() {
 void print_time(struct timeval* startTime, struct timeval* endTime, const char* string) {
 	double tS = startTime->tv_sec*1000000 + (startTime->tv_usec);
 	double tE = endTime->tv_sec*1000000  + (endTime->tv_usec);
-	printf("Timer %s: %f\n", string, tE - tS);
+	printf("Timer %s: %.0f usec\n", string, tE - tS);
 }
