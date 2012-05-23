@@ -378,7 +378,6 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 			print_time(&startTime, &endTime, "runaround");
 		}
 
-
 		gettimeofday(&startTime, NULL);
 
 		cudaEventElapsedTime(&MatrixCA_time, MatrixCA_start, MatrixCA_stop);
