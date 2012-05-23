@@ -376,7 +376,7 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 		time_stop(&roundtrip);
 
 		if(i == 5*synth.blocksize) {
-			print_time(&roundtrip, "runaround");
+			time_print(&roundtrip, "roundtrip");
 		}
 
 		time_start(&roundtrip);

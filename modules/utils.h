@@ -13,6 +13,6 @@ typedef struct {
 float fl_rand();
 void time_start(Timer*);
 void time_stop(Timer*);
-void print_time(Timer*, const char*);
+void time_print(Timer*, const char*);
 
 #endif
