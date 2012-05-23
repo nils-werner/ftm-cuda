@@ -260,6 +260,10 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
 		}
 		m_multiplyblockdiag(MatrixAp, *pointer_state_read, pointer_state_write, 2);
 		m_swap(&pointer_state_read, &pointer_state_write);
+		if(i == 0) {
+			time_stop(&turnaround);
+			time_print(&turnaround, "turnaround");
+		}
 		i = i + synth.blocksize;
 	}
 }
