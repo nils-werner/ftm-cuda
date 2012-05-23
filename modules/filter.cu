@@ -14,6 +14,7 @@ Timer turnaround;
  */
 
 int filter(int mode, float length, int samples, int blocksize, int filters) {
+	time_start(&turnaround);
 	initializeCoefficients(length, blocksize, samples, filters);
 
 	float * output = (float *) malloc(sizeof(float) * synth.samples);
@@ -414,6 +415,11 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 
 			for(j = 0; j < synth.blocksize; j++) {
 				output[i+j] = m_get(*pointer_output_chunk_read,j,0)/128;
+			}
+
+			if(i == 0) {
+				time_stop(&turnaround);
+				time_print(&turnaround, "turnaround");
 			}
 		}
 
