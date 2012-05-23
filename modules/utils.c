@@ -11,8 +11,16 @@ float fl_rand() {
 	return (float) rand()/RAND_MAX;
 }
 
-void print_time(struct timeval* startTime, struct timeval* endTime, const char* string) {
-	double tS = startTime->tv_sec*1000000 + (startTime->tv_usec);
-	double tE = endTime->tv_sec*1000000  + (endTime->tv_usec);
+void time_stop(Timer* timer) {
+	gettimeofday(&timer->stop, NULL);
+}
+
+void time_start(Timer* timer) {
+	gettimeofday(&timer->start, NULL);
+}
+
+void print_time(Timer* timer, const char* string) {
+	double tS = timer->start.tv_sec*1000000 + (timer->start.tv_usec);
+	double tE = timer->stop.tv_sec*1000000  + (timer->stop.tv_usec);
 	printf("Timer %s: %.0f usec\n", string, tE - tS);
 }

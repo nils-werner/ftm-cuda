@@ -4,6 +4,7 @@ String string;
 Synthesizer synth;
 Matrix MatrixC, MatrixA, state;
 Matrix MatrixAp, MatrixCA;
+Timer turnaround;
 
 /**
  * Wrapper for the methods required in the filter, just calls them in the correct order
@@ -302,7 +303,7 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 	Matrix device_output_chunk_read, device_output_chunk_write;
 	Matrix *pointer_device_output_chunk_read, *pointer_device_output_chunk_write;
 
-	struct timeval roundtrip_start, roundtrip_end;
+	Timer roundtrip;
 
 	pointer_output_chunk_read = &output_chunk_read;
 	pointer_output_chunk_write = &output_chunk_write;
@@ -372,13 +373,13 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 		 */
 
 		cudaThreadSynchronize();
-		gettimeofday(&roundtrip_end, NULL);
+		time_stop(&roundtrip);
 
 		if(i == 5*synth.blocksize) {
-			print_time(&roundtrip_start, &roundtrip_end, "runaround");
+			print_time(&roundtrip, "runaround");
 		}
 
-		gettimeofday(&roundtrip_start, NULL);
+		time_start(&roundtrip);
 
 		cudaEventElapsedTime(&MatrixCA_time, MatrixCA_start, MatrixCA_stop);
 		cudaEventElapsedTime(&MatrixAp_time, MatrixAp_start, MatrixAp_stop);
