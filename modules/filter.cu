@@ -302,7 +302,7 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 	Matrix device_output_chunk_read, device_output_chunk_write;
 	Matrix *pointer_device_output_chunk_read, *pointer_device_output_chunk_write;
 
-	struct timeval startTime, endTime;
+	struct timeval roundtrip_start, roundtrip_end;
 
 	pointer_output_chunk_read = &output_chunk_read;
 	pointer_output_chunk_write = &output_chunk_write;
@@ -372,13 +372,13 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 		 */
 
 		cudaThreadSynchronize();
-		gettimeofday(&endTime, NULL);
+		gettimeofday(&roundtrip_end, NULL);
 
 		if(i == 5*synth.blocksize) {
-			print_time(&startTime, &endTime, "runaround");
+			print_time(&roundtrip_start, &roundtrip_end, "runaround");
 		}
 
-		gettimeofday(&startTime, NULL);
+		gettimeofday(&roundtrip_start, NULL);
 
 		cudaEventElapsedTime(&MatrixCA_time, MatrixCA_start, MatrixCA_stop);
 		cudaEventElapsedTime(&MatrixAp_time, MatrixAp_start, MatrixAp_stop);
