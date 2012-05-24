@@ -9,45 +9,59 @@
  */
 
 int main(int argc, char *argv[]) {
-	int blocksize = 100;
+	int chunksize = 100;
 	float length = 0.65;
 	int samples = 441000;
 	int filters = 30;
-	int mode = 1;
+	int mode = 0;
+	int c;
 
 	setlocale(LC_ALL, "");
 
 #ifndef BENCHMARK
+	printf("GPGPU-Based recursive sound synthesis filter.\n\n");
+
 	if(argc == 1) {
-		printf("Call Syntax: %s mode filters chunksize seconds\n\n", argv[0]);
+		printf("Available parameters:\n", argv[0]);
+		printf("  -g         use GPU\n");
+		printf("  -f <int>   number of filters\n");
+		printf("  -c <int>   chunksize\n");
+		printf("  -s <int>   length of signals in seconds\n");
+		printf("  -l <float> length of string\n\n");
+		return 1;
 	}
 #endif
 
-	if(argc > 1) {
-		if(0 == strcmp(argv[1], "CPU") || 0 == strcmp(argv[1], "cpu"))
-			mode = 0;
-		else
-			mode = 1;
-	}
-
-	if(argc > 2)
-		filters = atoi(argv[2]);
-
-	if(argc > 3)
-		blocksize = atoi(argv[3]);
-
-	if(argc > 4)
-		samples = atoi(argv[4])*44100;
-
+	while ((c = getopt (argc, argv, "gf:c:s:l:")) != -1)
+		switch (c) {
+			case 'g':
+				mode = 1;
+				break;
+			case 'f':
+				filters = atoi(optarg);
+				break;
+			case 'c':
+				chunksize = atoi(optarg);
+				break;
+			case 's':
+				samples = atoi(optarg)*44100;
+				break;
+			case 'l':
+				length = atof(optarg);
+				break;
+			case '?':
+				return 1;
+			default:
+				abort ();
+		}
 
 #ifdef BENCHMARK
-		printf("<run>\n<settings mode=\"%s\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n", (mode == 0?"cpu":"gpu"), filters, blocksize, samples);
+		printf("<run>\n<settings mode=\"%s\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n", (mode == 0?"cpu":"gpu"), filters, chunksize, samples);
 #else
-		printf("GPGPU-Based recursive sound synthesis filter.\n\n");
-		printf("Settings:\n  Mode %s\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n", (mode == 0?"CPU":"GPU"), filters, blocksize, samples);
+		printf("Settings:\n  Mode %s\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n", (mode == 0?"CPU":"GPU"), filters, chunksize, samples);
 #endif
 
-	filter(mode, length, samples, blocksize, filters);
+	filter(mode, length, samples, chunksize, filters);
 
 #ifdef BENCHMARK
 		printf("</run>\n");
