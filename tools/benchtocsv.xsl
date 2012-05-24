@@ -12,7 +12,7 @@
 <xsl:template match="benchmark">
 	<xsl:text>Mode;Filters;Chunksize;Samples;Turnaround;Roundtrip;Overall
 </xsl:text>
-	<xsl:apply-templates select="run[position() mod 3 = 1]" />
+	<xsl:apply-templates select="run" />
 </xsl:template>
 
 <xsl:template match="run">
