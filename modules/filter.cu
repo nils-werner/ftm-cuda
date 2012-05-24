@@ -337,22 +337,19 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 	}
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp.elements, m_size(MatrixAp)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixAp.elements, MatrixAp.elements, m_size(MatrixAp), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpyAsync(device_MatrixAp.elements, MatrixAp.elements, m_size(MatrixAp), cudaMemcpyHostToDevice, streams[0]));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA.elements, m_size(MatrixCA)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixCA.elements, MatrixCA.elements, m_size(MatrixCA), cudaMemcpyHostToDevice));
-
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_read.elements, m_size(output_chunk_read)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_output_chunk_read.elements, output_chunk_read.elements, m_size(output_chunk_read), cudaMemcpyHostToDevice));
-
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_write.elements, m_size(output_chunk_write)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_output_chunk_write.elements, output_chunk_write.elements, m_size(output_chunk_write), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpyAsync(device_MatrixCA.elements, MatrixCA.elements, m_size(MatrixCA), cudaMemcpyHostToDevice, streams[1]));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_read.elements, m_size(state)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_state_read.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
+	CUDA_SAFE_CALL(cudaMemcpyAsync(device_state_read.elements, state.elements, m_size(state), cudaMemcpyHostToDevice, streams[2]));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_write.elements, m_size(state)));
-	CUDA_SAFE_CALL(cudaMemcpy(device_state_write.elements, state.elements, m_size(state), cudaMemcpyHostToDevice));
+
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_read.elements, m_size(output_chunk_read)));
+
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_write.elements, m_size(output_chunk_write)));
 
 	dim3 dimBlockCA(1, 1); // @TODO Optimierungspotential
 	dim3 dimGridCA(state.cols / dimBlockCA.x, MatrixCA.rows / dimBlockCA.y);
