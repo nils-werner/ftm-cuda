@@ -50,12 +50,6 @@ int main(int argc, char *argv[]) {
 				length = atof(optarg);
 				break;
 			case '?':
-				if (optopt == 'f' || optopt == 'c' || optopt == 's' || optopt == 'l')
-					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-				else if (isprint (optopt))
-					fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-				else
-					fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
 				return 1;
 			default:
 				abort ();
