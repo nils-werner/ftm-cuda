@@ -37,8 +37,14 @@ do
 		do
 			for try in ${TRIES[@]}
 			do
-				echo $mode $filter $chunk
-				./build/iirfilter $mode $filter $chunk >> bench.xml;
+				if [ $mode == "gpu" ]; then
+					modeswitch="-g"
+				else
+					modeswitch=""
+				fi
+
+				echo "$modeswitch -f $filter -c $chunk"
+				./build/iirfilter $modeswitch -f $filter -c $chunk >> bench.xml;
 			done
 		done
 	done
