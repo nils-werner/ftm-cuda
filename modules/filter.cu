@@ -134,16 +134,16 @@ void createMatrices() {
 		c1 = -2 * exp(sigma * 1 / synth.T) * cos(omega * 1 / synth.T);
 		c0 = exp( 2 * sigma * 1 / synth.T);
 
-		m_set(MatrixC, 0, 2*i  , 0);
-		m_set(MatrixC, 0, 2*i+1, a);
+		m_set(&MatrixC, 0, 2*i  , 0);
+		m_set(&MatrixC, 0, 2*i+1, a);
 
-		m_set(MatrixA, 2*i  , 2*i  , 0);
-		m_set(MatrixA, 2*i  , 2*i+1, -c0);
-		m_set(MatrixA, 2*i+1, 2*i  , 1);
-		m_set(MatrixA, 2*i+1, 2*i+1, -c1);
+		m_set(&MatrixA, 2*i  , 2*i  , 0);
+		m_set(&MatrixA, 2*i  , 2*i+1, -c0);
+		m_set(&MatrixA, 2*i+1, 2*i  , 1);
+		m_set(&MatrixA, 2*i+1, 2*i+1, -c1);
 
-		m_set(state, 2*i  , 0, 0);
-		m_set(state ,2*i+1, 0, 1);
+		m_set(&state, 2*i  , 0, 0);
+		m_set(&state ,2*i+1, 0, 1);
 
 	}
 }
@@ -180,17 +180,17 @@ void createBlockprocessingMatrices() {
 
 	m_new(&MatrixCA, synth.blocksize, MatrixA.cols);
 	m_new(&MatrixAp, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
-	m_identity(MatrixAp);
+	m_identity(&MatrixAp);
 
-	m_prepare_multiply(MatrixC, MatrixAp, &MatrixCA_line);
-	m_prepare_multiply(MatrixAp, MatrixA, &MatrixAp_tmp);
+	m_prepare_multiply(&MatrixC, &MatrixAp, &MatrixCA_line);
+	m_prepare_multiply(&MatrixAp, &MatrixA, &MatrixAp_tmp);
 
 	for(i = 1; i <= synth.blocksize; i++) {
-		m_multiply(MatrixC, *pointer_MatrixAp, &MatrixCA_line);
+		m_multiply(&MatrixC, pointer_MatrixAp, &MatrixCA_line);
 		for(j = 0; j < MatrixCA_line.cols; j++) {
-			m_set(MatrixCA, i-1, j, m_get(MatrixCA_line, 0, j));
+			m_set(&MatrixCA, i-1, j, m_get(&MatrixCA_line, 0, j));
 		}
-		m_multiplyblockdiag(*pointer_MatrixAp, MatrixA, pointer_MatrixAp_tmp, 2);
+		m_multiplyblockdiag(pointer_MatrixAp, &MatrixA, pointer_MatrixAp_tmp, 2);
 
 		m_swap(&pointer_MatrixAp_tmp, &pointer_MatrixAp);
 	}
@@ -233,15 +233,15 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
 	pointer_state_read = &state;
 	pointer_state_write = &state_tmp;
 
-	m_prepare_multiply(MatrixAp, state, &state_tmp);
+	m_prepare_multiply(&MatrixAp, &state, &state_tmp);
 
 	for(i = 0; i < synth.samples;) {
 		time_start(&roundtrip);
-		m_multiply(MatrixCA, *pointer_state_read, &output_chunk);
+		m_multiply(&MatrixCA, pointer_state_read, &output_chunk);
 
 		memcpy(&output[i], output_chunk.elements, sizeof(float) * synth.blocksize);
 
-		m_multiplyblockdiag(MatrixAp, *pointer_state_read, pointer_state_write, 2);
+		m_multiplyblockdiag(&MatrixAp, pointer_state_read, pointer_state_write, 2);
 		m_swap(&pointer_state_read, &pointer_state_write);
 		if(i == 0) {
 			time_stop(&turnaround);
@@ -337,20 +337,20 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 		cudaStreamCreate(& streams[i]);
 	}
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp.elements, m_size(MatrixAp)));
-	CUDA_SAFE_CALL(cudaMemcpyAsync(device_MatrixAp.elements, MatrixAp.elements, m_size(MatrixAp), cudaMemcpyHostToDevice, streams[0]));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp.elements, m_size(&MatrixAp)));
+	CUDA_SAFE_CALL(cudaMemcpyAsync(device_MatrixAp.elements, MatrixAp.elements, m_size(&MatrixAp), cudaMemcpyHostToDevice, streams[0]));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA.elements, m_size(MatrixCA)));
-	CUDA_SAFE_CALL(cudaMemcpyAsync(device_MatrixCA.elements, MatrixCA.elements, m_size(MatrixCA), cudaMemcpyHostToDevice, streams[1]));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA.elements, m_size(&MatrixCA)));
+	CUDA_SAFE_CALL(cudaMemcpyAsync(device_MatrixCA.elements, MatrixCA.elements, m_size(&MatrixCA), cudaMemcpyHostToDevice, streams[1]));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_read.elements, m_size(state)));
-	CUDA_SAFE_CALL(cudaMemcpyAsync(device_state_read.elements, state.elements, m_size(state), cudaMemcpyHostToDevice, streams[2]));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_read.elements, m_size(&state)));
+	CUDA_SAFE_CALL(cudaMemcpyAsync(device_state_read.elements, state.elements, m_size(&state), cudaMemcpyHostToDevice, streams[2]));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_write.elements, m_size(state)));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_write.elements, m_size(&state)));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_read.elements, m_size(output_chunk_read)));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_read.elements, m_size(&output_chunk_read)));
 
-	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_write.elements, m_size(output_chunk_write)));
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_write.elements, m_size(&output_chunk_write)));
 
 	dim3 dimBlockCA(1, 1); // @TODO Optimierungspotential
 	dim3 dimGridCA(state.cols / dimBlockCA.x, MatrixCA.rows / dimBlockCA.y);
@@ -391,7 +391,7 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 
 		if(i >= 0) {
 			cudaEventRecord(Memcpy_start, streams[2]);
-			cudaMemcpyAsync(pointer_output_chunk_write->elements, pointer_device_output_chunk_read->elements, m_size(output_chunk_write), cudaMemcpyDeviceToHost, streams[2]);
+			cudaMemcpyAsync(pointer_output_chunk_write->elements, pointer_device_output_chunk_read->elements, m_size(&output_chunk_write), cudaMemcpyDeviceToHost, streams[2]);
 			cudaEventRecord(Memcpy_stop, streams[2]);
 
 			memcpy(&output[i], pointer_output_chunk_read->elements, sizeof(float) * synth.blocksize);
