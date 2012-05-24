@@ -4,6 +4,7 @@ String string;
 Synthesizer synth;
 Matrix MatrixC, MatrixA, state;
 Matrix MatrixAp, MatrixCA;
+Timer turnaround, overall;
 
 /**
  * Wrapper for the methods required in the filter, just calls them in the correct order
@@ -13,6 +14,8 @@ Matrix MatrixAp, MatrixCA;
  */
 
 int filter(int mode, float length, int samples, int blocksize, int filters) {
+	time_start(&overall);
+	time_start(&turnaround);
 	initializeCoefficients(length, blocksize, samples, filters);
 
 	float * output = (float *) malloc(sizeof(float) * synth.samples);
@@ -32,6 +35,8 @@ int filter(int mode, float length, int samples, int blocksize, int filters) {
 		generateSignalGPU(output, string, synth);
 
 	writeFile("filter.wav", output, synth.samples, synth.T);
+	time_stop(&overall);
+	time_print(&overall, "overall");
 	return 0;
 }
 
@@ -258,6 +263,10 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
 		}
 		m_multiplyblockdiag(MatrixAp, *pointer_state_read, pointer_state_write, 2);
 		m_swap(&pointer_state_read, &pointer_state_write);
+		if(i == 0) {
+			time_stop(&turnaround);
+			time_print(&turnaround, "turnaround");
+		}
 		i = i + synth.blocksize;
 	}
 }
@@ -302,7 +311,7 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 	Matrix device_output_chunk_read, device_output_chunk_write;
 	Matrix *pointer_device_output_chunk_read, *pointer_device_output_chunk_write;
 
-	struct timeval startTime, endTime;
+	Timer roundtrip;
 
 	pointer_output_chunk_read = &output_chunk_read;
 	pointer_output_chunk_write = &output_chunk_write;
@@ -372,13 +381,13 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 		 */
 
 		cudaThreadSynchronize();
-		gettimeofday(&endTime, NULL);
+		time_stop(&roundtrip);
 
 		if(i == 5*synth.blocksize) {
-			print_time(&startTime, &endTime, "runaround");
+			time_print(&roundtrip, "roundtrip");
 		}
 
-		gettimeofday(&startTime, NULL);
+		time_start(&roundtrip);
 
 		cudaEventElapsedTime(&MatrixCA_time, MatrixCA_start, MatrixCA_stop);
 		cudaEventElapsedTime(&MatrixAp_time, MatrixAp_start, MatrixAp_stop);
@@ -413,6 +422,11 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 
 			for(j = 0; j < synth.blocksize; j++) {
 				output[i+j] = m_get(*pointer_output_chunk_read,j,0)/128;
+			}
+
+			if(i == 0) {
+				time_stop(&turnaround);
+				time_print(&turnaround, "turnaround");
 			}
 		}
 
