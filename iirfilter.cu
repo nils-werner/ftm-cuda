@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
 
 #ifndef BENCHMARK
 	if(argc == 1) {
-		printf("Call Syntax: %s mode xml-outputmode filters chunksize seconds\n\n", argv[0]);
+		printf("Call Syntax: %s mode filters chunksize seconds\n\n", argv[0]);
 	}
 #endif
 

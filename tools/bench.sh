@@ -26,7 +26,7 @@ do
 			for try in ${TRIES[@]}
 			do
 				echo $mode $filter $chunk
-				./build/iirfilter $mode xml $filter $chunk >> bench.xml;
+				./build/iirfilter $mode $filter $chunk >> bench.xml;
 			done
 		done
 	done
