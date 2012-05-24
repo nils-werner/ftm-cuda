@@ -134,7 +134,7 @@ void createMatrices() {
 				  )
 			);
 
-		a = sin(mu * M_PI * string.xa / string.l);
+		a = sin(mu * M_PI * string.xa / string.l)/128;
 
 		b = synth.T * sin(omega * 1 / synth.T) / (omega * 1 / synth.T);
 		c1 = -2 * exp(sigma * 1 / synth.T) * cos(omega * 1 / synth.T);
@@ -244,7 +244,7 @@ void createBlockprocessingMatrices() {
  */
 
 void generateSignalCPU(float * output, String string, Synthesizer synth) {
-	int i, j;
+	int i;
 	Matrix state_tmp, output_chunk;
 	Matrix *pointer_state_read, *pointer_state_write;
 	Timer roundtrip;
@@ -259,9 +259,8 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
 		time_start(&roundtrip);
 		m_multiply(MatrixCA, *pointer_state_read, &output_chunk);
 
-		for(j = 0; j < synth.blocksize; j++) {
-			output[i+j] = m_get(output_chunk,j,0)/128;
-		}
+		memcpy(&output[i], output_chunk.elements, sizeof(float) * synth.blocksize);
+
 		m_multiplyblockdiag(MatrixAp, *pointer_state_read, pointer_state_write, 2);
 		m_swap(&pointer_state_read, &pointer_state_write);
 		if(i == 0) {
@@ -306,7 +305,7 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
  */
 
 void generateSignalGPU(float * output, String string, Synthesizer synth) {
-	int i, j;
+	int i;
 
 	Matrix device_MatrixAp;
 	Matrix device_MatrixCA;
@@ -427,9 +426,7 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 			cudaMemcpyAsync(pointer_output_chunk_write->elements, pointer_device_output_chunk_read->elements, m_size(output_chunk_write), cudaMemcpyDeviceToHost, streams[2]);
 			cudaEventRecord(Memcpy_stop, streams[2]);
 
-			for(j = 0; j < synth.blocksize; j++) {
-				output[i+j] = m_get(*pointer_output_chunk_read,j,0)/128;
-			}
+			memcpy(&output[i], pointer_output_chunk_read->elements, sizeof(float) * synth.blocksize);
 
 			if(i == 0) {
 				time_stop(&turnaround);
