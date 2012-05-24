@@ -22,5 +22,5 @@ void time_start(Timer* timer) {
 void time_print(Timer* timer, const char* string) {
 	double tS = timer->start.tv_sec*1000000 + (timer->start.tv_usec);
 	double tE = timer->stop.tv_sec*1000000  + (timer->stop.tv_usec);
-	printf("Timer %s: %.0f usec\n", string, tE - tS);
+	printf("Timer %s: %'.0f usec\n", string, tE - tS);
 }

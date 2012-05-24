@@ -15,6 +15,7 @@ int main(int argc, char *argv[]) {
 	int filters = 30;
 	int mode = 1;
 
+	setlocale(LC_ALL, "");
 	printf("GPGPU-Based recursive sound synthesis filter.\n\n");
 
 	if(argc == 1) {
