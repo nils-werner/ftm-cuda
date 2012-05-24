@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 	}
 #endif
 
-	while ((c = getopt (argc, argv, "gf:b:c:s:")) != -1)
+	while ((c = getopt (argc, argv, "gf:c:s:l:")) != -1)
 		switch (c) {
 			case 'g':
 				mode = 1;
