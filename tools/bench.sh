@@ -34,4 +34,4 @@ done
 
 echo "</benchmark>" >> bench.xml
 
-xsltproc tools/benchtoxml.xsl bench.xml > bench.csv
+xsltproc tools/benchtocsv.xsl bench.xml > bench.csv
