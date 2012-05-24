@@ -16,11 +16,12 @@ int main(int argc, char *argv[]) {
 	int mode = 1;
 
 	setlocale(LC_ALL, "");
-	printf("GPGPU-Based recursive sound synthesis filter.\n\n");
 
+#ifndef BENCHMARK
 	if(argc == 1) {
 		printf("Call Syntax: %s mode filters chunksize seconds\n\n", argv[0]);
 	}
+#endif
 
 	if(argc > 1) {
 		if(0 == strcmp(argv[1], "CPU") || 0 == strcmp(argv[1], "cpu"))
@@ -39,8 +40,18 @@ int main(int argc, char *argv[]) {
 		samples = atoi(argv[4])*44100;
 
 
-	printf("Settings:\n  Mode %s\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n", (mode == 0?"CPU":"GPU"), filters, blocksize, samples);	
+#ifdef BENCHMARK
+		printf("<run>\n<settings mode=\"%s\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n", (mode == 0?"cpu":"gpu"), filters, blocksize, samples);
+#else
+		printf("GPGPU-Based recursive sound synthesis filter.\n\n");
+		printf("Settings:\n  Mode %s\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n", (mode == 0?"CPU":"GPU"), filters, blocksize, samples);
+#endif
 
 	filter(mode, length, samples, blocksize, filters);
+
+#ifdef BENCHMARK
+		printf("</run>\n");
+#endif
+
 	return 0;
 }

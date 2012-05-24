@@ -5,6 +5,7 @@ Synthesizer synth;
 Matrix MatrixC, MatrixA, state;
 Matrix MatrixAp, MatrixCA;
 Timer turnaround, overall;
+int xmloutput;
 
 /**
  * Wrapper for the methods required in the filter, just calls them in the correct order
