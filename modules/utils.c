@@ -19,8 +19,11 @@ void time_start(Timer* timer) {
 	gettimeofday(&timer->start, NULL);
 }
 
-void time_print(Timer* timer, const char* string) {
+void time_print(Timer* timer, const char* string, int xmloutput) {
 	double tS = timer->start.tv_sec*1000000 + (timer->start.tv_usec);
 	double tE = timer->stop.tv_sec*1000000  + (timer->stop.tv_usec);
-	printf("Timer %s: %'.0f usec\n", string, tE - tS);
+	if(xmloutput == 1)
+		printf("<timer name=\"%s\">%.0f</timer>\n", string, tE - tS);
+	else
+		printf("Timer %s: %'.0f usec\n", string, tE - tS);
 }

@@ -27,9 +27,10 @@ typedef struct {
 	int samples;
 	int filters;
 	int blocksize;
+	int xmloutput;
 } Synthesizer;
 
-int filter(int, float, int, int, int);
+int filter(int, int, float, int, int, int);
 void initializeCoefficients(float, int, int, int);
 void createMatrices();
 void createBlockprocessingMatrices();

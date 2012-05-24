@@ -5,6 +5,7 @@ Synthesizer synth;
 Matrix MatrixC, MatrixA, state;
 Matrix MatrixAp, MatrixCA;
 Timer turnaround, overall;
+int xmloutput;
 
 /**
  * Wrapper for the methods required in the filter, just calls them in the correct order
@@ -13,7 +14,8 @@ Timer turnaround, overall;
  * @return int 0
  */
 
-int filter(int mode, float length, int samples, int blocksize, int filters) {
+int filter(int mode, int xmloutput, float length, int samples, int blocksize, int filters) {
+	synth.xmloutput = xmloutput;
 	time_start(&overall);
 	time_start(&turnaround);
 	initializeCoefficients(length, blocksize, samples, filters);
@@ -29,7 +31,7 @@ int filter(int mode, float length, int samples, int blocksize, int filters) {
 
 	writeFile("filter.wav", output, synth.samples, synth.T);
 	time_stop(&overall);
-	time_print(&overall, "overall");
+	time_print(&overall, "overall", synth.xmloutput);
 	return 0;
 }
 
@@ -244,12 +246,12 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
 		m_swap(&pointer_state_read, &pointer_state_write);
 		if(i == 0) {
 			time_stop(&turnaround);
-			time_print(&turnaround, "turnaround");
+			time_print(&turnaround, "turnaround", synth.xmloutput);
 		}
 		time_stop(&roundtrip);
 
 		if(i == 5*synth.blocksize) {
-			time_print(&roundtrip, "roundtrip");
+			time_print(&roundtrip, "roundtrip", synth.xmloutput);
 		}
 
 		i = i + synth.blocksize;
@@ -366,7 +368,7 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 		time_stop(&roundtrip);
 
 		if(i == 5*synth.blocksize) {
-			time_print(&roundtrip, "roundtrip");
+			time_print(&roundtrip, "roundtrip", synth.xmloutput);
 		}
 
 		time_start(&roundtrip);
@@ -398,7 +400,7 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 
 			if(i == 0) {
 				time_stop(&turnaround);
-				time_print(&turnaround, "turnaround");
+				time_print(&turnaround, "turnaround", synth.xmloutput);
 			}
 		}
 
