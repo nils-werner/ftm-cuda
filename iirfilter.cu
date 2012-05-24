@@ -20,7 +20,6 @@ int main(int argc, char *argv[]) {
 
 	if(argc == 1) {
 		printf("Call Syntax: %s mode filters chunksize seconds\n\n", argv[0]);
-		return 1;
 	}
 
 	if(argc > 1) {
@@ -40,7 +39,7 @@ int main(int argc, char *argv[]) {
 		samples = atoi(argv[4])*44100;
 
 
-	printf("Settings:\n  Mode %s\n  Filters %d\n  Samples %d\n  Chunksize %d\n\n", (mode == 0?"CPU":"GPU"), filters, samples, blocksize);	
+	printf("Settings:\n  Mode %s\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n", (mode == 0?"CPU":"GPU"), filters, blocksize, samples);	
 
 	filter(mode, length, samples, blocksize, filters);
 	return 0;
