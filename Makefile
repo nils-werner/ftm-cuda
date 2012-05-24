@@ -44,7 +44,8 @@ md5: time
 	md5sum filter.wav
 
 time: build/iirfilter
-	time -p ./build/iirfilter gpu
+	./build/iirfilter gpu
+	./build/iirfilter cpu
 
 preview: time
 	cvlc filter.wav vlc://quit
