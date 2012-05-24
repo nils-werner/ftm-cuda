@@ -134,7 +134,7 @@ void createMatrices() {
 				  )
 			);
 
-		a = sin(mu * M_PI * string.xa / string.l);
+		a = sin(mu * M_PI * string.xa / string.l)/128;
 
 		b = synth.T * sin(omega * 1 / synth.T) / (omega * 1 / synth.T);
 		c1 = -2 * exp(sigma * 1 / synth.T) * cos(omega * 1 / synth.T);
@@ -260,7 +260,7 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
 		m_multiply(MatrixCA, *pointer_state_read, &output_chunk);
 
 		for(j = 0; j < synth.blocksize; j++) {
-			output[i+j] = m_get(output_chunk,j,0)/128;
+			output[i+j] = m_get(output_chunk,j,0);
 		}
 		m_multiplyblockdiag(MatrixAp, *pointer_state_read, pointer_state_write, 2);
 		m_swap(&pointer_state_read, &pointer_state_write);
@@ -428,7 +428,7 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 			cudaEventRecord(Memcpy_stop, streams[2]);
 
 			for(j = 0; j < synth.blocksize; j++) {
-				output[i+j] = m_get(*pointer_output_chunk_read,j,0)/128;
+				output[i+j] = m_get(*pointer_output_chunk_read,j,0);
 			}
 
 			if(i == 0) {
