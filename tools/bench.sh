@@ -8,7 +8,7 @@ CHUNKSIZES=( 25 50 75 100 125 150 175 200 225 250 )
 TRIES=( 1 2 3 4 5 )
 
 MODES=( gpu )
-FILTERS=( 30 90 150 210 270 330 390 450 )
+FILTERS=( 30 90 150 210 270 330 390 450 500 550 600 650 700 750 )
 CHUNKSIZES=( 100 )
 TRIES=( 1 2 3 )
 
@@ -33,3 +33,5 @@ do
 done
 
 echo "</benchmark>" >> bench.xml
+
+xsltproc tools/benchtoxml.xsl bench.xml > bench.csv
