@@ -22,13 +22,6 @@ int filter(int mode, float length, int samples, int blocksize, int filters) {
 	createMatrices();
 	createBlockprocessingMatrices();
 
-#if DEBUG == 2
-	printf("MatrixA");
-	m_print(MatrixA);
-	printf("MatrixC");
-	m_print(MatrixC);
-#endif
-
 	if(mode == 0)
 		generateSignalCPU(output, string, synth);
 	else
@@ -140,11 +133,6 @@ void createMatrices() {
 		c1 = -2 * exp(sigma * 1 / synth.T) * cos(omega * 1 / synth.T);
 		c0 = exp( 2 * sigma * 1 / synth.T);
 
-#if DEBUG == 1
-		printf("%d %d sigma %f\n", i, mu, sigma);
-		printf("      omega %f\n", omega);
-#endif
-
 		m_set(MatrixC, 0, 2*i  , 0);
 		m_set(MatrixC, 0, 2*i+1, a);
 
@@ -205,15 +193,6 @@ void createBlockprocessingMatrices() {
 
 		m_swap(&pointer_MatrixAp_tmp, &pointer_MatrixAp);
 	}
-
-#if DEBUG == 3
-	printf("MatrixA");
-	m_print(MatrixA);
-	printf("MatrixCA");
-	m_print(MatrixCA);
-	printf("state");
-	m_print(state);
-#endif
 }
 
 
@@ -398,14 +377,6 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 		cudaEventElapsedTime(&MatrixCA_time, MatrixCA_start, MatrixCA_stop);
 		cudaEventElapsedTime(&MatrixAp_time, MatrixAp_start, MatrixAp_stop);
 		cudaEventElapsedTime(&Memcpy_time, Memcpy_start, Memcpy_stop);
-
-#if DEBUG == 10
-		if(i == 5*synth.blocksize) {
-			printf("MatrixCA: %d\n", MatrixCA_time);
-			printf("MatrixAp: %d\n", MatrixAp_time);
-			printf("  Memcpy: %d\n", Memcpy_time);
-		}
-#endif
 
 		if(i >= 0) {
 			m_swap(&pointer_device_state_read, &pointer_device_state_write);
