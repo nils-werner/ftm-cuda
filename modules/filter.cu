@@ -246,8 +246,8 @@ void createBlockprocessingMatrices() {
 void generateSignalCPU(float * output, String string, Synthesizer synth) {
 	int i, j;
 	Matrix state_tmp, output_chunk;
-
 	Matrix *pointer_state_read, *pointer_state_write;
+	Timer roundtrip;
 
 	m_new(&output_chunk, synth.blocksize,1);
 	pointer_state_read = &state;
@@ -256,6 +256,7 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
 	m_prepare_multiply(MatrixAp, state, &state_tmp);
 
 	for(i = 0; i < synth.samples;) {
+		time_start(&roundtrip);
 		m_multiply(MatrixCA, *pointer_state_read, &output_chunk);
 
 		for(j = 0; j < synth.blocksize; j++) {
@@ -267,6 +268,12 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
 			time_stop(&turnaround);
 			time_print(&turnaround, "turnaround");
 		}
+		time_stop(&roundtrip);
+
+		if(i == 5*synth.blocksize) {
+			time_print(&roundtrip, "roundtrip");
+		}
+
 		i = i + synth.blocksize;
 	}
 }
