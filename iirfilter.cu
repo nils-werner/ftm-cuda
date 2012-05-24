@@ -13,14 +13,15 @@ int main(int argc, char *argv[]) {
 	float length = 0.65;
 	int samples = 441000;
 	int filters = 30;
-	int xmloutput = 0;
 	int mode = 1;
 
 	setlocale(LC_ALL, "");
 
+#ifndef BENCHMARK
 	if(argc == 1) {
 		printf("Call Syntax: %s mode xml-outputmode filters chunksize seconds\n\n", argv[0]);
 	}
+#endif
 
 	if(argc > 1) {
 		if(0 == strcmp(argv[1], "CPU") || 0 == strcmp(argv[1], "cpu"))
@@ -29,33 +30,28 @@ int main(int argc, char *argv[]) {
 			mode = 1;
 	}
 
-	if(argc > 2) {
-		if(0 == strcmp(argv[2], "XML") || 0 == strcmp(argv[2], "xml"))
-			xmloutput = 1;
-		else
-			xmloutput = 0;
-	}
+	if(argc > 2)
+		filters = atoi(argv[2]);
 
 	if(argc > 3)
-		filters = atoi(argv[3]);
+		blocksize = atoi(argv[3]);
 
 	if(argc > 4)
-		blocksize = atoi(argv[4]);
-
-	if(argc > 5)
-		samples = atoi(argv[5])*44100;
+		samples = atoi(argv[4])*44100;
 
 
-	if(xmloutput == 0) {
+#ifdef BENCHMARK
+		printf("<run>\n<settings mode=\"%s\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n", (mode == 0?"cpu":"gpu"), filters, blocksize, samples);
+#else
 		printf("GPGPU-Based recursive sound synthesis filter.\n\n");
 		printf("Settings:\n  Mode %s\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n", (mode == 0?"CPU":"GPU"), filters, blocksize, samples);
-	}
-	else
-		printf("<run>\n<settings mode=\"%s\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n", (mode == 0?"cpu":"gpu"), filters, blocksize, samples);
+#endif
 
-	filter(mode, xmloutput, length, samples, blocksize, filters);
+	filter(mode, length, samples, blocksize, filters);
 
-	if(xmloutput == 1)
+#ifdef BENCHMARK
 		printf("</run>\n");
+#endif
+
 	return 0;
 }

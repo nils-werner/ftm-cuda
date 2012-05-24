@@ -10,14 +10,13 @@ NVCC := nvcc
 INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include -I$(CUDA_SDK_PATH)/C/common/inc
 
 # Common flags
-COMMONFLAGS += $(INCLUDES) -DDEBUG=$(DEBUG) -DMODE=$(MODE)
+COMMONFLAGS += $(INCLUDES) -DDEBUG=$(DEBUG)
 NVCCFLAGS += $(COMMONFLAGS)
 CXXFLAGS += $(COMMONFLAGS)
 CFLAGS += $(COMMONFLAGS)
 .PHONY: all cpu clean time preview
 
 DEBUG = 0
-MODE = 1
 LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -L$(CUDA_SDK_PATH)/C/lib -lcudart -lcutil_x86_64 -lasound -lsndfile
 
 
@@ -46,6 +45,9 @@ md5: time
 time: build/iirfilter
 	./build/iirfilter gpu
 	./build/iirfilter cpu
+
+bench: COMMONFLAGS += -DBENCHMARK
+bench: clean build/iirfilter
 
 preview: time
 	cvlc filter.wav vlc://quit
