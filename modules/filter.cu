@@ -4,7 +4,7 @@ String string;
 Synthesizer synth;
 Matrix MatrixC, MatrixA, state;
 Matrix MatrixAp, MatrixCA;
-Timer turnaround;
+Timer turnaround, overall;
 
 /**
  * Wrapper for the methods required in the filter, just calls them in the correct order
@@ -14,6 +14,7 @@ Timer turnaround;
  */
 
 int filter(int mode, float length, int samples, int blocksize, int filters) {
+	time_start(&overall);
 	time_start(&turnaround);
 	initializeCoefficients(length, blocksize, samples, filters);
 
@@ -34,6 +35,8 @@ int filter(int mode, float length, int samples, int blocksize, int filters) {
 		generateSignalGPU(output, string, synth);
 
 	writeFile("filter.wav", output, synth.samples, synth.T);
+	time_stop(&overall);
+	time_print(&overall, "overall");
 	return 0;
 }
 
