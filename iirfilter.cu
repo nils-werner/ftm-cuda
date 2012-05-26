@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
 
 	setlocale(LC_ALL, "");
 
-	while ((c = getopt (argc, argv, "gf:c:s:l:x")) != -1) {
+	while ((c = getopt (argc, argv, "gf:c:s:l:xh")) != -1) {
 		switch (c) {
 			case 'g':
 				settings.mode = 1;
@@ -40,6 +40,15 @@ int main(int argc, char *argv[]) {
 			case 'x':
 				settings.xml = 1;
 				break;
+			case 'h':
+				printf("Available parameters:\n", argv[0]);
+				printf("  -g         use GPU\n");
+				printf("  -f <int>   number of filters\n");
+				printf("  -c <int>   chunksize\n");
+				printf("  -s <int>   length of signals in seconds\n");
+				printf("  -l <float> length of string\n");
+				printf("  -x         return benchmark data as XML\n");
+				return 0;
 			case '?':
 				return 1;
 			default:
@@ -49,17 +58,7 @@ int main(int argc, char *argv[]) {
 
 	if(settings.xml != 1) {
 		printf("GPGPU-Based recursive sound synthesis filter.\n\n");
-
-		if(argc == 1) {
-			printf("Available parameters:\n", argv[0]);
-			printf("  -g         use GPU\n");
-			printf("  -f <int>   number of filters\n");
-			printf("  -c <int>   chunksize\n");
-			printf("  -s <int>   length of signals in seconds\n");
-			printf("  -l <float> length of string\n\n");
-			printf("  -x         return benchmark data as XML\n\n");
-			return 1;
-		}
+		printf("Use option -h to see all available switches.\n\n");
 	}
 
 
