@@ -4,11 +4,14 @@
 #include <stdlib.h>
 #include <cutil.h>
 #include <sys/time.h>
+#include "modules/settings.h"
 
 typedef struct {
 	struct timeval start;
 	struct timeval stop;
 } Timer;
+
+extern Settings settings;
 
 float fl_rand();
 void time_start(Timer*);

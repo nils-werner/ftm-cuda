@@ -44,7 +44,7 @@ do
 				fi
 
 				echo "$modeswitch -f $filter -c $chunk"
-				./build/iirfilter $modeswitch -f $filter -c $chunk >> bench.xml;
+				./build/iirfilter $modeswitch -f $filter -c $chunk -x >> bench.xml;
 			done
 		done
 	done

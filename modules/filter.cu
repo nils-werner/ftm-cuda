@@ -381,7 +381,6 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 			m_swap(&pointer_device_output_chunk_read, &pointer_device_output_chunk_write);
 			m_swap(&pointer_output_chunk_read, &pointer_output_chunk_write);
 		}
-
 		cudaEventRecord(MatrixCA_start, streams[0]);
 		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, *pointer_device_state_read, *pointer_device_output_chunk_write);
 		cudaEventRecord(MatrixCA_stop, streams[0]);
