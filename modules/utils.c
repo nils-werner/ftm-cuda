@@ -22,9 +22,8 @@ void time_start(Timer* timer) {
 void time_print(Timer* timer, const char* string) {
 	double tS = timer->start.tv_sec*1000000 + (timer->start.tv_usec);
 	double tE = timer->stop.tv_sec*1000000  + (timer->stop.tv_usec);
-#ifdef BENCHMARK
-	printf("<timer name=\"%s\">%.0f</timer>\n", string, tE - tS);
-#else
-	printf("Timer %s: %'.0f usec\n", string, tE - tS);
-#endif
+	if(settings.xml == 1)
+		printf("<timer name=\"%s\">%.0f</timer>\n", string, tE - tS);
+	else
+		printf("Timer %s: %'.0f usec\n", string, tE - tS);
 }

@@ -14,16 +14,16 @@ int xmloutput;
  * @return int 0
  */
 
-int filter(int mode, float length, int samples, int blocksize, int filters) {
+int filter() {
 	time_start(&overall);
 	time_start(&turnaround);
-	initializeCoefficients(length, blocksize, samples, filters);
+	initializeCoefficients();
 
 	float * output = (float *) malloc(sizeof(float) * synth.samples);
 	createMatrices();
 	createBlockprocessingMatrices();
 
-	if(mode == 0)
+	if(settings.mode == 0)
 		generateSignalCPU(output, string, synth);
 	else
 		generateSignalGPU(output, string, synth);
@@ -52,9 +52,9 @@ int filter(int mode, float length, int samples, int blocksize, int filters) {
  * @return void
  */
 
-void initializeCoefficients(float length, int blocksize, int samples, int filters) {
+void initializeCoefficients() {
 	// Saiten-Koeffizienten
-	string.l = length;
+	string.l = settings.length;
 	string.Ts = 60.97;
 	string.rho = 1140;
 	string.A = 0.5188e-6;
@@ -69,9 +69,9 @@ void initializeCoefficients(float length, int blocksize, int samples, int filter
 	// Abtastrate und Samplelänge
 	synth.T = 44100;
 	synth.seconds = 10;
-	synth.samples = samples;
-	synth.filters = filters;
-	synth.blocksize = blocksize;
+	synth.samples = settings.samples;
+	synth.filters = settings.filters;
+	synth.blocksize = settings.chunksize;
 
 	assert(synth.samples % synth.blocksize == 0);
 }
@@ -381,7 +381,6 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 			m_swap(&pointer_device_output_chunk_read, &pointer_device_output_chunk_write);
 			m_swap(&pointer_output_chunk_read, &pointer_output_chunk_write);
 		}
-
 		cudaEventRecord(MatrixCA_start, streams[0]);
 		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixCA, *pointer_device_state_read, *pointer_device_output_chunk_write);
 		cudaEventRecord(MatrixCA_stop, streams[0]);

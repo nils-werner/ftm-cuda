@@ -9,63 +9,77 @@
  */
 
 int main(int argc, char *argv[]) {
-	int chunksize = 100;
-	float length = 0.65;
-	int samples = 441000;
-	int filters = 30;
-	int mode = 0;
 	int c;
+
+	settings.xml = 0;
+	settings.chunksize = 100;
+	settings.length = 0.65;
+	settings.samples = 441000;
+	settings.filters = 30;
+	settings.mode = 0;
 
 	setlocale(LC_ALL, "");
 
-#ifndef BENCHMARK
-	printf("GPGPU-Based recursive sound synthesis filter.\n\n");
-
-	if(argc == 1) {
-		printf("Available parameters:\n", argv[0]);
-		printf("  -g         use GPU\n");
-		printf("  -f <int>   number of filters\n");
-		printf("  -c <int>   chunksize\n");
-		printf("  -s <int>   length of signals in seconds\n");
-		printf("  -l <float> length of string\n\n");
-		return 1;
-	}
-#endif
-
-	while ((c = getopt (argc, argv, "gf:c:s:l:")) != -1)
+	while ((c = getopt (argc, argv, "gf:c:s:l:xh")) != -1) {
 		switch (c) {
 			case 'g':
-				mode = 1;
+				settings.mode = 1;
 				break;
 			case 'f':
-				filters = atoi(optarg);
+				settings.filters = atoi(optarg);
 				break;
 			case 'c':
-				chunksize = atoi(optarg);
+				settings.chunksize = atoi(optarg);
 				break;
 			case 's':
-				samples = atoi(optarg)*44100;
+				settings.samples = atoi(optarg)*44100;
 				break;
 			case 'l':
-				length = atof(optarg);
+				settings.length = atof(optarg);
 				break;
+			case 'x':
+				settings.xml = 1;
+				break;
+			case 'h':
+				printf("Available parameters:\n", argv[0]);
+				printf("  -g         use GPU\n");
+				printf("  -f <int>   number of filters\n");
+				printf("  -c <int>   chunksize\n");
+				printf("  -s <int>   length of signals in seconds\n");
+				printf("  -l <float> length of string\n");
+				printf("  -x         return benchmark data as XML\n");
+				return 0;
 			case '?':
 				return 1;
 			default:
 				abort ();
 		}
+	}
 
-#ifdef BENCHMARK
-		printf("<run>\n<settings mode=\"%s\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n", (mode == 0?"cpu":"gpu"), filters, chunksize, samples);
-#else
-		printf("Settings:\n  Mode %s\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n", (mode == 0?"CPU":"GPU"), filters, chunksize, samples);
-#endif
+	if(settings.xml != 1) {
+		printf("GPGPU-Based recursive sound synthesis filter.\n\n");
+		printf("Use option -h to see all available switches.\n\n");
+	}
 
-	filter(mode, length, samples, chunksize, filters);
 
-#ifdef BENCHMARK
-		printf("</run>\n");
-#endif
+	print_prefix();
+
+	filter();
+
+	print_suffix();
 
 	return 0;
+}
+
+
+void print_prefix() {
+	if(settings.xml == 1)
+		printf("<run>\n<settings mode=\"%s\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n", (settings.mode == 0?"cpu":"gpu"), settings.filters, settings.chunksize, settings.samples);
+	else
+		printf("Settings:\n  Mode %s\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n", (settings.mode == 0?"CPU":"GPU"), settings.filters, settings.chunksize, settings.samples);
+}
+
+void print_suffix() {
+	if(settings.xml == 1)
+		printf("</run>\n");
 }
