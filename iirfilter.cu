@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 
 	print_prefix();
 
-	filter(settings.mode, settings.length, settings.samples, settings.chunksize, settings.filters);
+	filter();
 
 	print_suffix();
 

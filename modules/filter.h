@@ -29,8 +29,8 @@ typedef struct {
 	int blocksize;
 } Synthesizer;
 
-int filter(int, float, int, int, int);
-void initializeCoefficients(float, int, int, int);
+int filter();
+void initializeCoefficients();
 void createMatrices();
 void createBlockprocessingMatrices();
 void generateSignalCPU(float*, String, Synthesizer);
