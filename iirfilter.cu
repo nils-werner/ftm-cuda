@@ -61,6 +61,8 @@ int main(int argc, char *argv[]) {
 		printf("Use option -h to see all available switches.\n\n");
 	}
 
+	settings.samples = settings.samples - (settings.samples % settings.chunksize);
+
 
 	print_prefix();
 
