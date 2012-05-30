@@ -31,8 +31,10 @@ typedef struct {
 
 int filter();
 void initializeCoefficients();
+void initializeGPU();
 void createMatrices();
 void createBlockprocessingMatrices();
+void createBlockprocessingMatricesGPU();
 void generateSignalCPU(float*, String, Synthesizer);
 void generateSignalGPU(float*, String, Synthesizer);
 void writeFile(const char*, float*, int, int);
