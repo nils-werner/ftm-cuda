@@ -207,10 +207,13 @@ void createBlockprocessingMatricesGPU() {
 
 	m_new(&MatrixCA, synth.blocksize, MatrixA.cols);
 	m_new(&MatrixAp, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
+	m_new(&device_MatrixA, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_new(&device_MatrixCA, synth.blocksize, MatrixA.cols);
 	m_new(&device_MatrixAp, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_new(&device_MatrixAp_write, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_new(&device_MatrixAp_read, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
+
+	m_new(&device_MatrixC, MatrixC.rows, MatrixC.cols); // BLOCKDIAGMATRIX
 
 	m_prepare_multiply(&MatrixC, &MatrixAp, &device_MatrixCA_line_read);
 	m_prepare_multiply(&MatrixC, &MatrixAp, &device_MatrixCA_line_write);
@@ -225,7 +228,6 @@ void createBlockprocessingMatricesGPU() {
 	CUDA_SAFE_CALL(cudaMemcpyAsync(device_MatrixAp_read.elements, MatrixAp.elements, m_size(&MatrixAp), cudaMemcpyHostToDevice, streams[0]));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp_write.elements, m_size(&MatrixAp)));
-	CUDA_SAFE_CALL(cudaMemcpyAsync(device_MatrixAp_write.elements, MatrixAp.elements, m_size(&MatrixAp), cudaMemcpyHostToDevice, streams[0]));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixA.elements, m_size(&MatrixA)));
 	CUDA_SAFE_CALL(cudaMemcpyAsync(device_MatrixA.elements, MatrixA.elements, m_size(&MatrixA), cudaMemcpyHostToDevice, streams[1]));
@@ -448,8 +450,6 @@ void generateSignalCPU(float * output, String string, Synthesizer synth) {
 void generateSignalGPU(float * output, String string, Synthesizer synth) {
 	int i;
 
-	Matrix device_MatrixAp;
-	Matrix device_MatrixCA;
 	Matrix device_state_read, device_state_write;
 	Matrix output_chunk_read, output_chunk_write;
 	Matrix *pointer_output_chunk_read, *pointer_output_chunk_write;
