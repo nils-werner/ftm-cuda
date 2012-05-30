@@ -246,10 +246,11 @@ void createBlockprocessingMatricesGPU() {
 	dim3 dimBlockA(1, 1); // @TODO Optimierungspotential; groessere Werte sind kleinere Gridsize
 	dim3 dimGridA(MatrixA.cols / dimBlockA.x, MatrixAp.rows / dimBlockA.y);
 
+	cudaThreadSynchronize();
 
 	for(i = 1; i <= synth.blocksize; i++) {
 		
-		//MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixC, *pointer_device_MatrixAp_read, *pointer_device_MatrixCA_line_write);
+		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixC, *pointer_device_MatrixAp_read, *pointer_device_MatrixCA_line_write);
 		// m_multiply(&MatrixC, pointer_MatrixAp, &MatrixCA_line);
 
 		MatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[2]>>>(*pointer_device_MatrixAp_read, device_MatrixA, *pointer_device_MatrixAp_write);
@@ -260,7 +261,7 @@ void createBlockprocessingMatricesGPU() {
 		m_swap(&pointer_device_MatrixAp_write, &pointer_device_MatrixAp_read);
 		m_swap(&pointer_device_MatrixCA_line_write, &pointer_device_MatrixCA_line_read);
 
-		//CUDA_SAFE_CALL(cudaMemcpyAsync(&device_MatrixCA.elements[(i-1) * MatrixCA.cols], pointer_device_MatrixCA_line_read->elements, m_size(&device_MatrixCA_line_read), cudaMemcpyDeviceToDevice, streams[1]));
+		CUDA_SAFE_CALL(cudaMemcpyAsync(&device_MatrixCA.elements[(i-1) * MatrixCA.cols], pointer_device_MatrixCA_line_read->elements, m_size(&device_MatrixCA_line_read), cudaMemcpyDeviceToDevice, streams[1]));
 	}
 
 	cudaThreadSynchronize();
@@ -466,8 +467,6 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 	m_new(&output_chunk_write, synth.blocksize,1);
 	m_new(&device_output_chunk_read, synth.blocksize,1);
 	m_new(&device_output_chunk_write, synth.blocksize,1);
-	m_new(&device_MatrixCA, synth.blocksize, MatrixA.cols);
-	m_new(&device_MatrixAp, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_new(&device_state_read, 2 * synth.filters, 1);
 	m_new(&device_state_write, 2 * synth.filters, 1);
 
@@ -510,6 +509,8 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 
 	dim3 dimBlockA(1, 1); // @TODO Optimierungspotential; groessere Werte sind kleinere Gridsize
 	dim3 dimGridA(state.cols / dimBlockA.x, MatrixAp.rows / dimBlockA.y);
+
+	cudaThreadSynchronize();
 
 	for(i = -synth.blocksize; i < synth.samples;) {
 		/*
