@@ -142,6 +142,8 @@ void createMatrices() {
 		c1 = -2 * exp(sigma * 1 / synth.T) * cos(omega * 1 / synth.T);
 		c0 = exp( 2 * sigma * 1 / synth.T);
 
+		noop(&b);
+
 		m_set(&MatrixC, 0, 2*i  , 0);
 		m_set(&MatrixC, 0, 2*i+1, a);
 

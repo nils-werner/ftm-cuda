@@ -27,3 +27,6 @@ void time_print(Timer* timer, const char* string) {
 	else
 		printf("Timer %s: %'.0f usec\n", string, tE - tS);
 }
+
+void noop(void * nothing) {
+}
