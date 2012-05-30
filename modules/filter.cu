@@ -108,6 +108,9 @@ void createMatrices() {
 	m_new(&MatrixA, 2 * synth.filters, 2 * synth.filters); //BLOCKMATRIX
 	m_new(&state, 2 * synth.filters, 1);
 
+	Timer timer;
+	time_start(&timer);
+
 	for(i = 0; i < synth.filters; i++) {
 		mu = i+1;
 		gamma = mu * ( M_PI / string.l );
@@ -146,6 +149,9 @@ void createMatrices() {
 		m_set(&state ,2*i+1, 0, 1);
 
 	}
+
+	time_stop(&timer);
+	time_print(&timer, "CreateM");
 }
 
 
@@ -176,6 +182,9 @@ void createBlockprocessingMatrices() {
 	Matrix *pointer_MatrixAp, *pointer_MatrixAp_tmp;
 
 	pointer_MatrixAp = &MatrixAp;
+	Timer timer;
+
+	time_start(&timer);
 	pointer_MatrixAp_tmp = &MatrixAp_tmp;
 
 	m_new(&MatrixCA, synth.blocksize, MatrixA.cols);
@@ -194,6 +203,9 @@ void createBlockprocessingMatrices() {
 
 		m_swap(&pointer_MatrixAp_tmp, &pointer_MatrixAp);
 	}
+
+	time_stop(&timer);
+	time_print(&timer, "BlockprocM");
 }
 
 
