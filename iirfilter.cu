@@ -17,13 +17,17 @@ int main(int argc, char *argv[]) {
 	settings.samples = 441000;
 	settings.filters = 30;
 	settings.mode = 0;
+	settings.matrixmode = 0;
 
 	setlocale(LC_ALL, "");
 
-	while ((c = getopt (argc, argv, "gf:c:s:l:xh")) != -1) {
+	while ((c = getopt (argc, argv, "gbf:c:s:l:xh")) != -1) {
 		switch (c) {
 			case 'g':
 				settings.mode = 1;
+				break;
+			case 'b':
+				settings.matrixmode = 1;
 				break;
 			case 'f':
 				settings.filters = atoi(optarg);
@@ -42,7 +46,8 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'h':
 				printf("Available parameters:\n", argv[0]);
-				printf("  -g         use GPU\n");
+				printf("  -g         use GPU for signal generation\n");
+				printf("  -b         use GPU for generating matrices\n");
 				printf("  -f <int>   number of filters\n");
 				printf("  -c <int>   chunksize\n");
 				printf("  -s <int>   length of signals in seconds\n");

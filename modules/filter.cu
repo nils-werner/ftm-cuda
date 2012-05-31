@@ -158,7 +158,6 @@ void createMatrices() {
 	}
 
 	time_stop(&timer);
-	time_print(&timer, "CreateM");
 }
 
 
@@ -305,6 +304,8 @@ void createBlockprocessingMatrices() {
 	pointer_MatrixAp = &MatrixAp;
 	Timer timer;
 
+	time_start(&timer);
+
 	pointer_MatrixAp_tmp = &MatrixAp_tmp;
 
 	m_new(&MatrixCA, synth.blocksize, MatrixA.cols);
@@ -315,10 +316,7 @@ void createBlockprocessingMatrices() {
 	m_prepare_multiply(&MatrixAp, &MatrixA, &MatrixAp_tmp);
 
 	for(i = 1; i <= synth.blocksize; i++) {
-		time_start(&timer);
 		m_multiply(&MatrixC, pointer_MatrixAp, &MatrixCA_line);
-		time_stop(&timer);
-		time_print(&timer, "BlockprocM");
 
 		for(j = 0; j < MatrixCA_line.cols; j++) {
 			m_set(&MatrixCA, i-1, j, m_get(&MatrixCA_line, 0, j));
@@ -330,7 +328,6 @@ void createBlockprocessingMatrices() {
 	}
 
 	time_stop(&timer);
-	time_print(&timer, "BlockprocM");
 }
 
 

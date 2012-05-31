@@ -8,6 +8,7 @@ typedef struct {
 	int samples;
 	int filters;
 	int mode;
+	int matrixmode;
 } Settings;
 
 #endif
