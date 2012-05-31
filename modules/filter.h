@@ -35,6 +35,8 @@ void initializeGPU();
 void createMatrices();
 void createBlockprocessingMatrices();
 void createBlockprocessingMatricesGPU();
+void copyMatricesToGPU();
+void copyMatricesFromGPU();
 void generateSignalCPU(float*, String, Synthesizer);
 void generateSignalGPU(float*, String, Synthesizer);
 void writeFile(const char*, float*, int, int);

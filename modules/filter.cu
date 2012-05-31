@@ -23,13 +23,26 @@ int filter() {
 	float * output = (float *) malloc(sizeof(float) * synth.samples);
 	createMatrices();
 
-	if(settings.mode == 0) {
+	if(settings.matrixmode == 0) {
 		createBlockprocessingMatrices();
-		generateSignalCPU(output, string, synth);
 	}
 	else {
 		initializeGPU();
 		createBlockprocessingMatricesGPU();
+	}
+
+	if(settings.mode == 0 && settings.matrixmode == 1) {
+		copyMatricesFromGPU();
+	}
+	if(settings.mode == 1 && settings.matrixmode == 0) {
+		initializeGPU();
+		copyMatricesToGPU();
+	}
+
+	if(settings.mode == 0) {
+		generateSignalCPU(output, string, synth);
+	}
+	else {
 		generateSignalGPU(output, string, synth);
 	}
 
@@ -359,6 +372,69 @@ void initializeGPU() {
 	cudaSetDevice(0);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Copies the blockprocessing matrices to the GPU
+ *
+ * @param void
+ * @return void
+ */
+
+void copyMatricesToGPU() {
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp.elements, m_size(&MatrixAp)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixAp.elements, MatrixAp.elements, m_size(&MatrixAp), cudaMemcpyHostToDevice));
+
+	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA.elements, m_size(&MatrixCA)));
+	CUDA_SAFE_CALL(cudaMemcpy(device_MatrixCA.elements, MatrixCA.elements, m_size(&MatrixCA), cudaMemcpyHostToDevice));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Copies the blockprocessing matrices from the GPU
+ *
+ * @param void
+ * @return void
+ */
+
+void copyMatricesFromGPU() {
+	CUDA_SAFE_CALL(cudaMemcpy(MatrixAp.elements, device_MatrixAp.elements, m_size(&MatrixAp), cudaMemcpyDeviceToHost));
+
+	CUDA_SAFE_CALL(cudaMemcpy(MatrixCA.elements, device_MatrixCA.elements, m_size(&MatrixCA), cudaMemcpyDeviceToHost));
+}
 
 
 
