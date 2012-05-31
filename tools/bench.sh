@@ -28,6 +28,8 @@ case $1 in
 		echo "$0 [filters|chunks|all]"
 esac
 
+START=$(date +%s)
+
 rm bench.xml
 
 echo "<?xml version=\"1.0\" ?>" >> bench.xml
@@ -62,6 +64,10 @@ do
 		done
 	done
 done
+
+END=$(date +%s)
+DIFF=$(( $END - $START ))
+echo "<timing seconds=\"$DIFF\" />" >> bench.xml
 
 echo "</benchmark>" >> bench.xml
 
