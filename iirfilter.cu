@@ -81,9 +81,9 @@ int main(int argc, char *argv[]) {
 
 void print_prefix() {
 	if(settings.xml == 1)
-		printf("<run>\n<settings mode=\"%s\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n", (settings.mode == 0?"cpu":"gpu"), settings.filters, settings.chunksize, settings.samples);
+		printf("<run>\n<settings mode=\"%s\" matrixmode=\"%s\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n", (settings.mode == 0?"cpu":"gpu"), (settings.matrixmode == 0?"cpu":"gpu"), settings.filters, settings.chunksize, settings.samples);
 	else
-		printf("Settings:\n  Mode %s\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n", (settings.mode == 0?"CPU":"GPU"), settings.filters, settings.chunksize, settings.samples);
+		printf("Settings:\n  Mode %s\n  Matrixmode %s\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n", (settings.mode == 0?"CPU":"GPU"), (settings.matrixmode == 0?"CPU":"GPU"), settings.filters, settings.chunksize, settings.samples);
 }
 
 void print_suffix() {
