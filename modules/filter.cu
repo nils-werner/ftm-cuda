@@ -171,6 +171,7 @@ void createMatrices() {
 	}
 
 	time_stop(&timer);
+	time_print(&timer, "createm");
 }
 
 
@@ -284,7 +285,7 @@ void createBlockprocessingMatricesGPU() {
 
 
 	time_stop(&timer);
-	time_print(&timer, "BlockprocM");
+	time_print(&timer, "blockprocm");
 }
 
 
@@ -341,6 +342,7 @@ void createBlockprocessingMatrices() {
 	}
 
 	time_stop(&timer);
+	time_print(&timer, "blockproc");
 }
 
 
