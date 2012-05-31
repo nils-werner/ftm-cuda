@@ -8,14 +8,14 @@ TRIES=( 1 )
 
 case $1 in
 	"filters")
-		MODES=( gpu )
-		MATRIXMODES=( gpu )
+		MODES=( gpu cpu )
+		MATRIXMODES=( gpu cpu )
 		FILTERS=( 30 90 150 210 270 330 390 450 500 550 600 650 700 750 )
 		CHUNKSIZES=( 100 )
 		;;
 	"chunks")
-		MODES=( gpu )
-		MATRIXMODES=( gpu )
+		MODES=( gpu cpu )
+		MATRIXMODES=( gpu cpu )
 		FILTERS=( 30 )
 		CHUNKSIZES=( 25 50 75 100 125 150 175 200 225 250 )
 		;;
