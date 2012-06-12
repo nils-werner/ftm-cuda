@@ -5,5 +5,8 @@
 *.wav
 *.swp
 .*
+*.ods
+*.odt
+*.eps
 bench.xml
 bench.csv
