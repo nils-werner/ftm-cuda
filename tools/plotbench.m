@@ -22,7 +22,8 @@ gpucpu = intersect(query(M,1,'gpu'), query(M,2,'cpu'));
 cpugpu = intersect(query(M,1,'cpu'), query(M,2,'gpu'));
 cpucpu = intersect(query(M,1,'cpu'), query(M,2,'cpu'));
 
-z = get(M, roundtrip, gpugpu);
+%z = get(M, roundtrip, gpugpu);
+z = get(M, turnaround, gpugpu);
 z = blkproc(z, [tries 1], @mean);
 
 x = z(:,1);
@@ -36,10 +37,11 @@ y = y(:,1);
 z = reshape(z, nrblocksizes, []);
 
 z = z/1000000; % Microsekunden -> Sekunden
-z = 1./(z./(repmat(y, 1, nrfilters)./44100));
+%z = 1./(z./(repmat(y, 1, nrfilters)./44100));
 
 surf(x,y,z)
 
 xlabel('Filters');
 ylabel('Blocksize');
-zlabel('Multiples of Playbackspeed');
+zlabel('Seconds');
+%zlabel('Multiples of Playbackspeed');
