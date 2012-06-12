@@ -5,28 +5,44 @@ unset IFS
 MODES=( gpu cpu )
 MATRIXMODES=( gpu cpu )
 TRIES=( 1 )
+FILTERS=( 30 )
+BLOCKSIZES=( 100 )
 
-case $1 in
-	"filters")
-		MODES=( gpu cpu )
-		MATRIXMODES=( gpu cpu )
-		FILTERS=( 30 90 150 210 270 330 390 450 500 550 600 650 700 750 )
-		CHUNKSIZES=( 100 )
+
+while getopts ":b:f:t:hd" opt; do
+	case $opt in
+		b)
+			BLOCKSIZES=$(eval echo $OPTARG)
 		;;
-	"chunks")
-		MODES=( gpu cpu )
-		MATRIXMODES=( gpu cpu )
-		FILTERS=( 30 )
-		CHUNKSIZES=( 25 50 75 100 125 150 175 200 225 250 )
+		f)
+			FILTERS=$(eval echo $OPTARG)
 		;;
-	"all")
-		FILTERS=( 30 90 150 210 270 330 390 450 500 550 600 650 700 750 800 850 900 950 )
-		CHUNKSIZES=( 25 50 75 100 125 150 175 200 225 250 300 350 400 450 500 550 600 650 700 750 800 850 900 950 1000 )
-		TRIES=( 1 2 3 4 5 )
+		t)
+			TRIES=$(eval echo {1..$OPTARG})
 		;;
-	*)
-		echo "$0 [filters|chunks|all]"
-esac
+		d)
+			FILTERS=( 30 90 150 210 270 330 390 450 500 550 600 650 700 750 800 850 900 950 )
+			BLOCKSIZES=( 25 50 75 100 125 150 175 200 225 250 300 350 400 450 500 550 600 650 700 750 800 850 900 950 1000 )
+			TRIES=( 1 2 3 4 5 )
+		;;
+		h)
+			echo "Optionen:"
+			echo " -b \"{start..ende..schrittgroesse}\" Blockgroessen"
+			echo " -f \"{start..ende..schrittgroesse}\" Filteranzahl"
+			echo " -t Anzahl Versuche"
+			echo " -d Standardwerte"
+			exit 0
+		;;
+		\?)
+			echo "Invalid option: -$OPTARG" >&2
+			exit 1
+		;;
+		:)
+			echo "Option -$OPTARG requires an argument." >&2
+			exit 1
+		;;
+	esac
+done
 
 START=$(date +%s)
 
@@ -41,7 +57,7 @@ do
 	do
 		for filter in ${FILTERS[@]}
 		do
-			for chunk in ${CHUNKSIZES[@]}
+			for block in ${BLOCKSIZES[@]}
 			do
 				for try in ${TRIES[@]}
 				do
@@ -57,8 +73,8 @@ do
 						matrixmodeswitch=""
 					fi
 
-					echo "./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $chunk -x"
-					./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $chunk -x >> bench.xml;
+					echo "./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $block -x"
+					./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $block -x >> bench.xml;
 				done
 			done
 		done
