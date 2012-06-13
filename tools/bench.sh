@@ -44,6 +44,9 @@ while getopts ":b:f:t:hd" opt; do
 	esac
 done
 
+total=$(expr ${#MODES[@]} \* ${#MATRIXMODES[@]} \* ${#FILTERS[@]} \* ${#BLOCKSIZES[@]} \* ${#TRIES[@]})
+i=0
+
 START=$(date +%s)
 
 rm bench.xml
@@ -61,6 +64,7 @@ do
 			do
 				for try in ${TRIES[@]}
 				do
+					i=$(expr $i + 1)
 					if [ $mode == "gpu" ]; then
 						modeswitch="-g"
 					else
@@ -73,7 +77,7 @@ do
 						matrixmodeswitch=""
 					fi
 
-					echo "./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $block -x"
+					echo "($i/$total) ./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $block -x"
 					./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $block -x >> bench.xml;
 				done
 			done
