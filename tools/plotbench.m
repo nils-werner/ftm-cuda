@@ -1,5 +1,7 @@
 clear;
 
+figure;
+
 M = importdata('bench.csv', ';', 1);
 
 tries = 5;
@@ -22,8 +24,8 @@ gpucpu = intersect(query(M,1,'gpu'), query(M,2,'cpu'));
 cpugpu = intersect(query(M,1,'cpu'), query(M,2,'gpu'));
 cpucpu = intersect(query(M,1,'cpu'), query(M,2,'cpu'));
 
-%z = get(M, roundtrip, gpugpu);
-z = get(M, turnaround, gpugpu);
+z = get(M, roundtrip, gpugpu);
+%z = get(M, turnaround, gpugpu);
 z = blkproc(z, [tries 1], @mean);
 
 x = z(:,1);
@@ -37,11 +39,21 @@ y = y(:,1);
 z = reshape(z, nrblocksizes, []);
 
 z = z/1000000; % Microsekunden -> Sekunden
-%z = 1./(z./(repmat(y, 1, nrfilters)./44100));
+z = 1./(z./(repmat(y, 1, nrfilters)./44100));
+
+%x = x(10:18)
+%z = z(:,10:18)
 
 surf(x,y,z)
+
+%x = x(10);
+%z = z(:,10);
 
 xlabel('Filters');
 ylabel('Blocksize');
 zlabel('Seconds');
-%zlabel('Multiples of Playbackspeed');
+zlabel('Multiples of Playbackspeed');
+
+%plot(y,z);
+%ylabel('Multiples of Playbackspeed');
+%xlabel('Blocksize');
