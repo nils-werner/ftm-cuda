@@ -12,13 +12,13 @@ BLOCKSIZES=( 100 )
 while getopts ":b:f:t:hd" opt; do
 	case $opt in
 		b)
-			BLOCKSIZES=$(eval echo $OPTARG)
+			BLOCKSIZES=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
 		;;
 		f)
-			FILTERS=$(eval echo $OPTARG)
+			FILTERS=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
 		;;
 		t)
-			TRIES=$(eval echo {1..$OPTARG})
+			TRIES=( $(seq -s " " $OPTARG) )
 		;;
 		d)
 			FILTERS=( 30 90 150 210 270 330 390 450 500 550 600 650 700 750 800 850 900 950 )
