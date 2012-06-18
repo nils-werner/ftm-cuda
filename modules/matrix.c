@@ -100,7 +100,7 @@ void m_multiply(Matrix* a, Matrix* b, Matrix* c) {
 }
 
 /**
- * Multiplies two blockdiagonal matrices in a more efficient manner.
+ * Multiplies a matrix with another, blockdiagonal matrix in a more efficient manner.
  *
  * @param Matrix a
  * @param Matrix b
@@ -109,6 +109,36 @@ void m_multiply(Matrix* a, Matrix* b, Matrix* c) {
  */
 
 void m_multiplyblockdiag(Matrix* a, Matrix* b, Matrix* c, int blocksize) {
+	int i, j, k, from, to;
+	float sum = 0;
+
+	assert(a->cols == b->rows);
+	assert(c->rows == a->rows);
+	assert(c->cols == b->cols);
+
+	for(i = 0; i < a->rows; i++) {
+		for(j = 0; j < b->cols; j++) {
+			from = blocksize * (i / blocksize);
+			to = from + blocksize;
+			for(k = from; k < to; k++) {
+				sum = sum + m_get(a,i,k) * m_get(b,k,j);
+			}
+			m_set(c, i, j, sum);
+			sum = 0;
+		}
+	}
+	return;
+}
+/**
+ * Multiplies two blockdiagonal matrices in a more efficient manner.
+ *
+ * @param Matrix a
+ * @param Matrix b
+ * @param int blocksize
+ * @return Matrix
+ */
+
+void m_multiplyblockdiagblockdiag(Matrix* a, Matrix* b, Matrix* c, int blocksize) {
 	int i, j, k, from, to;
 	float sum = 0;
 
