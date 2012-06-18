@@ -147,9 +147,9 @@ void m_multiplyblockdiagblockdiag(Matrix* a, Matrix* b, Matrix* c, int blocksize
 	assert(c->cols == b->cols);
 
 	for(i = 0; i < a->rows; i++) {
-		for(j = 0; j < b->cols; j++) {
-			from = blocksize * (i / blocksize);
-			to = from + blocksize;
+		from = blocksize * (i / blocksize);
+		to = from + blocksize;
+		for(j = from; j < to; j++) {
 			for(k = from; k < to; k++) {
 				sum = sum + m_get(a,i,k) * m_get(b,k,j);
 			}
