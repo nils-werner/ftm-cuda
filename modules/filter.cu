@@ -259,7 +259,7 @@ void createBlockprocessingMatricesGPU() {
 	dim3 dimGridCA(MatrixAp.cols / dimBlockCA.x, MatrixC.rows / dimBlockCA.y);
 
 	dim3 dimBlockA(1, 1); // @TODO Optimierungspotential; groessere Werte sind kleinere Gridsize
-	dim3 dimGridA(MatrixA.cols / dimBlockA.x, 2 / dimBlockA.y);
+	dim3 dimGridA(MatrixAp.cols / dimBlockA.x, 2 / dimBlockA.y);
 
 	cudaThreadSynchronize();
 
@@ -268,7 +268,7 @@ void createBlockprocessingMatricesGPU() {
 		MatrixMultiplyKernel<<<dimGridCA, dimBlockCA, 1, streams[0]>>>(device_MatrixC, *pointer_device_MatrixAp_read, *pointer_device_MatrixCA_line_write);
 		// m_multiply(&MatrixC, pointer_MatrixAp, &MatrixCA_line);
 
-		BlockDiagMatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[2]>>>(*pointer_device_MatrixAp_read, device_MatrixA, *pointer_device_MatrixAp_write, 2);
+		BlockDiagBlockDiagMatrixMultiplyKernel<<<dimGridA, dimBlockA, 1, streams[2]>>>(*pointer_device_MatrixAp_read, device_MatrixA, *pointer_device_MatrixAp_write, 2);
 		// m_multiplyblockdiag(pointer_MatrixAp, &MatrixA, pointer_MatrixAp_tmp, 2);
 
 		cudaThreadSynchronize();
