@@ -8,5 +8,5 @@
 *.ods
 *.odt
 *.eps
-bench.xml
-bench.csv
+bench*.xml
+bench*.csv
