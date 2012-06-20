@@ -7,7 +7,7 @@ MATRIXMODES=( gpu cpu )
 TRIES=( 1 )
 FILTERS=( 30 )
 CHUNKSIZES=( 100 )
-BLOCKSIZES=( 512 )
+BLOCKSIZES=( 16 )
 MESSAGE=""
 
 
@@ -96,7 +96,7 @@ do
 						fi
 
 						if [ $matrixmode == "gpu" ]; then
-							matrixmodeswitch="-b"
+							matrixmodeswitch="-p"
 						else
 							matrixmodeswitch=""
 						fi
