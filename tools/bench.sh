@@ -66,7 +66,7 @@ if [ -n "$MESSAGE" ]; then
 	MESSAGE=-$MESSAGE
 fi
 
-total=$(expr ${#MODES[@]} \* ${#MATRIXMODES[@]} \* ${#FILTERS[@]} \* ${#CHUNKSIZES[@]} \* ${#TRIES[@]})
+total=$(expr ${#MODES[@]} \* ${#MATRIXMODES[@]} \* ${#FILTERS[@]} \* ${#CHUNKSIZES[@]} \* ${#BLOCKSIZES[@]} \* ${#TRIES[@]})
 i=0
 
 START=$(date +%s)
