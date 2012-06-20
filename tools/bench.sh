@@ -7,9 +7,10 @@ MATRIXMODES=( gpu cpu )
 TRIES=( 1 )
 FILTERS=( 30 )
 BLOCKSIZES=( 100 )
+MESSAGE=""
 
 
-while getopts ":b:f:t:c:m:dh" opt; do
+while getopts ":b:f:t:c:p:m:dh" opt; do
 	case $opt in
 		b)
 			BLOCKSIZES=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
@@ -23,8 +24,11 @@ while getopts ":b:f:t:c:m:dh" opt; do
 		c)
 			MODES=( $OPTARG )
 		;;
-		m)
+		p)
 			MATRIXMODES=( $OPTARG )
+		;;
+		m)
+			MESSAGE=$OPTARG
 		;;
 		d)
 			FILTERS=( 30 90 150 210 270 330 390 450 500 550 600 650 700 750 800 850 900 950 )
@@ -37,8 +41,9 @@ while getopts ":b:f:t:c:m:dh" opt; do
 			echo " -f [start:[schrittgroesse:]]ende Filteranzahl"
 			echo " -t Anzahl Versuche"
 			echo " -c Signal berechnen auf [cpu|gpu|cpu gpu]"
-			echo " -m Matrizen berechnen auf [cpu|gpu|cpu gpu]"
-			echo " -d Standardwerte"
+			echo " -p Matrizen berechnen auf [cpu|gpu|cpu gpu]"
+			echo " -m Testbeschreibung"
+			echo " -d Standardwerte verwenden"
 			exit 0
 		;;
 		\?)
@@ -51,6 +56,10 @@ while getopts ":b:f:t:c:m:dh" opt; do
 		;;
 	esac
 done
+
+if [ -n "$MESSAGE" ]; then
+	MESSAGE=-$MESSAGE
+fi
 
 total=$(expr ${#MODES[@]} \* ${#MATRIXMODES[@]} \* ${#FILTERS[@]} \* ${#BLOCKSIZES[@]} \* ${#TRIES[@]})
 i=0
@@ -101,5 +110,5 @@ echo "</benchmark>" >> bench.xml
 
 xsltproc tools/benchtocsv.xsl bench.xml > bench.csv
 
-mv bench.xml bench/bench-`date +%y%m%d-%H%M`.xml
-mv bench.csv bench/bench-`date +%y%m%d-%H%M`.csv
+mv bench.xml "bench/bench-`date +%y%m%d-%H%M`$MESSAGE.xml"
+mv bench.csv "bench/bench-`date +%y%m%d-%H%M`$MESSAGE.csv"
