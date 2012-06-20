@@ -92,3 +92,6 @@ echo "<timing seconds=\"$DIFF\" />" >> bench.xml
 echo "</benchmark>" >> bench.xml
 
 xsltproc tools/benchtocsv.xsl bench.xml > bench.csv
+
+mv bench.xml bench/bench-`date +%y%m%d-%H%M`.xml
+mv bench.csv bench/bench-`date +%y%m%d-%H%M`.csv
