@@ -49,11 +49,11 @@ surf(x,y,z)
 %x = x(10);
 %z = z(:,10);
 
-xlabel('Filters');
-ylabel('Blocksize');
-zlabel('Seconds');
-zlabel('Multiples of Playbackspeed');
+xlabel('Filter');
+ylabel('Blockgroesse');
+zlabel('Sekunden');
+zlabel('Vielfache der Wiedergabegeschwindigkeit');
 
 %plot(y,z);
-%ylabel('Multiples of Playbackspeed');
-%xlabel('Blocksize');
+%ylabel('Vielfache der Wiedergabegeschwindigkeit');
+%xlabel('Blockgroesse');
