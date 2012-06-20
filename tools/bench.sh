@@ -7,16 +7,20 @@ MATRIXMODES=( gpu cpu )
 TRIES=( 1 )
 FILTERS=( 30 )
 CHUNKSIZES=( 100 )
+BLOCKSIZES=( 512 )
 MESSAGE=""
 
 
-while getopts ":c:f:t:s:p:m:dh" opt; do
+while getopts ":c:f:b:t:s:p:m:dh" opt; do
 	case $opt in
 		c)
 			CHUNKSIZES=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
 		;;
 		f)
 			FILTERS=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
+		;;
+		b)
+			BLOCKSIZES=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
 		;;
 		t)
 			TRIES=( $(seq -s " " $OPTARG) )
@@ -39,6 +43,7 @@ while getopts ":c:f:t:s:p:m:dh" opt; do
 			echo "Optionen:"
 			echo " -c [start:[schrittgroesse:]]ende Chunkgroessen"
 			echo " -f [start:[schrittgroesse:]]ende Filteranzahl"
+			echo " -b [start:[schrittgroesse:]]ende CUDA-Blockgroessen"
 			echo " -t Anzahl Versuche"
 			echo " -s Signal berechnen auf [cpu|gpu|cpu gpu]"
 			echo " -p Matrizen berechnen auf [cpu|gpu|cpu gpu]"
@@ -75,27 +80,30 @@ for mode in ${MODES[@]}
 do
 	for matrixmode in ${MATRIXMODES[@]}
 	do
-		for filter in ${FILTERS[@]}
+		for block in ${BLOCKSIZES[@]}
 		do
-			for chunk in ${CHUNKSIZES[@]}
+			for filter in ${FILTERS[@]}
 			do
-				for try in ${TRIES[@]}
+				for chunk in ${CHUNKSIZES[@]}
 				do
-					i=$(expr $i + 1)
-					if [ $mode == "gpu" ]; then
-						modeswitch="-g"
-					else
-						modeswitch=""
-					fi
+					for try in ${TRIES[@]}
+					do
+						i=$(expr $i + 1)
+						if [ $mode == "gpu" ]; then
+							modeswitch="-g"
+						else
+							modeswitch=""
+						fi
 
-					if [ $matrixmode == "gpu" ]; then
-						matrixmodeswitch="-b"
-					else
-						matrixmodeswitch=""
-					fi
+						if [ $matrixmode == "gpu" ]; then
+							matrixmodeswitch="-b"
+						else
+							matrixmodeswitch=""
+						fi
 
-					echo "($i/$total) ./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $chunk -x"
-					./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $chunk -x >> bench.xml;
+						echo "($i/$total) ./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $chunk -b $block -x"
+						./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $chunk -b $block -x >> bench.xml;
+					done
 				done
 			done
 		done
