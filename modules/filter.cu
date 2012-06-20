@@ -255,10 +255,10 @@ void createBlockprocessingMatricesGPU() {
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA_line_read.elements, m_size(&device_MatrixCA_line_read)));
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA_line_write.elements, m_size(&device_MatrixCA_line_write)));
 
-	dim3 dimBlockCA(settings.blocksize, settings.blocksize); // @TODO Optimierungspotential
+	dim3 dimBlockCA(settings.blocksize, 1); // @TODO Optimierungspotential
 	dim3 dimGridCA(MatrixAp.cols / dimBlockCA.x, MatrixC.rows / dimBlockCA.y);
 
-	dim3 dimBlockA(pow(settings.blocksize,2)/2, 2); // @TODO Optimierungspotential; groessere Werte sind kleinere Gridsize
+	dim3 dimBlockA(settings.blocksize/2, 2); // @TODO Optimierungspotential; groessere Werte sind kleinere Gridsize
 	dim3 dimGridA(MatrixAp.cols / dimBlockA.x, 2 / dimBlockA.y);
 
 	cudaThreadSynchronize();
@@ -581,10 +581,10 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_write.elements, m_size(&output_chunk_write)));
 
-	dim3 dimBlockCA(pow(settings.blocksize, 2), 1); // @TODO Optimierungspotential
+	dim3 dimBlockCA(1, settings.blocksize); // @TODO Optimierungspotential
 	dim3 dimGridCA(output_chunk_read.cols / dimBlockCA.x, output_chunk_read.rows / dimBlockCA.y);
 
-	dim3 dimBlockA(1, pow(settings.blocksize,2)); // @TODO Optimierungspotential; groessere Werte sind kleinere Gridsize
+	dim3 dimBlockA(1, settings.blocksize); // @TODO Optimierungspotential; groessere Werte sind kleinere Gridsize
 	dim3 dimGridA(state.cols / dimBlockA.x, state.rows / dimBlockA.y);
 
 	cudaThreadSynchronize();
