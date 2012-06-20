@@ -4,6 +4,7 @@
 typedef struct {
 	int xml;
 	int chunksize;
+	int blocksize;
 	float length;
 	int samples;
 	int filters;

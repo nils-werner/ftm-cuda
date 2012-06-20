@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
 
 	settings.xml = 0;
 	settings.chunksize = 100;
+	settings.blocksize = 16;
 	settings.length = 0.65;
 	settings.samples = 441000;
 	settings.filters = 30;
@@ -21,12 +22,12 @@ int main(int argc, char *argv[]) {
 
 	setlocale(LC_ALL, "");
 
-	while ((c = getopt (argc, argv, "gbf:c:s:l:xh")) != -1) {
+	while ((c = getopt (argc, argv, "gpf:c:b:s:l:xh")) != -1) {
 		switch (c) {
 			case 'g':
 				settings.mode = 1;
 				break;
-			case 'b':
+			case 'p':
 				settings.matrixmode = 1;
 				break;
 			case 'f':
@@ -34,6 +35,10 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'c':
 				settings.chunksize = atoi(optarg);
+				break;
+			case 'b':
+				settings.blocksize = atoi(optarg);
+				if(settings.blocksize % 2 == 1) settings.blocksize++;
 				break;
 			case 's':
 				settings.samples = atoi(optarg)*44100;
@@ -47,7 +52,8 @@ int main(int argc, char *argv[]) {
 			case 'h':
 				printf("Available parameters:\n", argv[0]);
 				printf("  -g         use GPU for signal generation\n");
-				printf("  -b         use GPU for generating matrices\n");
+				printf("  -p         use GPU for generating matrices\n");
+				printf("  -b <int>   CUDA blocksize\n");
 				printf("  -f <int>   number of filters\n");
 				printf("  -c <int>   chunksize\n");
 				printf("  -s <int>   length of signals in seconds\n");
@@ -81,9 +87,23 @@ int main(int argc, char *argv[]) {
 
 void print_prefix() {
 	if(settings.xml == 1)
-		printf("<run>\n<settings mode=\"%s\" matrixmode=\"%s\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n", (settings.mode == 0?"cpu":"gpu"), (settings.matrixmode == 0?"cpu":"gpu"), settings.filters, settings.chunksize, settings.samples);
+		printf("<run>\n<settings mode=\"%s\" matrixmode=\"%s\" blocksize=\"%d\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n",
+				(settings.mode == 0?"cpu":"gpu"),
+				(settings.matrixmode == 0?"cpu":"gpu"),
+				settings.blocksize,
+				settings.filters,
+				settings.chunksize,
+				settings.samples
+			);
 	else
-		printf("Settings:\n  Mode %s\n  Matrixmode %s\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n", (settings.mode == 0?"CPU":"GPU"), (settings.matrixmode == 0?"CPU":"GPU"), settings.filters, settings.chunksize, settings.samples);
+		printf("Settings:\n  Mode %s\n  Matrixmode %s\n  Blocksize %d\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n",
+				(settings.mode == 0?"CPU":"GPU"),
+				(settings.matrixmode == 0?"CPU":"GPU"),
+				settings.blocksize,
+				settings.filters,
+				settings.chunksize,
+				settings.samples
+			);
 }
 
 void print_suffix() {
