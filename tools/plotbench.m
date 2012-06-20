@@ -2,10 +2,10 @@ clear;
 
 figure;
 
-M = importdata('bench.csv', ';', 1);
+M = importdata('bench/bench-120620-1341-1000plus-filter.csv', ';', 1);
 
-tries = 5;
-nrblocksizes = 25;
+tries = 3;
+nrblocksizes = 1;
 nrfilters = length(M.data)/(nrblocksizes*4*tries);
 samplerate = 44100;
 
@@ -44,16 +44,16 @@ z = 1./(z./(repmat(y, 1, nrfilters)./44100));
 %x = x(10:18)
 %z = z(:,10:18)
 
-surf(x,y,z)
+%surf(x,y,z)
 
 %x = x(10);
 %z = z(:,10);
 
-xlabel('Filter');
-ylabel('Blockgroesse');
-zlabel('Sekunden');
-zlabel('Vielfache der Wiedergabegeschwindigkeit');
+%xlabel('Filter');
+%ylabel('Blockgroesse');
+%zlabel('Sekunden');
+%zlabel('Vielfache der Wiedergabegeschwindigkeit');
 
-%plot(y,z);
-%ylabel('Vielfache der Wiedergabegeschwindigkeit');
-%xlabel('Blockgroesse');
+plot(y,z);
+ylabel('Vielfache der Wiedergabegeschwindigkeit');
+xlabel('Blockgroesse');
