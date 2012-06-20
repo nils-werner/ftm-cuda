@@ -10,7 +10,7 @@ BLOCKSIZES=( 100 )
 MESSAGE=""
 
 
-while getopts ":b:f:t:c:p:m:dh" opt; do
+while getopts ":b:f:t:s:p:m:dh" opt; do
 	case $opt in
 		b)
 			BLOCKSIZES=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
@@ -21,7 +21,7 @@ while getopts ":b:f:t:c:p:m:dh" opt; do
 		t)
 			TRIES=( $(seq -s " " $OPTARG) )
 		;;
-		c)
+		s)
 			MODES=( $OPTARG )
 		;;
 		p)
@@ -40,7 +40,7 @@ while getopts ":b:f:t:c:p:m:dh" opt; do
 			echo " -b [start:[schrittgroesse:]]ende Blockgroessen"
 			echo " -f [start:[schrittgroesse:]]ende Filteranzahl"
 			echo " -t Anzahl Versuche"
-			echo " -c Signal berechnen auf [cpu|gpu|cpu gpu]"
+			echo " -s Signal berechnen auf [cpu|gpu|cpu gpu]"
 			echo " -p Matrizen berechnen auf [cpu|gpu|cpu gpu]"
 			echo " -m Testbeschreibung"
 			echo " -d Standardwerte verwenden"
