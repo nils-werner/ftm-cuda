@@ -2,12 +2,13 @@ clear;
 
 figure;
 
-M = importdata('bench.csv', ';', 1);
+M = importdata('bench/bench-120621-1615-kleinere-bloecke.csv', ';', 1);
 
 types = 1; % gpu/gpu, cpu/cpu etc.
 tries = 3;
+nrblocklengths = 8;
 nrblocksizes = 8;
-nrfilters = length(M.data)/(nrblocksizes*types*tries);
+nrfilters = length(M.data)/(nrblocklengths*nrblocksizes*types*tries);
 samplerate = 44100;
 
 filters = 1;
@@ -29,6 +30,7 @@ cpucpu = intersect(query(M,1,'cpu'), query(M,2,'cpu'));
 %%
 
 z = get(M, roundtrip, gpugpu);
+
 %z = get(M, turnaround, gpugpu);
 z = blkproc(z, [tries 1], @mean);
 
@@ -37,22 +39,84 @@ x = z(:,2);
 y = z(:,3);
 z = z(:,4);
 
-w = reshape(w, [], nrfilters);
-w = w(1,:)';
-x = reshape(x, nrblocksizes, []);
-x = x(:,1);
-y = reshape(y, nrblocksizes, []);
-y = y(:,1);
-z = reshape(z, nrblocksizes, []);
+% chunksize -> filters -> blocklength
 
-z = z/1000000; % Microsekunden -> Sekunden
-z = 1./(z./(repmat(y, 1, nrfilters)./44100));
+% filters
+w = reshape(w, nrblocklengths, nrfilters, []);
+w = w(1,:,1);
+w = permute(w,[2 1 3]);
 
-% Filter 550-1000 extrahieren
-%x = x(10:18)
-%z = z(:,10:18)
+% blocksize
+x = reshape(x, nrblocklengths, nrfilters, []);
+x = x(1,1,:);
+x = permute(x,[3 2 1]);
 
-surf(x,y,z)
+% chunksize
+y = reshape(y, nrblocklengths, nrfilters, []);
+y = y(:,1,1);
+y = permute(y,[1 3 2]);
+
+z = reshape(z, nrblocklengths, nrfilters, []);
+z = z/1000000;
+
+%%
+
+v = z(:,4,:);
+v = permute(v,[1 3 2]);
+
+v = 1./(v./(repmat(y, 1, length(x))./44100));
+
+surf(x,y,v);
+xlabel('Blocksize');
+ylabel('Chunksize');
+zlabel('Sekunden');
+
+%%
+
+v = z(:,:,1);
+v = permute(v,[1 2 3]);
+
+v = 1./(v./(repmat(y, 1, length(w))./44100));
+
+surf(w,y,v)
+xlabel('Filter');
+ylabel('Chunksize');
+zlabel('Sekunden');
+
+%%
+
+v = z(:,:,1);
+v = permute(v,[1 2 3]);
+
+v = 1./(v./(repmat(y, 1, length(w))./44100));
+
+surf(w(16:32),y,v(:,16:32))
+xlabel('Filter');
+ylabel('Chunksize');
+zlabel('Sekunden');
+
+
+%%
+
+v = z(4,:,:);
+v = permute(v,[3 2 1]);
+v =  1./(v./y(4)./44100);
+
+surf(w,x,v)
+xlabel('Filter');
+ylabel('Blocksize');
+zlabel('Sekunden');
+
+%%
+
+
+
+
+
+
+
+
+
 
 xlabel('Filter');
 ylabel('Blockgroesse');
