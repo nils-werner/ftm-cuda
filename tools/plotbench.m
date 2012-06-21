@@ -92,7 +92,7 @@ idx = 4;
 
 v = z(idx,:,:);
 v = permute(v,[3 2 1]);
-v =  1./(v./y(idx)./44100);
+v =  1./(v./y(idx)*44100);
 
 surf(w,x,v)
 xlabel('Filter');
