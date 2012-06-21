@@ -10,11 +10,12 @@ nrfilters = length(M.data)/(nrblocksizes*4*tries);
 samplerate = 44100;
 
 filters = 1;
-blocklength = 2;
-samples = 3;
-turnaround = 4;
-roundtrip = 5;
-overall = 6;
+blocksize = 2;
+blocklength = 3;
+samples = 4;
+turnaround = 5;
+roundtrip = 6;
+overall = 7;
 
 query = inline('find(ismember(M.textdata(:,col), search)==1)-1','M','col','search');
 get = inline('M.data(val,[1 2 col])','M','col','val');
