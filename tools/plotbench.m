@@ -18,7 +18,7 @@ roundtrip = 6;
 overall = 7;
 
 query = inline('find(ismember(M.textdata(:,col), search)==1)-1','M','col','search');
-get = inline('M.data(val,[1 2 col])','M','col','val');
+get = inline('M.data(val,[1 2 3 col])','M','col','val');
 
 gpugpu = intersect(query(M,1,'gpu'), query(M,2,'gpu'));
 gpucpu = intersect(query(M,1,'gpu'), query(M,2,'cpu'));
@@ -29,12 +29,15 @@ z = get(M, roundtrip, gpugpu);
 %z = get(M, turnaround, gpugpu);
 z = blkproc(z, [tries 1], @mean);
 
-x = z(:,1);
-y = z(:,2);
-z = z(:,3);
+w = z(:,1);
+x = z(:,2);
+y = z(:,3);
+z = z(:,4);
 
-x = reshape(x, [], nrfilters);
-x = x(1,:)';
+w = reshape(w, [], nrfilters);
+w = w(1,:)';
+x = reshape(x, nrblocksizes, []);
+x = x(:,1);
 y = reshape(y, nrblocksizes, []);
 y = y(:,1);
 z = reshape(z, nrblocksizes, []);
