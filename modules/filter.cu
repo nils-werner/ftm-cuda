@@ -255,10 +255,10 @@ void createBlockprocessingMatricesGPU() {
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA_line_read.elements, m_size(&device_MatrixCA_line_read)));
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA_line_write.elements, m_size(&device_MatrixCA_line_write)));
 
-	dim3 dimBlockCA(min(settings.blocksize, MatrixAp.cols), min(settings.blocksize, MatrixC.rows));
+	dim3 dimBlockCA(min(settings.matrixblocksize, MatrixAp.cols), min(settings.matrixblocksize, MatrixC.rows));
 	dim3 dimGridCA(MatrixAp.cols / dimBlockCA.x, MatrixC.rows / dimBlockCA.y);
 
-	dim3 dimBlockA(min(settings.blocksize, MatrixAp.cols), 2);
+	dim3 dimBlockA(min(settings.matrixblocksize, MatrixAp.cols), 2);
 	dim3 dimGridA(MatrixAp.cols / dimBlockA.x, 2 / dimBlockA.y);
 
 	cudaThreadSynchronize();
