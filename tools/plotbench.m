@@ -4,9 +4,10 @@ figure;
 
 M = importdata('bench.csv', ';', 1);
 
-tries = 5;
-nrblocksizes = 25;
-nrfilters = length(M.data)/(nrblocksizes*4*tries);
+types = 1; % gpu/gpu, cpu/cpu etc.
+tries = 3;
+nrblocksizes = 8;
+nrfilters = length(M.data)/(nrblocksizes*types*tries);
 samplerate = 44100;
 
 filters = 1;
