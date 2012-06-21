@@ -10,6 +10,7 @@ typedef struct {
 	int filters;
 	int mode;
 	int matrixmode;
+	int matrixblocksize;
 } Settings;
 
 #endif
