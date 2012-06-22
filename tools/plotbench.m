@@ -67,6 +67,7 @@ v = permute(v,[1 3 2]);
 v = 1./(v./(repmat(y, 1, length(x))./44100));
 
 surf(x,y,v);
+axis vis3d
 xlabel('Blockgroesse');
 ylabel('Chunkgroesse');
 zlabel('Vielfache der Wiedergabegeschwindigkeit');
@@ -83,6 +84,7 @@ v = permute(v,[1 2 3]);
 v = 1./(v./(repmat(y, 1, length(w))./44100));
 
 surf(w,y,v)
+axis vis3d
 xlabel('Filter');
 ylabel('Chunkgroesse');
 zlabel('Vielfache der Wiedergabegeschwindigkeit');
@@ -99,6 +101,7 @@ v = permute(v,[3 2 1]);
 v =  1./(v./y(idx)*44100);
 
 surf(w,x,v)
+axis vis3d
 xlabel('Filter');
 ylabel('Blockgroesse');
 zlabel('Vielfache der Wiedergabegeschwindigkeit');
