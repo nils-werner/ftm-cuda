@@ -58,7 +58,9 @@ z = reshape(z, nr_chunksizes, nr_filters, []);
 z = z/1000000;
 
 %%
+
 idx = 1;
+disp(['Displaying item ', num2str(idx), ' of ', num2str(length(w))])
 
 v = z(:,idx,:);
 v = permute(v,[1 3 2]);
@@ -69,10 +71,12 @@ surf(x,y,v);
 xlabel('Blocksize');
 ylabel('Chunksize');
 zlabel('Vielfache der Wiedergabegeschwindigkeit');
-
+legend(sprintf('Filters %d', w(idx)));
 
 %%
+
 idx = 1;
+disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
 
 v = z(:,:,idx);
 v = permute(v,[1 2 3]);
@@ -83,21 +87,23 @@ surf(w,y,v)
 xlabel('Filter');
 ylabel('Chunksize');
 zlabel('Vielfache der Wiedergabegeschwindigkeit');
-
+legend(sprintf('Blocksize %d', x(idx)));
 
 %%
 
-
 idx = 1;
+disp(['Displaying item ', num2str(idx), ' of ', num2str(length(y))])
 
 v = z(idx,:,:);
 v = permute(v,[3 2 1]);
+
 v =  1./(v./y(idx)*44100);
 
 surf(w,x,v)
 xlabel('Filter');
 ylabel('Blocksize');
 zlabel('Vielfache der Wiedergabegeschwindigkeit');
+legend(sprintf('Chunksize %d', y(idx)));
 
 %%
 
