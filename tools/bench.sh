@@ -12,7 +12,7 @@ MATRIXBLOCKSIZES=( 64 )
 MESSAGE=""
 
 
-while getopts ":c:f:b:t:s:p:m:dh" opt; do
+while getopts ":c:f:b:t:s:p:m:d:h" opt; do
 	case $opt in
 		c)
 			CHUNKSIZES=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
