@@ -40,21 +40,21 @@ z = z(:,4);
 % chunksize -> filters -> blocklength
 
 % filters
-w = reshape(w, nr_blocksizes, nr_filters, []);
+w = reshape(w, nr_chunksizes, nr_filters, []);
 w = w(1,:,1);
 w = permute(w,[2 1 3]);
 
 % blocksize
-x = reshape(x, nr_blocksizes, nr_filters, []);
+x = reshape(x, nr_chunksizes, nr_filters, []);
 x = x(1,1,:);
 x = permute(x,[3 2 1]);
 
 % chunksize
-y = reshape(y, nr_blocksizes, nr_filters, []);
+y = reshape(y, nr_chunksizes, nr_filters, []);
 y = y(:,1,1);
 y = permute(y,[1 3 2]);
 
-z = reshape(z, nr_blocksizes, nr_filters, []);
+z = reshape(z, nr_chunksizes, nr_filters, []);
 z = z/1000000;
 
 %%
