@@ -10,7 +10,7 @@
 </xsl:template>
 
 <xsl:template match="benchmark">
-	<xsl:text>Mode;Matrixmode;Filters;Chunksize;Blocksize;Samples;Turnaround;Roundtrip;Overall
+	<xsl:text>Mode;Matrixmode;Filters;Blocksize;Chunksize;Samples;Turnaround;Roundtrip;Overall
 </xsl:text>
 	<xsl:apply-templates select="run" />
 </xsl:template>
