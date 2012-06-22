@@ -2,11 +2,11 @@ clear;
 
 M = importdata('bench/bench-120621-1615-kleinere-bloecke.csv', ';', 1);
 
-nr_types = 1; % gpu/gpu, cpu/cpu etc.
-nr_tries = 3;
-nr_blocksizes = 8;
-nr_chunksizes = 8;
-nr_filters = length(M.data)/(nr_blocksizes*nr_chunksizes*nr_types*nr_tries);
+nr_types = length(unique(M.textdata(2:end,1))) * length(unique(M.textdata(2:end,2)));
+nr_filters = length(unique(M.data(:,1)));
+nr_blocksizes = length(unique(M.data(:,2)));
+nr_chunksizes = length(unique(M.data(:,3)));
+nr_tries = length(M.data(:,3)) / (nr_chunksizes*nr_blocksizes*nr_filters*nr_types);
 samplerate = 44100;
 
 filters = 1;
