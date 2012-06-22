@@ -58,7 +58,7 @@ z = reshape(z, nr_chunksizes, nr_filters, []);
 z = z/1000000;
 
 %%
-idx = 45;
+idx = 1;
 
 v = z(:,idx,:);
 v = permute(v,[1 3 2]);
@@ -79,7 +79,7 @@ v = permute(v,[1 2 3]);
 
 v = 1./(v./(repmat(y, 1, length(w))./44100));
 
-surf(w(10:20),y,v(:,10:20))
+surf(w,y,v)
 xlabel('Filter');
 ylabel('Chunksize');
 zlabel('Vielfache der Wiedergabegeschwindigkeit');
@@ -88,7 +88,7 @@ zlabel('Vielfache der Wiedergabegeschwindigkeit');
 %%
 
 
-idx = 4;
+idx = 1;
 
 v = z(idx,:,:);
 v = permute(v,[3 2 1]);
