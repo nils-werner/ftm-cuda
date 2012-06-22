@@ -25,7 +25,6 @@ gpucpu = intersect(query(M,1,'gpu'), query(M,2,'cpu'));
 cpugpu = intersect(query(M,1,'cpu'), query(M,2,'gpu'));
 cpucpu = intersect(query(M,1,'cpu'), query(M,2,'cpu'));
 
-%%
 
 z = get(M, roundtrip, gpugpu);
 
@@ -68,10 +67,10 @@ v = permute(v,[1 3 2]);
 v = 1./(v./(repmat(y, 1, length(x))./44100));
 
 surf(x,y,v);
-xlabel('Blocksize');
-ylabel('Chunksize');
+xlabel('Blockgroesse');
+ylabel('Chunkgroesse');
 zlabel('Vielfache der Wiedergabegeschwindigkeit');
-legend(sprintf('Filters %d', w(idx)));
+legend(sprintf('Filter %d', w(idx)));
 
 %%
 
@@ -85,9 +84,9 @@ v = 1./(v./(repmat(y, 1, length(w))./44100));
 
 surf(w,y,v)
 xlabel('Filter');
-ylabel('Chunksize');
+ylabel('Chunkgroesse');
 zlabel('Vielfache der Wiedergabegeschwindigkeit');
-legend(sprintf('Blocksize %d', x(idx)));
+legend(sprintf('Blockgroesse %d', x(idx)));
 
 %%
 
@@ -101,31 +100,6 @@ v =  1./(v./y(idx)*44100);
 
 surf(w,x,v)
 xlabel('Filter');
-ylabel('Blocksize');
-zlabel('Vielfache der Wiedergabegeschwindigkeit');
-legend(sprintf('Chunksize %d', y(idx)));
-
-%%
-
-
-
-
-
-
-
-
-
-
-xlabel('Filter');
 ylabel('Blockgroesse');
-zlabel('Sekunden');
 zlabel('Vielfache der Wiedergabegeschwindigkeit');
-
-%%
-
-x = x(10);
-z = z(:,10);
-
-plot(y,z);
-ylabel('Vielfache der Wiedergabegeschwindigkeit');
-xlabel('Blockgroesse');
+legend(sprintf('Chunkgroesse %d', y(idx)));
