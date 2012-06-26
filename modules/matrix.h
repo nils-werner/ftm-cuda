@@ -21,6 +21,7 @@ void m_multiply(Matrix*, Matrix*, Matrix*);
 void m_blockdiagmultiply(Matrix*, Matrix*, Matrix*,  int);
 void m_multiplyblockdiag(Matrix*, Matrix*, Matrix*,  int);
 void m_multiplyblockdiagblockdiag(Matrix*, Matrix*, Matrix*,  int);
+void m_identityblockdiag(Matrix*, int);
 void m_identity(Matrix*);
 void m_fill(Matrix*);
 void m_filllimit(Matrix*, float, float);

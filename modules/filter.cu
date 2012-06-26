@@ -123,7 +123,7 @@ void createMatrices() {
 	double a, b, c1, c0;
 
 	m_new(&MatrixC, 1, 2 * synth.filters);
-	m_new(&MatrixA, 2 * synth.filters, 2 * synth.filters); //BLOCKMATRIX
+	m_new(&MatrixA, 2 * synth.filters, 2); //BLOCKMATRIX
 	m_new(&state, 2 * synth.filters, 1);
 
 	Timer timer;
@@ -160,10 +160,10 @@ void createMatrices() {
 		m_set(&MatrixC, 0, 2*i  , 0);
 		m_set(&MatrixC, 0, 2*i+1, a);
 
-		m_set(&MatrixA, 2*i  , 2*i  , 0);
-		m_set(&MatrixA, 2*i  , 2*i+1, -c0);
-		m_set(&MatrixA, 2*i+1, 2*i  , 1);
-		m_set(&MatrixA, 2*i+1, 2*i+1, -c1);
+		m_set(&MatrixA, 2*i  , 0, 0);
+		m_set(&MatrixA, 2*i  , 1, -c0);
+		m_set(&MatrixA, 2*i+1, 0, 1);
+		m_set(&MatrixA, 2*i+1, 1, -c1);
 
 		m_set(&state, 2*i  , 0, 0);
 		m_set(&state ,2*i+1, 0, 1);
@@ -220,10 +220,10 @@ void createBlockprocessingMatricesGPU() {
 		cudaStreamCreate(& streams[i]);
 	}
 
-	m_new(&MatrixCA, synth.blocksize, MatrixA.cols);
+	m_new(&MatrixCA, synth.blocksize, MatrixA.rows);
 	m_new(&MatrixAp, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_new(&device_MatrixA, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
-	m_new(&device_MatrixCA, synth.blocksize, MatrixA.cols);
+	m_new(&device_MatrixCA, MatrixCA.rows, MatrixCA.cols);
 	m_new(&device_MatrixAp, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_new(&device_MatrixAp_write, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
 	m_new(&device_MatrixAp_read, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
@@ -235,7 +235,7 @@ void createBlockprocessingMatricesGPU() {
 	m_prepare_multiply(&MatrixAp, &MatrixA, &device_MatrixAp_read);
 	m_prepare_multiply(&MatrixAp, &MatrixA, &device_MatrixAp_write);
 
-	m_identity(&MatrixAp);
+	m_identityblockdiag(&MatrixAp, 2);
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp.elements, m_size(&MatrixAp)));
 
@@ -328,9 +328,9 @@ void createBlockprocessingMatrices() {
 
 	pointer_MatrixAp_tmp = &MatrixAp_tmp;
 
-	m_new(&MatrixCA, synth.blocksize, MatrixA.cols);
+	m_new(&MatrixCA, synth.blocksize, MatrixA.rows);
 	m_new(&MatrixAp, MatrixA.rows, MatrixA.cols); // BLOCKDIAGMATRIX
-	m_identity(&MatrixAp);
+	m_identityblockdiag(&MatrixAp, 2);
 
 	m_prepare_multiply(&MatrixC, &MatrixAp, &MatrixCA_line);
 	m_prepare_multiply(&MatrixAp, &MatrixA, &MatrixAp_tmp);
