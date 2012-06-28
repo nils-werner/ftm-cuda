@@ -106,3 +106,20 @@ xlabel('Filter');
 ylabel('Blockgroesse');
 zlabel('Vielfache der Wiedergabegeschwindigkeit');
 legend(sprintf('Chunkgroesse %d', y(idx)));
+
+%%
+
+idx = 1;
+idy = 1;
+disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
+
+v = z(:,idy,idx);
+v = permute(v,[1 2 3]);
+
+%v = 1./(v./(repmat(y, 1, length(w))./44100));
+
+plot(y,v)
+axis vis3d
+xlabel('Chunkgroesse');
+ylabel('Vielfache der Wiedergabegeschwindigkeit');
+legend(sprintf('Filter %d', w(idy)));
