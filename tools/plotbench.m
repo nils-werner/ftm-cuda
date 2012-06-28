@@ -116,7 +116,7 @@ disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
 v = z(:,idy,idx);
 v = permute(v,[1 2 3]);
 
-%v = 1./(v./(repmat(y, 1, length(w))./44100));
+v = 1./(v./y.*44100);
 
 plot(y,v)
 axis vis3d
