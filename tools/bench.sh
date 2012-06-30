@@ -12,7 +12,7 @@ MATRIXBLOCKSIZES=( 128 )
 MESSAGE=""
 
 
-while getopts ":c:f:b:t:s:p:m:d:h" opt; do
+while getopts ":c:f:b:t:s:p:m:d:ho" opt; do
 	case $opt in
 		c)
 			CHUNKSIZES=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
@@ -38,6 +38,11 @@ while getopts ":c:f:b:t:s:p:m:d:h" opt; do
 		d)
 			MESSAGE=$OPTARG
 		;;
+		o)
+			FILTERS=( 30 90 150 210 270 330 390 450 500 550 600 650 700 750 800 850 900 950 )
+			CHUNKSIZES=( 25 50 75 100 125 150 175 200 225 250 300 350 400 450 500 550 600 650 700 750 800 850 900 950 1000 )
+			TRIES=( 1 2 3 4 5 )
+		;;
 		h)
 			echo "Optionen:"
 			echo " -c [start:[schrittgroesse:]]ende Chunkgroessen"
@@ -48,6 +53,7 @@ while getopts ":c:f:b:t:s:p:m:d:h" opt; do
 			echo " -s Signal berechnen auf [cpu|gpu|cpu gpu]"
 			echo " -p Matrizen berechnen auf [cpu|gpu|cpu gpu]"
 			echo " -d Testbeschreibung"
+			echo " -o Original-Testbereiche"
 			exit 0
 		;;
 		\?)
