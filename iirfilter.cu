@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 	int c;
 
 	settings.xml = 0;
-	settings.chunksize = 384;
+	settings.chunksize = 720;
 	settings.blocksize = 6;
 	settings.length = 0.65;
 	settings.samples = 441000;
