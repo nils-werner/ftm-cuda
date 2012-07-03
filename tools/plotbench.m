@@ -1,6 +1,7 @@
 clear;
 
-M = importdata('bench/bench-120621-1615-kleinere-bloecke.csv', ';', 1);
+M = importdata('bench/bench-120628-1214-abbildung-6-6.csv', ';', 1);
+%M = importdata('bench/bench-120620-0000-all-nach-blockopt.csv', ';', 1);
 
 nr_types = length(unique(M.textdata(2:end,1))) * length(unique(M.textdata(2:end,2)));
 nr_filters = length(unique(M.data(:,1)));
@@ -27,6 +28,7 @@ cpucpu = intersect(query(M,1,'cpu'), query(M,2,'cpu'));
 
 
 z = get(M, roundtrip, gpugpu);
+%z = get(M, roundtrip, cpucpu);
 
 %z = get(M, turnaround, gpugpu);
 z = blkproc(z, [nr_tries 1], @mean);
@@ -126,14 +128,16 @@ legend(sprintf('Filter %d', w(idy)));
 
 %%
 
+hold on
 idx = 1;
 idy = 22;
+%idy = 19;
 disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
 
 v = z(idy,:,idx);
 v = permute(v,[1 2 3]);
 
-v = 1./(v./y(idx).*44100);
+v = 1./(v./y(idy).*44100);
 
 plot(w,v)
 axis vis3d
