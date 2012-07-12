@@ -287,6 +287,27 @@ size_t m_size(Matrix* m) {
 }
 
 /**
+ * Transposes a matrix
+ *
+ * @param *Matrix a
+ * @return void
+ */
+
+void m_transpose(Matrix *m) {
+	float tmp;
+	int tmpint;
+	for (int i = 0; i < m->cols; i++) {
+		for (int j = i+1; j < m->rows; j++) {
+			tmp = m->elements[i * m->cols + j];
+			m->elements[i * m->cols + j] = m->elements[j * m->cols + i];
+			m->elements[j * m->cols + i] = tmp;
+		}
+	}
+	tmpint = m->rows;
+	m->rows = m->cols;
+	m->cols = tmpint;
+}
+/**
  * Swaps two matrix pointers, called by reference
  *
  * @param *Matrix a

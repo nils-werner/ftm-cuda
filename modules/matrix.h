@@ -27,6 +27,7 @@ void m_filllimit(Matrix*, float, float);
 void m_print(Matrix*);
 void m_stat(Matrix*);
 size_t m_size(Matrix*);
+void m_transpose(Matrix*);
 void m_swap(Matrix**, Matrix**);
 
 
