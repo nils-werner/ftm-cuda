@@ -336,7 +336,7 @@ void createBlockprocessingMatrices() {
 	m_prepare_multiply(&MatrixAp, &MatrixA, &MatrixAp_tmp);
 
 	for(i = 1; i <= synth.blocksize; i++) {
-		m_multiply(&MatrixC, pointer_MatrixAp, &MatrixCA_line);
+		m_blockdiagmultiply(&MatrixC, pointer_MatrixAp, &MatrixCA_line, 2);
 
 		for(j = 0; j < MatrixCA_line.cols; j++) {
 			m_set(&MatrixCA, i-1, j, m_get(&MatrixCA_line, 0, j));
