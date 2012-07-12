@@ -18,6 +18,7 @@ void m_set(Matrix*, int, int, float);
 float m_get(Matrix*, int, int);
 void m_prepare_multiply(Matrix*, Matrix*, Matrix*);
 void m_multiply(Matrix*, Matrix*, Matrix*);
+void m_blockdiagmultiply(Matrix*, Matrix*, Matrix*,  int);
 void m_multiplyblockdiag(Matrix*, Matrix*, Matrix*,  int);
 void m_multiplyblockdiagblockdiag(Matrix*, Matrix*, Matrix*,  int);
 void m_identity(Matrix*);
