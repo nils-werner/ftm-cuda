@@ -8,5 +8,6 @@
 *.ods
 *.odt
 *.eps
+*.nvvp
 bench*.xml
 bench*.csv
