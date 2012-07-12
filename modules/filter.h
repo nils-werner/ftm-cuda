@@ -6,6 +6,7 @@
 #include <sndfile.h>
 #include "cuda/matrixmultiply.kernel.h"
 #include "cuda/matrixblockdiagmultiply.kernel.h"
+#include "cuda/matrixmultiplytransposed.kernel.h"
 #include "cuda/blockdiagmatrixmultiply.kernel.h"
 #include "cuda/blockdiagblockdiagmatrixmultiply.kernel.h"
 #include <cuda_runtime.h>

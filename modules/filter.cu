@@ -237,6 +237,8 @@ void createBlockprocessingMatricesGPU() {
 
 	m_identity(&MatrixAp);
 
+	m_transpose(&MatrixC);
+
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp.elements, m_size(&MatrixAp)));
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixAp_read.elements, m_size(&MatrixAp)));
