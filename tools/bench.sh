@@ -2,48 +2,58 @@
 
 unset IFS
 
-MODES=( gpu cpu )
-MATRIXMODES=( gpu cpu )
-TRIES=( 1 )
-FILTERS=( 30 )
-BLOCKSIZES=( 100 )
+MODES=( gpu )
+MATRIXMODES=( gpu )
+TRIES=( 1 2 3 )
+FILTERS=( 32 )
+CHUNKSIZES=( 720 )
+BLOCKSIZES=( 6 )
+MATRIXBLOCKSIZES=( 128 )
 MESSAGE=""
 
 
-while getopts ":b:f:t:c:p:m:dh" opt; do
+while getopts ":c:f:b:t:s:p:m:d:ho" opt; do
 	case $opt in
-		b)
-			BLOCKSIZES=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
+		c)
+			CHUNKSIZES=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
 		;;
 		f)
 			FILTERS=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
 		;;
+		b)
+			BLOCKSIZES=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
+		;;
+		m)
+			MATRIXBLOCKSIZES=( $(echo $OPTARG | sed -e "s/:/ /g" | xargs seq -s " ") )
+		;;
 		t)
 			TRIES=( $(seq -s " " $OPTARG) )
 		;;
-		c)
+		s)
 			MODES=( $OPTARG )
 		;;
 		p)
 			MATRIXMODES=( $OPTARG )
 		;;
-		m)
+		d)
 			MESSAGE=$OPTARG
 		;;
-		d)
+		o)
 			FILTERS=( 30 90 150 210 270 330 390 450 500 550 600 650 700 750 800 850 900 950 )
-			BLOCKSIZES=( 25 50 75 100 125 150 175 200 225 250 300 350 400 450 500 550 600 650 700 750 800 850 900 950 1000 )
+			CHUNKSIZES=( 25 50 75 100 125 150 175 200 225 250 300 350 400 450 500 550 600 650 700 750 800 850 900 950 1000 )
 			TRIES=( 1 2 3 4 5 )
 		;;
 		h)
 			echo "Optionen:"
-			echo " -b [start:[schrittgroesse:]]ende Blockgroessen"
+			echo " -c [start:[schrittgroesse:]]ende Chunkgroessen"
 			echo " -f [start:[schrittgroesse:]]ende Filteranzahl"
+			echo " -b [start:[schrittgroesse:]]ende CUDA-Blockgroessen"
+			echo " -m [start:[schrittgroesse:]]ende CUDA-Blockgroessen fuer Matrixerzeugung"
 			echo " -t Anzahl Versuche"
-			echo " -c Signal berechnen auf [cpu|gpu|cpu gpu]"
+			echo " -s Signal berechnen auf [cpu|gpu|cpu gpu]"
 			echo " -p Matrizen berechnen auf [cpu|gpu|cpu gpu]"
-			echo " -m Testbeschreibung"
-			echo " -d Standardwerte verwenden"
+			echo " -d Testbeschreibung"
+			echo " -o Original-Testbereiche"
 			exit 0
 		;;
 		\?)
@@ -61,7 +71,7 @@ if [ -n "$MESSAGE" ]; then
 	MESSAGE=-$MESSAGE
 fi
 
-total=$(expr ${#MODES[@]} \* ${#MATRIXMODES[@]} \* ${#FILTERS[@]} \* ${#BLOCKSIZES[@]} \* ${#TRIES[@]})
+total=$(expr ${#MODES[@]} \* ${#MATRIXMODES[@]} \* ${#FILTERS[@]} \* ${#CHUNKSIZES[@]} \* ${#MATRIXBLOCKSIZES[@]} \* ${#BLOCKSIZES[@]} \* ${#TRIES[@]})
 i=0
 
 START=$(date +%s)
@@ -75,27 +85,33 @@ for mode in ${MODES[@]}
 do
 	for matrixmode in ${MATRIXMODES[@]}
 	do
-		for filter in ${FILTERS[@]}
+		for matrixblock in ${MATRIXBLOCKSIZES[@]}
 		do
 			for block in ${BLOCKSIZES[@]}
 			do
-				for try in ${TRIES[@]}
+				for filter in ${FILTERS[@]}
 				do
-					i=$(expr $i + 1)
-					if [ $mode == "gpu" ]; then
-						modeswitch="-g"
-					else
-						modeswitch=""
-					fi
+					for chunk in ${CHUNKSIZES[@]}
+					do
+						for try in ${TRIES[@]}
+						do
+							i=$(expr $i + 1)
+							if [ $mode == "gpu" ]; then
+								modeswitch="-g"
+							else
+								modeswitch=""
+							fi
 
-					if [ $matrixmode == "gpu" ]; then
-						matrixmodeswitch="-b"
-					else
-						matrixmodeswitch=""
-					fi
+							if [ $matrixmode == "gpu" ]; then
+								matrixmodeswitch="-p"
+							else
+								matrixmodeswitch=""
+							fi
 
-					echo "($i/$total) ./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $block -x"
-					./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $block -x >> bench.xml;
+							echo "($i/$total) ./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $chunk -b $block -m $matrixblock -x"
+							./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $chunk -b $block -m $matrixblock -x >> bench.xml;
+						done
+					done
 				done
 			done
 		done

@@ -4,11 +4,13 @@
 typedef struct {
 	int xml;
 	int chunksize;
+	int blocksize;
 	float length;
 	int samples;
 	int filters;
 	int mode;
 	int matrixmode;
+	int matrixblocksize;
 } Settings;
 
 #endif

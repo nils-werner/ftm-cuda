@@ -1,5 +1,6 @@
 #include <locale.h>
 #include <unistd.h>
+#include <getopt.h>
 #include <ctype.h>
 #include "modules/filter.h"
 #include "modules/settings.h"
