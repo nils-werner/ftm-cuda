@@ -70,9 +70,9 @@ v = 1./(v./(repmat(y, 1, length(x))./44100));
 
 surf(x,y,v);
 axis vis3d
-xlabel('Blockgroesse');
-ylabel('Chunkgroesse');
-zlabel('Vielfache der Wiedergabegeschwindigkeit');
+xlabel('b');
+ylabel('c');
+zlabel('v');
 legend(sprintf('Filter %d', w(idx)));
 
 %%
@@ -87,9 +87,9 @@ v = 1./(v./(repmat(y, 1, length(w))./44100));
 
 surf(w,y,v)
 axis vis3d
-xlabel('Filter');
-ylabel('Chunkgroesse');
-zlabel('Vielfache der Wiedergabegeschwindigkeit');
+xlabel('f');
+ylabel('c');
+zlabel('v');
 legend(sprintf('Blockgroesse %d', x(idx)));
 
 %%
@@ -104,9 +104,9 @@ v =  1./(v./y(idx)*44100);
 
 surf(w,x,v)
 axis vis3d
-xlabel('Filter');
-ylabel('Blockgroesse');
-zlabel('Vielfache der Wiedergabegeschwindigkeit');
+xlabel('f');
+ylabel('b');
+zlabel('v');
 legend(sprintf('Chunkgroesse %d', y(idx)));
 
 %%
@@ -122,8 +122,8 @@ v = 1./(v./y.*44100);
 
 plot(y,v)
 axis vis3d
-xlabel('Chunkgroesse');
-ylabel('Vielfache der Wiedergabegeschwindigkeit');
+xlabel('c');
+ylabel('v');
 legend(sprintf('Filter %d', w(idy)));
 
 %%
@@ -141,6 +141,6 @@ v = 1./(v./y(idy).*44100);
 
 plot(w,v)
 axis vis3d
-xlabel('Filter');
-ylabel('Vielfache der Wiedergabegeschwindigkeit');
+xlabel('f');
+ylabel('v');
 legend(sprintf('Chunkgroesse %d', y(idy)));
