@@ -3,7 +3,7 @@ clear;
 M = importdata('bench/bench-120628-1214-abbildung-6-6.csv', ';', 1);
 %M = importdata('bench/bench-120620-0000-all-nach-blockopt.csv', ';', 1);
 
-nr_types = length(unique(M.textdata(2:end,1))) * length(unique(M.textdata(2:end,2)));
+nr_types = length(unique(strcat(M.textdata(2:end,1),M.textdata(2:end,2))));
 nr_filters = length(unique(M.data(:,1)));
 nr_blocksizes = length(unique(M.data(:,2)));
 nr_chunksizes = length(unique(M.data(:,3)));
