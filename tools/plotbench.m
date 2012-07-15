@@ -26,11 +26,23 @@ gpucpu = intersect(query(M,1,'gpu'), query(M,2,'cpu'));
 cpugpu = intersect(query(M,1,'cpu'), query(M,2,'gpu'));
 cpucpu = intersect(query(M,1,'cpu'), query(M,2,'cpu'));
 
+modes = [gpugpu, cpucpu, cpugpu, gpucpu];
+timers = [roundtrip, turnaround];
 
-z = get(M, roundtrip, gpugpu);
-%z = get(M, roundtrip, cpucpu);
 
-%z = get(M, turnaround, gpugpu);
+in_mode = input(' 1: GPU/GPU\n 2: CPU/CPU\n 3: CPU/GPU\n 4: GPU/CPU\nWhat data do you want to load? [1] ');
+if isempty(in_mode) || in_mode > 4
+    in_mode = 1;
+end
+
+in_timer = input(' 1: Roundtrip\n 2: Turnaround\nWhat timer do you want to load? [1] ');
+if isempty(in_timer) || in_timer > 2
+    in_timer = 1;
+end
+
+
+z = get(M, timers(in_timer), modes(:,in_mode));
+
 z = blkproc(z, [nr_tries 1], @mean);
 
 w = z(:,1);
@@ -58,58 +70,94 @@ y = permute(y,[1 3 2]);
 z = reshape(z, nr_chunksizes, nr_filters, []);
 z = z/1000000;
 
+question = '';
+
+in_display = input(sprintf(' 1: Filter (%d)\n 2: Blocksize (%d)\n 3: Chunksize (%d)\nWhat variable do you want to select from? [1] ', length(w), length(x), length(y)));
+if isempty(in_display) || in_display > 3
+    in_display = 1;
+end
+
+if (in_display == 1 && length(w) > 1) || (in_display == 2 && length(x) > 1) || (in_display == 3 && length(y) > 1)
+    idx = input(sprintf('What entry do you want to see? [1] ', length(w), length(x), length(y)));
+    if isempty(idx)
+        idx = 1;
+    end
+else
+    idx = 1;
+end
+
+if in_display == 1
+    % Geschwindigkeit über Blocksize und Chunksize
+    idx = 1;
+    disp(['Displaying item ', num2str(idx), ' of ', num2str(length(w))])
+
+    v = z(:,idx,:);
+    v = permute(v,[1 3 2]);
+
+    if in_timer == 1
+        v = 1./(v./(repmat(y, 1, length(x))./44100));
+    end
+
+    surf(x,y,v);
+    axis vis3d
+    xlabel('b');
+    ylabel('c');
+    zlabel('v');
+    legend(sprintf('Filter %d', w(idx)));
+elseif in_display == 2
+    % Geschwindigkeit über Filter und Chunksize
+    idx = 1;
+    disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
+
+    v = z(:,:,idx);
+    v = permute(v,[1 2 3]);
+
+    if in_timer == 1
+        v = 1./(v./(repmat(y, 1, length(w))./44100));
+    end
+
+    surf(w,y,v)
+    axis vis3d
+    xlabel('f');
+    ylabel('c');
+    zlabel('v');
+    legend(sprintf('Blockgroesse %d', x(idx)));
+elseif in_display == 3
+    % Geschwindigkeit über Filter und Blocksize
+    idx = 1;
+    disp(['Displaying item ', num2str(idx), ' of ', num2str(length(y))])
+
+    v = z(idx,:,:);
+    v = permute(v,[3 2 1]);
+
+    if in_timer == 1
+        v =  1./(v./y(idx)*44100);
+    end
+
+    surf(w,x,v)
+    axis vis3d
+    xlabel('f');
+    ylabel('b');
+    zlabel('v');
+    legend(sprintf('Chunkgroesse %d', y(idx)));
+end
+
 %%
 
-idx = 1;
-disp(['Displaying item ', num2str(idx), ' of ', num2str(length(w))])
 
-v = z(:,idx,:);
-v = permute(v,[1 3 2]);
 
-v = 1./(v./(repmat(y, 1, length(x))./44100));
 
-surf(x,y,v);
-axis vis3d
-xlabel('b');
-ylabel('c');
-zlabel('v');
-legend(sprintf('Filter %d', w(idx)));
 
-%%
 
-idx = 1;
-disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
 
-v = z(:,:,idx);
-v = permute(v,[1 2 3]);
 
-v = 1./(v./(repmat(y, 1, length(w))./44100));
 
-surf(w,y,v)
-axis vis3d
-xlabel('f');
-ylabel('c');
-zlabel('v');
-legend(sprintf('Blockgroesse %d', x(idx)));
 
-%%
 
-idx = 1;
-disp(['Displaying item ', num2str(idx), ' of ', num2str(length(y))])
 
-v = z(idx,:,:);
-v = permute(v,[3 2 1]);
 
-v =  1./(v./y(idx)*44100);
 
-surf(w,x,v)
-axis vis3d
-xlabel('f');
-ylabel('b');
-zlabel('v');
-legend(sprintf('Chunkgroesse %d', y(idx)));
 
-%%
 
 idx = 1;
 idy = 1;
@@ -118,7 +166,9 @@ disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
 v = z(:,idy,idx);
 v = permute(v,[1 2 3]);
 
-v = 1./(v./y.*44100);
+if in_timer == 1
+    v = 1./(v./y.*44100);
+end
 
 plot(y,v)
 axis vis3d
@@ -137,7 +187,9 @@ disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
 v = z(idy,:,idx);
 v = permute(v,[1 2 3]);
 
-v = 1./(v./y(idy).*44100);
+if in_timer == 1
+    v = 1./(v./y(idy).*44100);
+end
 
 plot(w,v)
 axis vis3d
