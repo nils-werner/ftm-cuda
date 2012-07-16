@@ -109,7 +109,7 @@ struct option longopts[] = {
 
 void print_prefix() {
 	if(settings.xml == 1)
-		printf("<run>\n<settings mode=\"%s\" matrixmode=\"%s\" blocksize=\"%d\" matrixblocksize=\"%d\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n",
+		printf("<usedsettings mode=\"%s\" matrixmode=\"%s\" blocksize=\"%d\" matrixblocksize=\"%d\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n",
 				(settings.mode == 0?"cpu":"gpu"),
 				(settings.matrixmode == 0?"cpu":"gpu"),
 				settings.blocksize,
@@ -131,6 +131,4 @@ void print_prefix() {
 }
 
 void print_suffix() {
-	if(settings.xml == 1)
-		printf("</run>\n");
 }
