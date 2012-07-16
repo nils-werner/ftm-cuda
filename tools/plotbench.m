@@ -1,9 +1,7 @@
 clear;
 
-M = importdata('bench/bench-120716-1903-getrennte-params.csv', ';', 1);
+M = importdata('bench/bench-120716-2114-getrennte-params-nochmal.csv', ';', 1);
 %M = importdata('bench/bench-120620-0000-all-nach-blockopt.csv', ';', 1);
-
-
 
 filters = 1;
 blocksize = 2;
@@ -68,30 +66,31 @@ y = unique(M.data(:,chunksize));
 z = reshape(z, nr_chunksizes, nr_filters, nr_matrixblocksizes, []);
 z = z/1000000;
 
-
+labels = ['f' 'b' 'm' 'c'];
+axistofields = [chunksize filters matrixblocksize blocksize];
 
 question = '';
 
 in_eliminate = zeros(1,2);
 
-in_val = input(sprintf(' 1: Filter (%d)\n 2: Blocksize (%d)\n 3: Matrixblocksize (%d)\n 4: Chunksize (%d)\nWhat variable do you want to eliminate? [1] ', length(v), length(w), length(x), length(y)));
+in_val = input(sprintf(' 1: Chunksize (%d)\n 2: Filter (%d)\n 3: Matrixblocksize (%d)\n 4: Blocksize (%d)\nWhat variable do you want to eliminate? [1] ', length(y), length(v), length(x), length(w)));
 if isempty(in_val) || in_val > 4
     in_val = 1;
 end
 in_eliminate(1) = in_val;
 
-idx = input(sprintf('What entry do you want to see? [1] '));
+idx = input(sprintf('What entry do you want to see of the eliminated variable? [1] '));
 if isempty(idx)
     idx = 1;
 end
 
-in_val = input(sprintf(' 1: Filter (%d)\n 2: Blocksize (%d)\n 3: Matrixblocksize (%d)\n 4: Chunksize (%d)\nWhat variable do you want to eliminate? [2] ', length(v), length(w), length(x), length(y)));
+in_val = input(sprintf(' 1: Chunksize (%d)\n 2: Filter (%d)\n 3: Matrixblocksize (%d)\n 4: Blocksize (%d)\nWhat variable do you want to eliminate? [1] ', length(y), length(v), length(x), length(w)));
 if isempty(in_val) || in_val > 4
     in_val = 2;
 end
 in_eliminate(2) = in_val;
 
-idy = input(sprintf('What entry do you want to see next? [1] '));
+idy = input(sprintf('What entry do you want to see of the eliminated variable? [1] '));
 if isempty(idy)
     idy = 1;
 end
@@ -102,7 +101,7 @@ disp(['Displaying item ', num2str(idx), ' of ', num2str(length(w))])
 
 xy = setdiff([1 2 3 4],in_eliminate);
 
-d = permute(z,[in_eliminate xy]);
+d = permute(z,[xy in_eliminate]);
 d = d(:,:,idx,idy);
 %d = permute(d,[3 4 1 2]);
 
@@ -110,121 +109,9 @@ if in_timer == 1
     %d = 1./(d./(repmat(y, 1, length(x))./44100));
 end
 
-surf(unique(M.data(:,xy(1))),unique(M.data(:,xy(2))),d);
+surf(unique(M.data(:,axistofields(xy(2)))),unique(M.data(:,axistofields(xy(1)))),d);
 axis vis3d
-%%
-
-xlabel('b');
-ylabel('c');
+xlabel(labels(axistofields(xy(2))));
+ylabel(labels(axistofields(xy(1))));
 zlabel('v');
-legend(sprintf('Filter %d', w(idx)));
-    
-%%
-
-if in_display == 2
-    % Geschwindigkeit über Filter und Chunksize
-    disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
-
-    d = z(:,:,idx);
-    d = permute(d,[1 2 3]);
-
-    if in_timer == 1
-        d = 1./(d./(repmat(y, 1, length(w))./44100));
-    end
-
-    surf(w,y,d)
-    axis vis3d
-    xlabel('f');
-    ylabel('c');
-    zlabel('v');
-    legend(sprintf('Blockgroesse %d', x(idx)));
-elseif in_display == 3
-    % Geschwindigkeit über Filter und Blocksize
-    disp(['Displaying item ', num2str(idx), ' of ', num2str(length(y))])
-
-    d = z(idx,:,:);
-    d = permute(d,[3 2 1]);
-
-    if in_timer == 1
-        d =  1./(d./y(idx)*44100);
-    end
-
-    surf(w,x,d)
-    axis vis3d
-    xlabel('f');
-    ylabel('b');
-    zlabel('v');
-    legend(sprintf('Chunkgroesse %d', y(idx)));
-elseif in_display == 4
-    % Geschwindigkeit über Filter und Blocksize
-    disp(['Displaying item ', num2str(idx), ' of ', num2str(length(y))])
-
-    d = z(idx,:,:);
-    d = permute(d,[3 2 1]);
-
-    if in_timer == 1
-        d =  1./(d./y(idx)*44100);
-    end
-
-    surf(w,x,d)
-    axis vis3d
-    xlabel('f');
-    ylabel('b');
-    zlabel('v');
-    legend(sprintf('Chunkgroesse %d', y(idx)));
-end
-
-%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-idx = 1;
-idy = 1;
-disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
-
-d = z(:,idy,idx);
-d = permute(d,[1 2 3]);
-
-if in_timer == 1
-    d = 1./(d./y.*44100);
-end
-
-plot(y,d)
-axis vis3d
-xlabel('c');
-ylabel('v');
-legend(sprintf('Filter %d', w(idy)));
-
-%%
-
-hold on
-idx = 1;
-idy = 22;
-%idy = 19;
-disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
-
-d = z(idy,:,idx);
-d = permute(d,[1 2 3]);
-
-if in_timer == 1
-    d = 1./(d./y(idy).*44100);
-end
-
-plot(w,d)
-axis vis3d
-xlabel('f');
-ylabel('v');
-legend(sprintf('Chunkgroesse %d', y(idy)));
+%legend(sprintf('%d %s, %d %s',M.data(idy,axistofields(in_eliminate(1))),labels(axistofields(in_eliminate(1))),M.data(idx,axistofields(in_eliminate(2))),labels(axistofields(in_eliminate(2)))));
