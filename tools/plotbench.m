@@ -48,42 +48,22 @@ z = get(M, timers(in_timer), modes(:,in_mode));
 
 z = blkproc(z, [nr_tries 1], @mean);
 
-
-
-v = z(:,1);
-w = z(:,2);
-x = z(:,3);
-y = z(:,4);
 z = z(:,5);
 
 
 % chunksize -> filters -> matrixblocklength -> blocksize
 
 % filters
-%v = reshape(v, nr_chunksizes, nr_filters, nr_matrixblocksizes, []);
-%v = v(1,:,1,1);
-%v = permute(v,[2 1 3 4]);
 v = unique(M.data(:,filters));
 
 % blocksize
-%w = reshape(w, nr_chunksizes, nr_filters, nr_matrixblocksizes, []);
-%w = w(1,1,:,1);
-%w = permute(w,[4 2 1 3]);
 w = unique(M.data(:,blocksize));
 
 % matrixblocksize
-x = reshape(x, nr_chunksizes, nr_filters, nr_matrixblocksizes, []);
-x = x(1,1,:,1);
-x = permute(x,[3 4 1 2]);
 x = unique(M.data(:,matrixblocksize));
 
-
 % chunksize
-y = reshape(y, nr_chunksizes, nr_filters, nr_matrixblocksizes, []);
-y = y(:,1,1,1);
-y = permute(y,[1 3 2 4]);
 y = unique(M.data(:,chunksize));
-
 
 z = reshape(z, nr_chunksizes, nr_filters, nr_matrixblocksizes, []);
 z = z/1000000;
