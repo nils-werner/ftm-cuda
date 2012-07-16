@@ -90,14 +90,14 @@ if in_display == 1
     % Geschwindigkeit über Blocksize und Chunksize
     disp(['Displaying item ', num2str(idx), ' of ', num2str(length(w))])
 
-    v = z(:,idx,:,:);
-    v = permute(v,[1 3 2]);
+    d = z(:,idx,:,:);
+    d = permute(d,[1 3 2]);
 
     if in_timer == 1
-        v = 1./(v./(repmat(y, 1, length(x))./44100));
+        d = 1./(d./(repmat(y, 1, length(x))./44100));
     end
 
-    surf(x,y,v);
+    surf(x,y,d);
     axis vis3d
     xlabel('b');
     ylabel('c');
@@ -107,14 +107,14 @@ elseif in_display == 2
     % Geschwindigkeit über Filter und Chunksize
     disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
 
-    v = z(:,:,idx);
-    v = permute(v,[1 2 3]);
+    d = z(:,:,idx);
+    d = permute(d,[1 2 3]);
 
     if in_timer == 1
-        v = 1./(v./(repmat(y, 1, length(w))./44100));
+        d = 1./(d./(repmat(y, 1, length(w))./44100));
     end
 
-    surf(w,y,v)
+    surf(w,y,d)
     axis vis3d
     xlabel('f');
     ylabel('c');
@@ -124,14 +124,14 @@ elseif in_display == 3
     % Geschwindigkeit über Filter und Blocksize
     disp(['Displaying item ', num2str(idx), ' of ', num2str(length(y))])
 
-    v = z(idx,:,:);
-    v = permute(v,[3 2 1]);
+    d = z(idx,:,:);
+    d = permute(d,[3 2 1]);
 
     if in_timer == 1
-        v =  1./(v./y(idx)*44100);
+        d =  1./(d./y(idx)*44100);
     end
 
-    surf(w,x,v)
+    surf(w,x,d)
     axis vis3d
     xlabel('f');
     ylabel('b');
@@ -141,14 +141,14 @@ elseif in_display == 4
     % Geschwindigkeit über Filter und Blocksize
     disp(['Displaying item ', num2str(idx), ' of ', num2str(length(y))])
 
-    v = z(idx,:,:);
-    v = permute(v,[3 2 1]);
+    d = z(idx,:,:);
+    d = permute(d,[3 2 1]);
 
     if in_timer == 1
-        v =  1./(v./y(idx)*44100);
+        d =  1./(d./y(idx)*44100);
     end
 
-    surf(w,x,v)
+    surf(w,x,d)
     axis vis3d
     xlabel('f');
     ylabel('b');
@@ -177,14 +177,14 @@ idx = 1;
 idy = 1;
 disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
 
-v = z(:,idy,idx);
-v = permute(v,[1 2 3]);
+d = z(:,idy,idx);
+d = permute(d,[1 2 3]);
 
 if in_timer == 1
-    v = 1./(v./y.*44100);
+    d = 1./(d./y.*44100);
 end
 
-plot(y,v)
+plot(y,d)
 axis vis3d
 xlabel('c');
 ylabel('v');
@@ -198,14 +198,14 @@ idy = 22;
 %idy = 19;
 disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
 
-v = z(idy,:,idx);
-v = permute(v,[1 2 3]);
+d = z(idy,:,idx);
+d = permute(d,[1 2 3]);
 
 if in_timer == 1
-    v = 1./(v./y(idy).*44100);
+    d = 1./(d./y(idy).*44100);
 end
 
-plot(w,v)
+plot(w,d)
 axis vis3d
 xlabel('f');
 ylabel('v');
