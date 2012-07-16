@@ -72,13 +72,13 @@ z = z/1000000;
 
 question = '';
 
-in_axis = zeros(1,2);
+in_eliminate = zeros(1,2);
 
 in_val = input(sprintf(' 1: Filter (%d)\n 2: Blocksize (%d)\n 3: Matrixblocksize (%d)\n 4: Chunksize (%d)\nWhat variable do you want to eliminate? [1] ', length(v), length(w), length(x), length(y)));
 if isempty(in_val) || in_val > 4
     in_val = 1;
 end
-in_axis(1) = in_val;
+in_eliminate(1) = in_val;
 
 idx = input(sprintf('What entry do you want to see? [1] '));
 if isempty(idx)
@@ -89,7 +89,7 @@ in_val = input(sprintf(' 1: Filter (%d)\n 2: Blocksize (%d)\n 3: Matrixblocksize
 if isempty(in_val) || in_val > 4
     in_val = 2;
 end
-in_axis(2) = in_val;
+in_eliminate(2) = in_val;
 
 idy = input(sprintf('What entry do you want to see next? [1] '));
 if isempty(idy)
@@ -100,8 +100,9 @@ end
 % Geschwindigkeit über Blocksize und Chunksize
 disp(['Displaying item ', num2str(idx), ' of ', num2str(length(w))])
 
+xy = setdiff([1 2 3 4],in_eliminate);
 
-d = permute(z,[in_axis setdiff([1 2 3 4],in_axis)]);
+d = permute(z,[in_eliminate xy]);
 d = d(:,:,idx,idy);
 %d = permute(d,[3 4 1 2]);
 
@@ -109,7 +110,7 @@ if in_timer == 1
     %d = 1./(d./(repmat(y, 1, length(x))./44100));
 end
 
-surf(x,w,d);
+surf(unique(M.data(:,xy(1))),unique(M.data(:,xy(2))),d);
 axis vis3d
 %%
 
