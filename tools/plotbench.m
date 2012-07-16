@@ -68,42 +68,59 @@ y = unique(M.data(:,chunksize));
 z = reshape(z, nr_chunksizes, nr_filters, nr_matrixblocksizes, []);
 z = z/1000000;
 
-%%
+
 
 question = '';
 
-in_display = input(sprintf(' 0: None\n 1: Filter (%d)\n 2: Blocksize (%d)\n 3: Chunksize (%d)\nWhat variable do you want to select from? [1] ', length(w), length(x), length(y)));
-if isempty(in_display) || in_display > 3
-    in_display = 1;
-end
+in_axis = zeros(1,2);
 
-if (in_display == 1 && length(w) > 1) || (in_display == 2 && length(x) > 1) || (in_display == 3 && length(y) > 1)
-    idx = input(sprintf('What entry do you want to see? [1] ', length(w), length(x), length(y)));
-    if isempty(idx)
-        idx = 1;
-    end
-else
+in_val = input(sprintf(' 1: Filter (%d)\n 2: Blocksize (%d)\n 3: Matrixblocksize (%d)\n 4: Chunksize (%d)\nWhat variable do you want to eliminate? [1] ', length(v), length(w), length(x), length(y)));
+if isempty(in_val) || in_val > 4
+    in_val = 1;
+end
+in_axis(1) = in_val;
+
+idx = input(sprintf('What entry do you want to see? [1] '));
+if isempty(idx)
     idx = 1;
 end
 
-if in_display == 1
-    % Geschwindigkeit über Blocksize und Chunksize
-    disp(['Displaying item ', num2str(idx), ' of ', num2str(length(w))])
+in_val = input(sprintf(' 1: Filter (%d)\n 2: Blocksize (%d)\n 3: Matrixblocksize (%d)\n 4: Chunksize (%d)\nWhat variable do you want to eliminate? [2] ', length(v), length(w), length(x), length(y)));
+if isempty(in_val) || in_val > 4
+    in_val = 2;
+end
+in_axis(2) = in_val;
 
-    d = z(:,idx,:,:);
-    d = permute(d,[1 3 2]);
+idy = input(sprintf('What entry do you want to see next? [1] '));
+if isempty(idy)
+    idy = 1;
+end
 
-    if in_timer == 1
-        d = 1./(d./(repmat(y, 1, length(x))./44100));
-    end
 
-    surf(x,y,d);
-    axis vis3d
-    xlabel('b');
-    ylabel('c');
-    zlabel('v');
-    legend(sprintf('Filter %d', w(idx)));
-elseif in_display == 2
+% Geschwindigkeit über Blocksize und Chunksize
+disp(['Displaying item ', num2str(idx), ' of ', num2str(length(w))])
+
+
+d = permute(z,[in_axis setdiff([1 2 3 4],in_axis)]);
+d = d(:,:,idx,idy);
+%d = permute(d,[3 4 1 2]);
+
+if in_timer == 1
+    %d = 1./(d./(repmat(y, 1, length(x))./44100));
+end
+
+surf(x,w,d);
+axis vis3d
+%%
+
+xlabel('b');
+ylabel('c');
+zlabel('v');
+legend(sprintf('Filter %d', w(idx)));
+    
+%%
+
+if in_display == 2
     % Geschwindigkeit über Filter und Chunksize
     disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
 
