@@ -17,6 +17,8 @@ float fl_rand();
 void time_start(Timer*);
 void time_stop(Timer*);
 void time_print(Timer*, const char*);
+int gcd(int, int);
+int lcm(int, int);
 void noop(void *);
 
 #endif
