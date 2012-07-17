@@ -1,7 +1,7 @@
 clear;
 
-files = dir('bench/');
-files = files(end-5:end);
+files = dir('bench/*.csv');
+files = files(end-4:end);
 question = '';
 
 for i = 5:-1:1
