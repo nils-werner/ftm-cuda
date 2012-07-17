@@ -109,9 +109,9 @@ do
 							fi
 
 							echo "<run>" >> bench.xml;
-							echo "<settings mode=\"$mode\" matrixmode=\"$matrixmode\" blocksize=\"$block\" matrixblocksize=\"$matrixblock\" filters=\"$filter\" chunksize=\"$chunk\" samples=\"0\" />" >> bench.xml
-							echo "($i/$total) ./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $chunk -b $block -m $matrixblock -x"
-							./build/iirfilter $modeswitch $matrixmodeswitch -f $filter -c $chunk -b $block -m $matrixblock -x >> bench.xml;
+							echo "<settings mode=\"$mode\" matrixmode=\"$matrixmode\" matrixblocksize=\"$matrixblock\" filters=\"$filter\" blocksize=\"$block\" chunksize=\"$chunk\" samples=\"0\" />" >> bench.xml
+							echo "($i/$total) ./build/iirfilter $modeswitch $matrixmodeswitch -m $matrixblock -f $filter -b $block -c $chunk -x"
+							./build/iirfilter $modeswitch $matrixmodeswitch -m $matrixblock -f $filter -b $block -c $chunk -x >> bench.xml;
 							echo "</run>" >> bench.xml;
 						done
 					done
