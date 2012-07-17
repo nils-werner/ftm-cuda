@@ -1,4 +1,6 @@
 clear;
+close all;
+
 
 files = dir('bench/*.csv');
 files = files(end-4:end);
@@ -123,6 +125,7 @@ if in_timer == 1 && length(find(axistofields(xy) == 4)) > 0
     repmatdim = repmatdim';
     divmat = repmat(y, repmatdim);
     if find(axistofields(xy) == 4) == 2
+        disp Normalizing by chunksize
         divmat = divmat';
     end
     d = 1./(d./(divmat./44100));
