@@ -95,6 +95,11 @@ struct option longopts[] = {
 	if(settings.matrixblocksize % 2 == 1) settings.matrixblocksize++;
 	if(settings.filters % 2 == 1) settings.filters++;
 
+	if(settings.blocksize > settings.chunksize)
+		settings.blocksize = settings.chunksize;
+	if(settings.matrixblocksize > settings.filters)
+		settings.matrixblocksize = settings.filters;
+
 	settings.chunksize = settings.chunksize - (settings.chunksize % settings.blocksize);
 	settings.filters = settings.filters - (settings.filters % settings.matrixblocksize);
 	settings.samples = settings.samples - (settings.samples % settings.chunksize);
