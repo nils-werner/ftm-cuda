@@ -57,10 +57,9 @@ end
 
 
 z = get(M, timers(in_timer), modes(:,in_mode));
-
 z = blkproc(z, [nr_tries 1], @mean);
-
 z = z(:,5);
+z(find(z == 0)) = NaN;
 
 
 % chunksize -> filters -> matrixblocklength -> blocksize
@@ -132,4 +131,4 @@ if in_timer == 1
 else
     zlabel('s');
 end
-%legend(sprintf('%d %s, %d %s',M.data(idy,axistofields(in_eliminate(1))),labels(axistofields(in_eliminate(1))),M.data(idx,axistofields(in_eliminate(2))),labels(axistofields(in_eliminate(2)))));
+legend(sprintf('%d %s, %d %s',M.data(idy,axistofields(in_eliminate(1))),labels(axistofields(in_eliminate(1))),M.data(idx,axistofields(in_eliminate(2))),labels(axistofields(in_eliminate(2)))));
