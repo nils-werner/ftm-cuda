@@ -1,7 +1,21 @@
 clear;
 
-M = importdata('bench/bench-120716-2114-getrennte-params-nochmal.csv', ';', 1);
-%M = importdata('bench/bench-120620-0000-all-nach-blockopt.csv', ';', 1);
+files = dir('bench/');
+files = files(end-5:end);
+question = '';
+
+for i = 5:-1:1
+    question = strcat(question, sprintf(' %d: %s\\n', 6-i, files(i).name));
+end
+
+in_file = input(strcat(question, 'What file do you want to load? [1] '));
+if isempty(in_file)
+    in_file = 1;
+end
+
+filename = files(6 - in_file).name;
+
+M = importdata(strcat('bench/', filename), ';', 1);
 
 filters = 1;
 blocksize = 2;
@@ -84,7 +98,7 @@ if isempty(idx)
     idx = 1;
 end
 
-in_val = input(sprintf(' 1: Chunksize (%d)\n 2: Filter (%d)\n 3: Matrixblocksize (%d)\n 4: Blocksize (%d)\nWhat variable do you want to eliminate? [1] ', length(y), length(v), length(x), length(w)));
+in_val = input(sprintf(' 1: Chunksize (%d)\n 2: Filter (%d)\n 3: Matrixblocksize (%d)\n 4: Blocksize (%d)\nWhat variable do you want to eliminate? [2] ', length(y), length(v), length(x), length(w)));
 if isempty(in_val) || in_val > 4
     in_val = 2;
 end
