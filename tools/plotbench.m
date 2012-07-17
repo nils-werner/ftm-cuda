@@ -118,11 +118,11 @@ d = permute(z,[xy in_eliminate]);
 d = d(:,:,idx,idy);
 %d = permute(d,[3 4 1 2]);
 
-if in_timer == 1 && length(find(axistofields(xy))) > 0
+if in_timer == 1 && length(find(axistofields(xy) == 4)) > 0
     repmatdim = [1 length(unique(M.data(:,axistofields(xy(2)))))];
     repmatdim = repmatdim';
-    divmat = repmat(v, repmatdim);
-    if find(axistofields(xy) == 1) == 2
+    divmat = repmat(y, repmatdim);
+    if find(axistofields(xy) == 4) == 2
         divmat = divmat';
     end
     d = 1./(d./(divmat./44100));
