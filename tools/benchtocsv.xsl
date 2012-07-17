@@ -22,7 +22,7 @@
 <xsl:value-of select="settings/@blocksize" /><xsl:text>;</xsl:text>
 <xsl:value-of select="settings/@matrixblocksize" /><xsl:text>;</xsl:text>
 <xsl:value-of select="settings/@chunksize" /><xsl:text>;</xsl:text>
-<xsl:value-of select="settings/@samples" /><xsl:text>;</xsl:text>
+<xsl:value-of select="usedsettings/@samples" /><xsl:text>;</xsl:text>
 <xsl:choose>
 	<xsl:when test="timer">
 		<xsl:value-of select="timer[@name = 'turnaround']" /><xsl:text>;</xsl:text>
