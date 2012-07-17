@@ -113,5 +113,9 @@ surf(unique(M.data(:,axistofields(xy(2)))),unique(M.data(:,axistofields(xy(1))))
 axis vis3d
 xlabel(labels(axistofields(xy(2))));
 ylabel(labels(axistofields(xy(1))));
-zlabel('v');
+if in_timer == 1
+    zlabel('v');
+else
+    zlabel('s');
+end
 %legend(sprintf('%d %s, %d %s',M.data(idy,axistofields(in_eliminate(1))),labels(axistofields(in_eliminate(1))),M.data(idx,axistofields(in_eliminate(2))),labels(axistofields(in_eliminate(2)))));
