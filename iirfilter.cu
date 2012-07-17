@@ -9,7 +9,7 @@
  */
 
 int main(int argc, char *argv[]) {
-	int c, blocksize_lcm;
+	int c;
 
 	settings.xml = 0;
 	settings.chunksize = 720;
@@ -95,21 +95,8 @@ struct option longopts[] = {
 	if(settings.matrixblocksize % 2 == 1) settings.matrixblocksize++;
 	if(settings.filters % 2 == 1) settings.filters++;
 
-	
-	blocksize_lcm = lcm(settings.blocksize,settings.matrixblocksize);
-
-
-	if(settings.filters < blocksize_lcm) {
-		settings.matrixblocksize = settings.matrixblocksize - settings.matrixblocksize % settings.filters;
-		blocksize_lcm = lcm(settings.blocksize,settings.matrixblocksize);
-	}
-	
-	settings.chunksize = settings.chunksize - (settings.chunksize % blocksize_lcm);
-	if(settings.filters % blocksize_lcm > settings.filters / 2)
-		settings.filters = settings.filters + (blocksize_lcm % settings.filters);
-	else
-		settings.filters = settings.filters - (settings.filters % blocksize_lcm);
-
+	settings.chunksize = settings.chunksize - (settings.chunksize % settings.blocksize);
+	settings.filters = settings.filters - (settings.filters % settings.matrixblocksize);
 	settings.samples = settings.samples - (settings.samples % settings.chunksize);
 
 
