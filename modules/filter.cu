@@ -255,17 +255,19 @@ void createBlockprocessingMatricesGPU() {
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA_line_read.elements, m_size(&device_MatrixCA_line_read)));
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_MatrixCA_line_write.elements, m_size(&device_MatrixCA_line_write)));
 
-	dim3 dimBlockCA(min(settings.matrixblocksize, device_MatrixCA_line_read.cols), min(settings.matrixblocksize, device_MatrixCA_line_read.rows));
-
+	dim3 dimBlockCA(1, min(settings.matrixblocksize, device_MatrixCA_line_read.rows));
 	assert(MatrixAp.cols % dimBlockCA.x == 0);
 	assert(MatrixC.rows % dimBlockCA.y == 0);
 	dim3 dimGridCA(device_MatrixCA_line_read.cols / dimBlockCA.x, device_MatrixCA_line_read.rows / dimBlockCA.y);
 
-	dim3 dimBlockA(min(settings.matrixblocksize, MatrixAp.cols), 2);
 
+
+	dim3 dimBlockA(min(settings.matrixblocksize, MatrixAp.cols), 2);
 	assert(MatrixAp.cols % dimBlockA.x == 0);
 	assert(2 % dimBlockA.y == 0);
 	dim3 dimGridA(MatrixAp.cols / dimBlockA.x, 2 / dimBlockA.y);
+
+
 
 	cudaThreadSynchronize();
 
@@ -580,21 +582,18 @@ void generateSignalGPU(float * output, String string, Synthesizer synth) {
 
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_read.elements, m_size(&state)));
 	CUDA_SAFE_CALL(cudaMemcpyAsync(device_state_read.elements, state.elements, m_size(&state), cudaMemcpyHostToDevice, streams[2]));
-
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_state_write.elements, m_size(&state)));
-
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_read.elements, m_size(&output_chunk_read)));
-
 	CUDA_SAFE_CALL(cudaMalloc((void**) &device_output_chunk_write.elements, m_size(&output_chunk_write)));
 
-	dim3 dimBlockCA(min(settings.blocksize, output_chunk_read.cols), min(settings.blocksize, output_chunk_read.rows));
 
+	dim3 dimBlockCA(1, min(settings.blocksize, output_chunk_read.rows));
 	assert(output_chunk_read.cols % dimBlockCA.x == 0);
 	assert(output_chunk_read.rows % dimBlockCA.y == 0);
 	dim3 dimGridCA(output_chunk_read.cols / dimBlockCA.x, output_chunk_read.rows / dimBlockCA.y);
 
-	dim3 dimBlockA(min(settings.blocksize, state.cols), min(settings.blocksize, state.rows)); 
 
+	dim3 dimBlockA(1, min(settings.matrixblocksize, state.rows)); 
 	assert(state.cols % dimBlockA.x == 0);
 	assert(state.rows % dimBlockA.y == 0);
 	dim3 dimGridA(state.cols / dimBlockA.x, state.rows / dimBlockA.y);
