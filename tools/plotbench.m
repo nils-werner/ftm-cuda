@@ -120,7 +120,7 @@ d = permute(z,[xy in_eliminate]);
 d = d(:,:,idx,idy);
 %d = permute(d,[3 4 1 2]);
 
-
+indizes = [idx, idy];
 
 chunksdim = find(axistofields(xy) == chunksize);
 otherdim = setdiff([1 2],chunksdim);
@@ -134,6 +134,9 @@ if in_timer == 1 && length(chunksdim) == 1
         divmat = divmat';
     end
     d = 1./(d./(divmat./44100));
+else
+    chunksidx = find(axistofields(in_eliminate) == chunksize);
+    d = 1./(d./(y(indizes(chunksidx))./44100));
 end
 
 surf(unique(M.data(:,axistofields(xy(2)))),unique(M.data(:,axistofields(xy(1)))),d);
