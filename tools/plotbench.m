@@ -1,25 +1,43 @@
 clear;
+close all;
 
-M = importdata('bench/bench-120628-1214-abbildung-6-6.csv', ';', 1);
-%M = importdata('bench/bench-120620-0000-all-nach-blockopt.csv', ';', 1);
 
-nr_types = length(unique(strcat(M.textdata(2:end,1),M.textdata(2:end,2))));
-nr_filters = length(unique(M.data(:,1)));
-nr_blocksizes = length(unique(M.data(:,2)));
-nr_chunksizes = length(unique(M.data(:,3)));
-nr_tries = length(M.data(:,3)) / (nr_chunksizes*nr_blocksizes*nr_filters*nr_types);
-samplerate = 44100;
+files = dir('bench/*.csv');
+files = files(end-4:end);
+question = '';
+
+for i = 5:-1:1
+    question = strcat(question, sprintf(' %d: %s\\n', 6-i, files(i).name));
+end
+
+in_file = input(strcat(question, 'What file do you want to load? [1] '));
+if isempty(in_file)
+    in_file = 1;
+end
+
+filename = files(6 - in_file).name;
+
+M = importdata(strcat('bench/', filename), ';', 1);
 
 filters = 1;
 blocksize = 2;
-blocklength = 3;
-samples = 4;
-turnaround = 5;
-roundtrip = 6;
-overall = 7;
+matrixblocksize = 3;
+chunksize = 4;
+samples = 5;
+turnaround = 6;
+roundtrip = 7;
+overall = 8;
+
+nr_types = length(unique(strcat(M.textdata(2:end,1),M.textdata(2:end,2))));
+nr_filters = length(unique(M.data(:,filters)));
+nr_blocksizes = length(unique(M.data(:,blocksize)));
+nr_matrixblocksizes = length(unique(M.data(:,matrixblocksize)));
+nr_chunksizes = length(unique(M.data(:,chunksize)));
+nr_tries = length(M.data(:,3)) / (nr_chunksizes*nr_matrixblocksizes*nr_blocksizes*nr_filters*nr_types);
+samplerate = 44100;
 
 query = inline('find(ismember(M.textdata(:,col), search)==1)-1','M','col','search');
-get = inline('M.data(val,[1 2 3 col])','M','col','val');
+get = inline('M.data(val,[1 2 3 4 col])','M','col','val');
 
 gpugpu = intersect(query(M,1,'gpu'), query(M,2,'gpu'));
 gpucpu = intersect(query(M,1,'gpu'), query(M,2,'cpu'));
@@ -28,7 +46,6 @@ cpucpu = intersect(query(M,1,'cpu'), query(M,2,'cpu'));
 
 modes = [gpugpu, cpucpu, cpugpu, gpucpu];
 timers = [roundtrip, turnaround];
-
 
 in_mode = input(' 1: GPU/GPU\n 2: CPU/CPU\n 3: CPU/GPU\n 4: GPU/CPU\nWhat data do you want to load? [1] ');
 if isempty(in_mode) || in_mode > 4
@@ -42,157 +59,93 @@ end
 
 
 z = get(M, timers(in_timer), modes(:,in_mode));
-
 z = blkproc(z, [nr_tries 1], @mean);
+z = z(:,5);
+z(find(z == 0)) = NaN;
 
-w = z(:,1);
-x = z(:,2);
-y = z(:,3);
-z = z(:,4);
 
-% chunksize -> filters -> blocklength
+% chunksize -> filters -> matrixblocklength -> blocksize
 
 % filters
-w = reshape(w, nr_chunksizes, nr_filters, []);
-w = w(1,:,1);
-w = permute(w,[2 1 3]);
+v = unique(M.data(:,filters));
 
 % blocksize
-x = reshape(x, nr_chunksizes, nr_filters, []);
-x = x(1,1,:);
-x = permute(x,[3 2 1]);
+w = unique(M.data(:,blocksize));
+
+% matrixblocksize
+x = unique(M.data(:,matrixblocksize));
 
 % chunksize
-y = reshape(y, nr_chunksizes, nr_filters, []);
-y = y(:,1,1);
-y = permute(y,[1 3 2]);
+y = unique(M.data(:,chunksize));
 
-z = reshape(z, nr_chunksizes, nr_filters, []);
+z = reshape(z, nr_chunksizes, nr_filters, nr_matrixblocksizes, []);
 z = z/1000000;
+
+labels = ['f' 'b' 'm' 'c'];
+axistofields = [chunksize filters matrixblocksize blocksize];
 
 question = '';
 
-in_display = input(sprintf(' 1: Filter (%d)\n 2: Blocksize (%d)\n 3: Chunksize (%d)\nWhat variable do you want to select from? [1] ', length(w), length(x), length(y)));
-if isempty(in_display) || in_display > 3
-    in_display = 1;
+in_eliminate = zeros(1,2);
+
+in_val = input(sprintf(' 1: Chunksize (%d)\n 2: Filter (%d)\n 3: Matrixblocksize (%d)\n 4: Blocksize (%d)\nWhat variable do you want to eliminate? [1] ', length(y), length(v), length(x), length(w)));
+if isempty(in_val) || in_val > 4
+    in_val = 1;
+end
+in_eliminate(1) = in_val;
+
+idx = input(sprintf('What entry do you want to see of the eliminated variable? [1] '));
+if isempty(idx)
+    idx = 1;
 end
 
-if (in_display == 1 && length(w) > 1) || (in_display == 2 && length(x) > 1) || (in_display == 3 && length(y) > 1)
-    idx = input(sprintf('What entry do you want to see? [1] ', length(w), length(x), length(y)));
-    if isempty(idx)
-        idx = 1;
+in_val = input(sprintf(' 1: Chunksize (%d)\n 2: Filter (%d)\n 3: Matrixblocksize (%d)\n 4: Blocksize (%d)\nWhat variable do you want to eliminate? [2] ', length(y), length(v), length(x), length(w)));
+if isempty(in_val) || in_val > 4
+    in_val = 2;
+end
+in_eliminate(2) = in_val;
+
+idy = input(sprintf('What entry do you want to see of the eliminated variable? [1] '));
+if isempty(idy)
+    idy = 1;
+end
+
+
+% Geschwindigkeit über Blocksize und Chunksize
+disp(['Displaying item ', num2str(idx), ' of ', num2str(length(w))])
+
+xy = setdiff([1 2 3 4],in_eliminate);
+
+d = permute(z,[xy in_eliminate]);
+d = d(:,:,idx,idy);
+%d = permute(d,[3 4 1 2]);
+
+indizes = [idx, idy];
+
+chunksdim = find(axistofields(xy) == chunksize);
+otherdim = setdiff([1 2],chunksdim);
+
+if in_timer == 1 && length(chunksdim) == 1
+    disp('Normalizing by chunksize');
+    repmatdim = [1 length(unique(M.data(:,axistofields(xy(otherdim)))))];
+    repmatdim = repmatdim';
+    divmat = repmat(y, repmatdim);
+    if chunksdim == 2
+        divmat = divmat';
     end
+    d = 1./(d./(divmat./44100));
 else
-    idx = 1;
+    chunksidx = find(axistofields(in_eliminate) == chunksize);
+    d = 1./(d./(y(indizes(chunksidx))./44100));
 end
 
-if in_display == 1
-    % Geschwindigkeit über Blocksize und Chunksize
-    idx = 1;
-    disp(['Displaying item ', num2str(idx), ' of ', num2str(length(w))])
-
-    v = z(:,idx,:);
-    v = permute(v,[1 3 2]);
-
-    if in_timer == 1
-        v = 1./(v./(repmat(y, 1, length(x))./44100));
-    end
-
-    surf(x,y,v);
-    axis vis3d
-    xlabel('b');
-    ylabel('c');
-    zlabel('v');
-    legend(sprintf('Filter %d', w(idx)));
-elseif in_display == 2
-    % Geschwindigkeit über Filter und Chunksize
-    idx = 1;
-    disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
-
-    v = z(:,:,idx);
-    v = permute(v,[1 2 3]);
-
-    if in_timer == 1
-        v = 1./(v./(repmat(y, 1, length(w))./44100));
-    end
-
-    surf(w,y,v)
-    axis vis3d
-    xlabel('f');
-    ylabel('c');
-    zlabel('v');
-    legend(sprintf('Blockgroesse %d', x(idx)));
-elseif in_display == 3
-    % Geschwindigkeit über Filter und Blocksize
-    idx = 1;
-    disp(['Displaying item ', num2str(idx), ' of ', num2str(length(y))])
-
-    v = z(idx,:,:);
-    v = permute(v,[3 2 1]);
-
-    if in_timer == 1
-        v =  1./(v./y(idx)*44100);
-    end
-
-    surf(w,x,v)
-    axis vis3d
-    xlabel('f');
-    ylabel('b');
-    zlabel('v');
-    legend(sprintf('Chunkgroesse %d', y(idx)));
-end
-
-%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-idx = 1;
-idy = 1;
-disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
-
-v = z(:,idy,idx);
-v = permute(v,[1 2 3]);
-
-if in_timer == 1
-    v = 1./(v./y.*44100);
-end
-
-plot(y,v)
+surf(unique(M.data(:,axistofields(xy(2)))),unique(M.data(:,axistofields(xy(1)))),d);
 axis vis3d
-xlabel('c');
-ylabel('v');
-legend(sprintf('Filter %d', w(idy)));
-
-%%
-
-hold on
-idx = 1;
-idy = 22;
-%idy = 19;
-disp(['Displaying item ', num2str(idx), ' of ', num2str(length(x))])
-
-v = z(idy,:,idx);
-v = permute(v,[1 2 3]);
-
+xlabel(labels(axistofields(xy(2))));
+ylabel(labels(axistofields(xy(1))));
 if in_timer == 1
-    v = 1./(v./y(idy).*44100);
+    zlabel('v');
+else
+    zlabel('s');
 end
-
-plot(w,v)
-axis vis3d
-xlabel('f');
-ylabel('v');
-legend(sprintf('Chunkgroesse %d', y(idy)));
+legend(sprintf('%d %s, %d %s',M.data(idx,axistofields(in_eliminate(1))),labels(axistofields(in_eliminate(1))),M.data(idy,axistofields(in_eliminate(2))),labels(axistofields(in_eliminate(2)))));

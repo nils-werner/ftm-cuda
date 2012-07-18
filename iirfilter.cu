@@ -12,14 +12,14 @@ int main(int argc, char *argv[]) {
 	int c;
 
 	settings.xml = 0;
-	settings.chunksize = 720;
-	settings.blocksize = 6;
+	settings.chunksize = 448;
+	settings.blocksize = 4;
 	settings.length = 0.65;
 	settings.samples = 441000;
 	settings.filters = 32;
 	settings.mode = 0;
 	settings.matrixmode = 0;
-	settings.matrixblocksize = 128;
+	settings.matrixblocksize = 192;
 
 
 struct option longopts[] = {
@@ -93,7 +93,15 @@ struct option longopts[] = {
 
 	if(settings.blocksize % 2 == 1) settings.blocksize++;
 	if(settings.matrixblocksize % 2 == 1) settings.matrixblocksize++;
+	if(settings.filters % 2 == 1) settings.filters++;
 
+	if(settings.blocksize > settings.chunksize)
+		settings.blocksize = settings.chunksize;
+	if(settings.matrixblocksize > settings.filters)
+		settings.matrixblocksize = settings.filters;
+
+	settings.chunksize = settings.chunksize - (settings.chunksize % settings.blocksize);
+	settings.filters = settings.filters - (settings.filters % settings.matrixblocksize);
 	settings.samples = settings.samples - (settings.samples % settings.chunksize);
 
 
@@ -109,22 +117,22 @@ struct option longopts[] = {
 
 void print_prefix() {
 	if(settings.xml == 1)
-		printf("<usedsettings mode=\"%s\" matrixmode=\"%s\" blocksize=\"%d\" matrixblocksize=\"%d\" filters=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n",
+		printf("<usedsettings mode=\"%s\" matrixmode=\"%s\" matrixblocksize=\"%d\" filters=\"%d\" blocksize=\"%d\" chunksize=\"%d\" samples=\"%d\" />\n",
 				(settings.mode == 0?"cpu":"gpu"),
 				(settings.matrixmode == 0?"cpu":"gpu"),
-				settings.blocksize,
 				settings.matrixblocksize,
 				settings.filters,
+				settings.blocksize,
 				settings.chunksize,
 				settings.samples
 			);
 	else
-		printf("Settings:\n  Mode %s\n  Matrixmode %s\n  Blocksize %d\n  Matrixblocksize %d\n  Filters %d\n  Chunksize %d\n  Samples %d\n\n",
+		printf("Settings:\n  Mode %s\n  Matrixmode %s\n  Matrixblocksize %d\n  Filters %d\n  Blocksize %d\n  Chunksize %d\n  Samples %d\n\n",
 				(settings.mode == 0?"CPU":"GPU"),
 				(settings.matrixmode == 0?"CPU":"GPU"),
-				settings.blocksize,
 				settings.matrixblocksize,
 				settings.filters,
+				settings.blocksize,
 				settings.chunksize,
 				settings.samples
 			);
