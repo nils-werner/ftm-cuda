@@ -13,13 +13,13 @@ int main(int argc, char *argv[]) {
 
 	settings.xml = 0;
 	settings.chunksize = 720;
-	settings.blocksize = 6;
+	settings.blocksize = 4;
 	settings.length = 0.65;
 	settings.samples = 441000;
 	settings.filters = 32;
 	settings.mode = 0;
 	settings.matrixmode = 0;
-	settings.matrixblocksize = 128;
+	settings.matrixblocksize = 192;
 
 
 struct option longopts[] = {
