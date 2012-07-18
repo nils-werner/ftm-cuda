@@ -120,12 +120,17 @@ d = permute(z,[xy in_eliminate]);
 d = d(:,:,idx,idy);
 %d = permute(d,[3 4 1 2]);
 
-if in_timer == 1 && length(find(axistofields(xy) == 4)) > 0
-    repmatdim = [1 length(unique(M.data(:,axistofields(xy(2)))))];
+
+
+chunksdim = find(axistofields(xy) == chunksize);
+otherdim = setdiff([1 2],chunksdim);
+
+if in_timer == 1 && length(chunksdim) == 1
+    disp('Normalizing by chunksize');
+    repmatdim = [1 length(unique(M.data(:,axistofields(xy(otherdim)))))];
     repmatdim = repmatdim';
     divmat = repmat(y, repmatdim);
-    if find(axistofields(xy) == 4) == 2
-        disp Normalizing by chunksize
+    if chunksdim == 2
         divmat = divmat';
     end
     d = 1./(d./(divmat./44100));
