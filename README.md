@@ -12,12 +12,11 @@ Functional Model Based Guitar String Synthesizer
 Fetching Sources
 ----------------
 
-The sourcecode of this project is located in this folder. To fetch them you need to simply copy them on your harddrive.
-Since this directory is also a Git repository you could alternatively use Git to clone it:
+The sourcecode of this project is located in this folder. Since this directory also contains a Git repository you can take a look at the history of this project using 
 
-    $ git clone /path/to/CD/rom/C
+    $ git log
 
-It is definitely recommended to use Git instead of simply copying it since you will be able to inspect the changelog of the entire development process of this tool.
+It is definitely recommended to use Git since you will be able to inspect the changelog of the entire development process of this tool.
 Also, you would be able to seamlessly start tracking your development in the very same repository.
 
 
