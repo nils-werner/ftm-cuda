@@ -24,7 +24,7 @@ LIBS := -L$(CUDA_INSTALL_PATH)/lib64 -L$(CUDA_SDK_PATH)/C/lib -lcudart -lcutil_x
 ### PHONY RULES ###
 
 default: build/iirfilter
-all: build/iirfilter build/matrixtest build/cudatest
+all: build/iirfilter build/cudatest
 	
 clean:
 	- rm -f build/*
@@ -55,7 +55,6 @@ preview: time
 ### ABHAENGIGKEITEN ###
 
 build/iirfilter: iirfilter.cu.o modules/filter.cu.o modules/matrix.c.o modules/utils.c.o cuda/matrixmultiply.kernel.cu.o cuda/blockdiagmatrixmultiply.kernel.cu.o cuda/matrixblockdiagmultiply.kernel.cu.o cuda/blockdiagblockdiagmatrixmultiply.kernel.cu.o modules/settings.h
-build/matrixtest: matrixtest.c.o modules/matrix.c.o modules/utils.c.o
 build/cudatest: cudatest.cu.o modules/matrix.c.o modules/utils.c.o cuda/matrixmultiply.kernel.cu.o cuda/blockdiagmatrixmultiply.kernel.cu.o
 
 

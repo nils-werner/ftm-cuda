@@ -1,5 +1,7 @@
 #include "cudatest.h"
 
+/* Just some tests to make sure matrix multiplications work on the GPU */
+
 int main() {
 	/*
 	 *
