@@ -22,6 +22,8 @@ int main(int argc, char *argv[]) {
 	settings.matrixblocksize = 192;
 
 
+/* Read parameters from commandline arguments, see getopt(3) */
+
 struct option longopts[] = {
 	{ "synth-gpu",	no_argument,		NULL,		'g' },
 	{ "matrix-gpu",	no_argument,		NULL,		'p' },
@@ -86,24 +88,33 @@ struct option longopts[] = {
 		}
 	}
 
+	/* Output information about -h switch if not using XML output */ 
+
 	if(settings.xml != 1) {
 		printf("GPGPU-Based recursive sound synthesis filter.\n\n");
 		printf("Use option -h to see all available switches.\n\n");
 	}
 
+	/* Make sure blocksizes are divisible by 2 */
+
 	if(settings.blocksize % 2 == 1) settings.blocksize++;
 	if(settings.matrixblocksize % 2 == 1) settings.matrixblocksize++;
 	if(settings.filters % 2 == 1) settings.filters++;
+
+	/* Make sure blocksize isn't larger than the entire set of elements */
 
 	if(settings.blocksize > settings.chunksize)
 		settings.blocksize = settings.chunksize;
 	if(settings.matrixblocksize > settings.filters)
 		settings.matrixblocksize = settings.filters;
 
+	/* Make sure blocksizes are natural divisors of matrix sizes */
+
 	settings.chunksize = settings.chunksize - (settings.chunksize % settings.blocksize);
 	settings.filters = settings.filters - (settings.filters % settings.matrixblocksize);
 	settings.samples = settings.samples - (settings.samples % settings.chunksize);
 
+	/* Print something, run filter, print something again */
 
 	print_prefix();
 
@@ -114,6 +125,12 @@ struct option longopts[] = {
 	return 0;
 }
 
+/**
+ * Prints out settings information of filter run. Returns XML-data if settings.xml is set to 1 
+ *
+ * @param void
+ * @return void
+ */
 
 void print_prefix() {
 	if(settings.xml == 1)
@@ -137,6 +154,14 @@ void print_prefix() {
 				settings.samples
 			);
 }
+
+/**
+ * Could potentially print something after filter has finished
+ *
+ * @param void
+ * @return void
+ */
+
 
 void print_suffix() {
 }
